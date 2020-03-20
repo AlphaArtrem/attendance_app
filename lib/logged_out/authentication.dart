@@ -1,34 +1,38 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
-class Authentication extends StatelessWidget {
+class Authentication extends StatefulWidget {
+  @override
+  _AuthenticationState createState() => _AuthenticationState();
+}
+
+class _AuthenticationState extends State<Authentication> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          'Authentication'
-        ),
-        centerTitle: true,
-      ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: <Widget>[
-            RaisedButton.icon(
-              onPressed: (){},
-              icon: Icon(Icons.account_circle),
-              label: Text('Login'),
-              elevation: 0,
-            ),
-            RaisedButton.icon(
-              onPressed: (){},
-              icon: Icon(Icons.person_add),
-              label: Text('Register'),
-              elevation: 0,
-            )
-          ],
+      body: SafeArea(
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: <Widget>[
+              RaisedButton.icon(
+                onPressed: (){
+                  Navigator.of(context).pushReplacementNamed('/login');
+                },
+                icon: Icon(Icons.account_circle),
+                label: Text('  Log In  '),
+                elevation: 0,
+              ),
+              RaisedButton.icon(
+                onPressed: (){},
+                icon: Icon(Icons.person_add),
+                label: Text('Register'),
+                elevation: 0,
+              ),
+            ],
+          ),
         ),
       ),
     );
