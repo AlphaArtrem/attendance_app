@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "467733820172",
+    "firebase_url": "https://alphaartrem-attendance-app.firebaseio.com",
+    "project_id": "alphaartrem-attendance-app",
+    "storage_bucket": "alphaartrem-attendance-app.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:467733820172:android:a9f6c2bbdbc3866aac0f29",
+        "android_client_info": {
+          "package_name": "com.alphaartrem.attendanceapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "467733820172-viuhr33jfk0gg6btp3oagteciev63bd9.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBqS-s7mA4aL2yaFxynl4OcxMcL9jj9HOM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "467733820172-viuhr33jfk0gg6btp3oagteciev63bd9.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
