@@ -17,18 +17,40 @@ class _LoginState extends State<Login> {
         title: Text('Login'),
         centerTitle: true,
       ),
-      body: Center(
-        child: RaisedButton.icon(
-          onPressed: () async{
-            dynamic user = await _account.anonymous();
-            if(user != null)
-              {
-                Navigator.of(context).pushReplacementNamed('/student');
-              }
-          },
-          icon: Icon(Icons.account_circle),
-          label: Text('Login'),
-          elevation: 0,
+      body: Form(
+        child: Container(
+          margin: EdgeInsets.symmetric(horizontal: 50),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: <Widget>[
+              TextFormField(
+                onChanged: (id){
+
+                },
+              ),
+              SizedBox(height: 10,),
+              TextFormField(
+                obscureText: true,
+                onChanged: (pass){
+
+                },
+              ),
+              SizedBox(height: 25,),
+              RaisedButton.icon(
+                onPressed: () async{
+                  dynamic user = _account.anonymous();
+                  if(user != null)
+                    {
+                      Navigator.of(context).pushReplacementNamed('/attendance');
+                    }
+                },
+                icon: Icon(Icons.person),
+                label: Text('Log In'),
+                elevation: 0,
+              )
+            ],
+          ),
         ),
       ),
     );

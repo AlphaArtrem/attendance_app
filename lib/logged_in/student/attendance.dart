@@ -12,7 +12,7 @@ class _StudentState extends State<Student> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: Text('${Provider.of<String>(context)}'),
+          title: Text('Home'),
           centerTitle: true,
           actions: <Widget>[
             IconButton(
@@ -30,6 +30,9 @@ class _StudentState extends State<Student> {
               },
             )
           ],
+      ),
+      body: Center(
+        child: Text('${Provider.of<String>(context)}'),
       ),
     );
   }

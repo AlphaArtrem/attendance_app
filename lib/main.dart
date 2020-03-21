@@ -1,3 +1,4 @@
+import 'package:attendanceapp/logged_out/methods/register.dart';
 import 'package:flutter/material.dart';
 import 'package:attendanceapp/logged_out/authentication.dart';
 import 'package:attendanceapp/logged_out/methods/log_in.dart';
@@ -19,6 +20,7 @@ class LoginApp extends StatelessWidget {
         home: Authentication(),
         routes: {
           '/login': (context) => Login(),
+          '/register': (context) => Register(),
           '/student': (context) => Student(),
           '/authentication': (context) => Authentication(),
         },
