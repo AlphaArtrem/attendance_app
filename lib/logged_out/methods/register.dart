@@ -42,7 +42,7 @@ class _RegisterState extends State<Register> {
                   dynamic user = _account.anonymous();
                   if(user != null)
                   {
-                    Navigator.of(context).pushReplacementNamed('/attendance');
+                    Navigator.of(context).pushReplacementNamed('/student');
                   }
                 },
                 icon: Icon(Icons.person),
