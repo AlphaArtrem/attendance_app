@@ -38,7 +38,7 @@ class _RegisterState extends State<Register> {
               ),
               SizedBox(height: 10,),
               TextFormField(
-                validator: _account.validatePass,
+                validator: _account.validateRegisterPass,
                 obscureText: true,
                 onChanged: (val){
                   pass = val;

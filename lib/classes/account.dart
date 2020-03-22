@@ -19,11 +19,23 @@ class User{
     }
   }
 
-  String validatePass(String pass)
+  String validateRegisterPass(String pass)
   {
     if(pass.length < 6)
     {
       return "Password can't be less than 6 characters";
+    }
+    else
+    {
+      return null;
+    }
+  }
+
+  String validateLoginPass(String pass)
+  {
+    if(pass.isEmpty)
+    {
+      return "Password can't be empty";
     }
     else
     {
@@ -48,14 +60,15 @@ class User{
     }
     catch(e)
     {
+      print(e.toString());
       return null;
     }
   }
 
 
-  Future<String> anonymous() async{
+  Future<String> login(email, pass) async{
     try {
-      AuthResult account = await _auth.signInAnonymously();
+      AuthResult account = await _auth.signInWithEmailAndPassword(email: email, password: pass);
       return uid(account.user);
     }
     catch (e) {
