@@ -1,4 +1,5 @@
 import 'package:attendanceapp/classes/account.dart';
+import 'package:attendanceapp/shared/formatting.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -31,6 +32,7 @@ class _LoginState extends State<Login> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: <Widget>[
               TextFormField(
+                decoration: textInputFormatting.copyWith(helperText: "Enter Email"),
                 validator: _account.validateId,
                 onChanged: (val){
                   email = val;
@@ -38,6 +40,7 @@ class _LoginState extends State<Login> {
               ),
               SizedBox(height: 10,),
               TextFormField(
+                decoration: textInputFormatting.copyWith(helperText: "Enter Password"),
                 validator: _account.validateLoginPass,
                 obscureText: true,
                 onChanged: (val){
