@@ -7,25 +7,63 @@ class User{
     return _auth.onAuthStateChanged.map(uid);
   }
 
-  Future<String> anonymous() async{
-    try {
-      AuthResult account = await _auth.signInAnonymously();
-      FirebaseUser user = account.user;
-      return user.uid;
+  String validateId(String id)
+  {
+    if(id.isEmpty)
+    {
+      return "Email can't be blank";
     }
-    catch (e) {
+    else
+    {
       return null;
     }
   }
 
-  String uid(FirebaseUser account){
+  String validatePass(String pass)
+  {
+    if(pass.length < 6)
+    {
+      return "Password can't be less than 6 characters";
+    }
+    else
+    {
+      return null;
+    }
+  }
+
+  String uid(FirebaseUser user){
     try{
-      return account.uid;
+      return user.uid;
     }
     catch(e){
       return null;
     }
   }
+
+  Future register(email, pass) async{
+    try
+    {
+      AuthResult account = await _auth.createUserWithEmailAndPassword(email: email, password: pass);
+      return uid(account.user);
+    }
+    catch(e)
+    {
+      return null;
+    }
+  }
+
+
+  Future<String> anonymous() async{
+    try {
+      AuthResult account = await _auth.signInAnonymously();
+      return uid(account.user);
+    }
+    catch (e) {
+      print(e.toString());
+      return null;
+    }
+  }
+
 
   Future signOut() async{
     try{

@@ -4,7 +4,7 @@ import 'package:attendanceapp/logged_out/authentication.dart';
 import 'package:attendanceapp/logged_out/methods/log_in.dart';
 import 'package:provider/provider.dart';
 import 'package:attendanceapp/classes/account.dart';
-import 'package:attendanceapp/logged_in/student/attendance.dart';
+import 'package:attendanceapp/logged_in/student/student.dart';
 
 void main() => runApp(LoginApp());
 
