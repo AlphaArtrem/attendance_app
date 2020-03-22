@@ -16,65 +16,70 @@ class _LoginState extends State<Login> {
   String pass;
   String error = '';
 
+  bool loading = false;
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Login'),
-        centerTitle: true,
-      ),
-      body: Form(
-        key: _formKey,
-        child: Container(
-          margin: EdgeInsets.symmetric(horizontal: 50),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: <Widget>[
-              TextFormField(
-                decoration: textInputFormatting.copyWith(helperText: "Enter Email"),
-                validator: _account.validateId,
-                onChanged: (val){
-                  email = val;
-                },
-              ),
-              SizedBox(height: 10,),
-              TextFormField(
-                decoration: textInputFormatting.copyWith(helperText: "Enter Password"),
-                validator: _account.validateLoginPass,
-                obscureText: true,
-                onChanged: (val){
-                  pass = val;
-                },
-              ),
-              SizedBox(height: 25,),
-              RaisedButton.icon(
-                onPressed: () async{
-                  if(_formKey.currentState.validate())
-                    {
-                      dynamic user = await _account.login(email, pass);
-                      if(user != null)
+
+        return loading ? LoadingScreen() : Scaffold(
+          appBar: AppBar(
+            title: Text('Login'),
+            centerTitle: true,
+          ),
+          body: Form(
+            key: _formKey,
+            child: Container(
+              margin: EdgeInsets.symmetric(horizontal: 50),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: <Widget>[
+                  TextFormField(
+                    decoration: textInputFormatting.copyWith(helperText: "Enter Email"),
+                    validator: _account.validateId,
+                    onChanged: (val){
+                      email = val;
+                    },
+                  ),
+                  SizedBox(height: 10,),
+                  TextFormField(
+                    decoration: textInputFormatting.copyWith(helperText: "Enter Password"),
+                    validator: _account.validateLoginPass,
+                    obscureText: true,
+                    onChanged: (val){
+                      pass = val;
+                    },
+                  ),
+                  SizedBox(height: 25,),
+                  RaisedButton.icon(
+                    onPressed: () async{
+                      if(_formKey.currentState.validate())
                       {
-                        Navigator.of(context).pushReplacementNamed('/student');
-                      }
-                      else
+                        setState(() => loading = true);
+                        dynamic user = await _account.login(email, pass);
+                        if(user != null)
+                        {
+                          Navigator.of(context).pushReplacementNamed('/student');
+                        }
+                        else
                         {
                           setState(() {
+                            loading = false;
                             error = 'Email and/or password is incorrect';
                           });
                         }
-                    }
-                },
-                icon: Icon(Icons.person),
-                label: Text('Log In'),
-                elevation: 0,
+                      }
+                    },
+                    icon: Icon(Icons.person),
+                    label: Text('Log In'),
+                    elevation: 0,
+                  ),
+                  SizedBox(height: 50,),
+                  Text(error, style: TextStyle(color: Colors.red),)
+                ],
               ),
-              SizedBox(height: 50,),
-              Text(error, style: TextStyle(color: Colors.red),)
-            ],
+            ),
           ),
-        ),
-      ),
-    );
+        );
   }
 }

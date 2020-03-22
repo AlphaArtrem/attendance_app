@@ -16,9 +16,11 @@ class _RegisterState extends State<Register> {
   String pass;
   String error = '';
 
+  bool loading = false;
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return loading ? LoadingScreen() : Scaffold(
       appBar: AppBar(
         title: Text('Register'),
         centerTitle: true,
@@ -52,6 +54,7 @@ class _RegisterState extends State<Register> {
                 onPressed: () async{
                   if(_formKey.currentState.validate())
                     {
+                      setState(() => loading = true);
                       dynamic user = await _account.register(email, pass);
                       print(user);
                       if(user != null)
@@ -61,6 +64,7 @@ class _RegisterState extends State<Register> {
                       else
                         {
                           setState(() {
+                            loading = false;
                             error = "Please provide an valid E-mail";
                           });
                         }
