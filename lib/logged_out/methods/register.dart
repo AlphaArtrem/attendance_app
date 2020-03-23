@@ -1,5 +1,6 @@
 import 'package:attendanceapp/classes/account.dart';
 import 'package:attendanceapp/shared/formatting.dart';
+import 'package:dropdown_formfield/dropdown_formfield.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -12,9 +13,10 @@ class _RegisterState extends State<Register> {
   final User _account = User();
   final _formKey = GlobalKey<FormState>();
 
-  String email;
-  String pass;
+  String email, pass, firstName, lastName;
   String error = '';
+  String type = ' ';
+  List<String> types = ['Student', 'Teacher'];
 
   bool loading = false;
 
@@ -33,6 +35,39 @@ class _RegisterState extends State<Register> {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: <Widget>[
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: <Widget>[
+                  Expanded(
+                    flex: 1,
+                    child:Container(
+                      margin: EdgeInsets.fromLTRB(0, 0, 5, 0),
+                      child: TextFormField(
+                        decoration: textInputFormatting.copyWith(helperText: "First Name"),
+                        validator: (val) => val.isEmpty ? 'Can\'t Be Empty' : null,
+                        onChanged: (val){
+                          firstName = val;
+                        },
+                      ),
+                    ),
+                  ),
+                  Expanded(
+                    flex: 1,
+                    child: Container(
+                      margin: EdgeInsets.fromLTRB(5, 0, 0, 0),
+                      child: TextFormField(
+                        decoration: textInputFormatting.copyWith(helperText: "Last Name"),
+                        validator: (val) => val.isEmpty ? 'Can\'t Be Empty' : null,
+                        onChanged: (val){
+                          lastName =val;
+                        },
+                      ),
+                    ),
+                  )
+                ],
+              ),
+              SizedBox(height: 10,),
               TextFormField(
                 decoration: textInputFormatting.copyWith(helperText: "Enter Email"),
                 validator: _account.validateId,
@@ -49,6 +84,8 @@ class _RegisterState extends State<Register> {
                   pass = val;
                 },
               ),
+              SizedBox(height: 10,),
+              //TODO : Add adropdown for account type
               SizedBox(height: 25,),
               RaisedButton.icon(
                 onPressed: () async{
