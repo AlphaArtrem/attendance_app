@@ -1,6 +1,5 @@
 import 'package:attendanceapp/classes/account.dart';
 import 'package:attendanceapp/shared/formatting.dart';
-import 'package:dropdown_formfield/dropdown_formfield.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -15,8 +14,8 @@ class _RegisterState extends State<Register> {
 
   String email, pass, firstName, lastName;
   String error = '';
-  String type = ' ';
-  List<String> types = ['Student', 'Teacher'];
+  String type = '';
+  List<String> _types = ['', 'Student', 'Teacher'];
 
   bool loading = false;
 
@@ -85,7 +84,36 @@ class _RegisterState extends State<Register> {
                 },
               ),
               SizedBox(height: 10,),
-              //TODO : Add adropdown for account type
+              Container(
+                height: 80,
+                child: FormField<String>(
+                  validator: (val) => val.isEmpty ? "Choose A Category" : null,
+                  builder: (FormFieldState<String> state) {
+                    return InputDecorator(
+                      decoration: textInputFormatting.copyWith(helperText: 'Choose Account Type'),
+                      isEmpty: type == '',
+                      child: DropdownButtonHideUnderline(
+                        child: DropdownButton<String>(
+                          value: type,
+                          isDense: true,
+                          onChanged: (value) {
+                            setState(() {
+                              type = value;
+                              state.didChange(value);
+                            });
+                          },
+                          items: _types.map((value) {
+                            return DropdownMenuItem<String>(
+                              value: value,
+                              child: Text(value),
+                            );
+                          }).toList(),
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ),
               SizedBox(height: 25,),
               RaisedButton.icon(
                 onPressed: () async{
