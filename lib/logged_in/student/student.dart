@@ -1,4 +1,5 @@
 import 'package:attendanceapp/classes/account.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -23,10 +24,6 @@ class _StudentState extends State<Student> {
               {
 
                 Navigator.of(context).pushReplacementNamed('/authentication');
-              }
-              else
-              {
-                print(result);
               }
             },
           )

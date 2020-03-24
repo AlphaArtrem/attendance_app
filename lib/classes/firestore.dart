@@ -30,4 +30,8 @@ class UserDataBase{
     return data.data['type'];
   }
 
+  Stream<QuerySnapshot> get userData{
+    return _userData.snapshots();
+  }
+
 }
