@@ -1,4 +1,5 @@
 import 'package:attendanceapp/classes/account.dart';
+import 'package:attendanceapp/classes/firestore.dart';
 import 'package:attendanceapp/shared/formatting.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -59,7 +60,8 @@ class _LoginState extends State<Login> {
                         dynamic user = await _account.login(email, pass);
                         if(user != null)
                         {
-                          Navigator.of(context).pushReplacementNamed('/student');
+                          dynamic type = await UserDataBase(user).userType();
+                          Navigator.of(context).pushReplacementNamed('/home', arguments: type);
                         }
                         else
                         {

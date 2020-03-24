@@ -8,42 +8,6 @@ class User{
     return _auth.onAuthStateChanged.map(uid);
   }
 
-  String validateId(String id)
-  {
-    if(id.isEmpty)
-    {
-      return "Email can't be blank";
-    }
-    else
-    {
-      return null;
-    }
-  }
-
-  String validateRegisterPass(String pass)
-  {
-    if(pass.length < 6)
-    {
-      return "Password can't be less than 6 characters";
-    }
-    else
-    {
-      return null;
-    }
-  }
-
-  String validateLoginPass(String pass)
-  {
-    if(pass.isEmpty)
-    {
-      return "Password can't be empty";
-    }
-    else
-    {
-      return null;
-    }
-  }
-
   String uid(FirebaseUser user){
     try{
       return user.uid;
@@ -92,4 +56,41 @@ class User{
     FirebaseUser user = await _auth.currentUser();
     await user.delete();
   }
+
+  String validateId(String id)
+  {
+    if(id.isEmpty)
+    {
+      return "Email can't be blank";
+    }
+    else
+    {
+      return null;
+    }
+  }
+
+  String validateRegisterPass(String pass)
+  {
+    if(pass.length < 6)
+    {
+      return "Password can't be less than 6 characters";
+    }
+    else
+    {
+      return null;
+    }
+  }
+
+  String validateLoginPass(String pass)
+  {
+    if(pass.isEmpty)
+    {
+      return "Password can't be empty";
+    }
+    else
+    {
+      return null;
+    }
+  }
+
 }

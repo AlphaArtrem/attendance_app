@@ -12,7 +12,7 @@ class _StudentState extends State<Student> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Home'),
+        title: Text('Home - Student'),
         centerTitle: true,
         actions: <Widget>[
           IconButton(
@@ -21,6 +21,7 @@ class _StudentState extends State<Student> {
               dynamic result = await User().signOut();
               if(result == null)
               {
+
                 Navigator.of(context).pushReplacementNamed('/authentication');
               }
               else

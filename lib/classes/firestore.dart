@@ -21,4 +21,13 @@ class UserDataBase{
       return null;
     }
   }
+
+  Future userType() async{
+    DocumentSnapshot data;
+    await _userData.document(uid).get().then((DocumentSnapshot ds){
+      data = ds;
+    });
+    return data.data['type'];
+  }
+
 }

@@ -129,7 +129,9 @@ class _RegisterState extends State<Register> {
                             dynamic userDataSet = await userData.newUserData(firstName, lastName, type);
                             if(userDataSet != null)
                               {
-                                Navigator.of(context).pushReplacementNamed('/student');
+                                dynamic type = await UserDataBase(user).userType();
+                                Navigator.of(context).pushReplacementNamed('/home', arguments: type);
+                                Navigator.of(context).pushReplacementNamed('/home');
                               }
                             else
                               {
