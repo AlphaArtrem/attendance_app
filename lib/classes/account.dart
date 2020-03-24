@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 class User{
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
+
   Stream<String> get account{
     return _auth.onAuthStateChanged.map(uid);
   }
@@ -52,7 +53,7 @@ class User{
     }
   }
 
-  Future register(email, pass) async{
+  Future<String> register(email, pass) async{
     try
     {
       AuthResult account = await _auth.createUserWithEmailAndPassword(email: email, password: pass);

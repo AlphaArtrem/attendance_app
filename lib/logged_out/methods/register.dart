@@ -1,4 +1,5 @@
 import 'package:attendanceapp/classes/account.dart';
+import 'package:attendanceapp/classes/firestore.dart';
 import 'package:attendanceapp/shared/formatting.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -122,10 +123,21 @@ class _RegisterState extends State<Register> {
                       {
                         setState(() => loading = true);
                         dynamic user = await _account.register(email, pass);
-                        print(user);
                         if(user != null)
                           {
-                            Navigator.of(context).pushReplacementNamed('/student');
+                            UserDataBase userData = UserDataBase(user) ;
+                            dynamic userDataSet = await userData.newUserData(firstName, lastName, type);
+                            if(userDataSet != null)
+                              {
+                                Navigator.of(context).pushReplacementNamed('/student');
+                              }
+                            else
+                              {
+                                setState(() {
+                                  loading = false;
+                                  error = "Couldn't add user details to database";
+                                });
+                              }
                           }
                         else
                           {
