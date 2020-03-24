@@ -87,4 +87,9 @@ class User{
       return null;
     }
   }
+
+  Future deleteUser() async{
+    FirebaseUser user = await _auth.currentUser();
+    await user.delete();
+  }
 }

@@ -133,6 +133,7 @@ class _RegisterState extends State<Register> {
                               }
                             else
                               {
+                                await _account.deleteUser();
                                 setState(() {
                                   loading = false;
                                   error = "Couldn't add user details to database";
