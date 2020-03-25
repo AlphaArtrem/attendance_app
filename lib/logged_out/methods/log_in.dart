@@ -23,64 +23,78 @@ class _LoginState extends State<Login> {
   Widget build(BuildContext context) {
 
         return loading ? LoadingScreen() : Scaffold(
-          appBar: AppBar(
-            title: Text('Login'),
-            centerTitle: true,
-          ),
-          body: Form(
-            key: _formKey,
-            child: Container(
-              margin: EdgeInsets.symmetric(horizontal: 50),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: <Widget>[
-                  TextFormField(
-                    decoration: textInputFormatting.copyWith(helperText: "Enter Email"),
-                    validator: _account.validateId,
-                    onChanged: (val){
-                      email = val;
-                    },
+          backgroundColor: Colors.blue,
+          body: ListView(
+            children: <Widget>[
+              SafeArea(
+                child: Form(
+                  key: _formKey,
+                  child: Card(
+                    elevation: 5,
+                    margin: EdgeInsets.symmetric(horizontal: 20, vertical: 150),
+                    child: Padding(
+                      padding: const EdgeInsets.fromLTRB(15, 90, 15, 15),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: <Widget>[
+                          TextFormField(
+                            decoration: textInputFormatting.copyWith(helperText: "Enter Email"),
+                            validator: _account.validateId,
+                            onChanged: (val){
+                              email = val;
+                            },
+                          ),
+                          SizedBox(height: 10,),
+                          TextFormField(
+                            decoration: textInputFormatting.copyWith(helperText: "Enter Password"),
+                            validator: _account.validateLoginPass,
+                            obscureText: true,
+                            onChanged: (val){
+                              pass = val;
+                            },
+                          ),
+                          SizedBox(height: 30,),
+                          RaisedButton.icon(
+                            onPressed: () async{
+                              if(_formKey.currentState.validate())
+                              {
+                                setState(() => loading = true);
+                                dynamic user = await _account.login(email, pass);
+                                if(user != null)
+                                {
+                                  dynamic type = await UserDataBase(user).userType();
+                                  Navigator.of(context).pushReplacementNamed('/home', arguments: type);
+                                }
+                                else
+                                {
+                                  setState(() {
+                                    loading = false;
+                                    error = 'Email and/or password is incorrect';
+                                  });
+                                }
+                              }
+                            },
+                            icon: Icon(Icons.person, color: Colors.white,),
+                            label: Text(
+                                'Log In',
+                                style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.w400),
+                            ),
+                            elevation: 0,
+                            color: Colors.blue,
+                          ),
+                          SizedBox(height: 30,),
+                          Text(error, style: TextStyle(color: Colors.red),)
+                        ],
+                      ),
+                    ),
                   ),
-                  SizedBox(height: 10,),
-                  TextFormField(
-                    decoration: textInputFormatting.copyWith(helperText: "Enter Password"),
-                    validator: _account.validateLoginPass,
-                    obscureText: true,
-                    onChanged: (val){
-                      pass = val;
-                    },
-                  ),
-                  SizedBox(height: 25,),
-                  RaisedButton.icon(
-                    onPressed: () async{
-                      if(_formKey.currentState.validate())
-                      {
-                        setState(() => loading = true);
-                        dynamic user = await _account.login(email, pass);
-                        if(user != null)
-                        {
-                          dynamic type = await UserDataBase(user).userType();
-                          Navigator.of(context).pushReplacementNamed('/home', arguments: type);
-                        }
-                        else
-                        {
-                          setState(() {
-                            loading = false;
-                            error = 'Email and/or password is incorrect';
-                          });
-                        }
-                      }
-                    },
-                    icon: Icon(Icons.person),
-                    label: Text('Log In'),
-                    elevation: 0,
-                  ),
-                  SizedBox(height: 50,),
-                  Text(error, style: TextStyle(color: Colors.red),)
-                ],
+                ),
               ),
-            ),
+            ],
           ),
         );
   }
