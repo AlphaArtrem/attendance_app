@@ -4,11 +4,11 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 
 // For formatting text inout fields
 const enabled =  OutlineInputBorder(
-  borderSide: BorderSide(color: Colors.black, width: 2),
+  borderSide: BorderSide(color: Colors.blue, width: 2),
 );
 
 const focused =  OutlineInputBorder(
-  borderSide: BorderSide(color: Colors.blue, width: 2),
+  borderSide: BorderSide(color: Colors.lightBlueAccent, width: 2),
 );
 
 const textInputFormatting = InputDecoration(
