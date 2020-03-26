@@ -7,7 +7,7 @@ class UserDataBase{
 
   final CollectionReference _userData = Firestore.instance.collection('users');
 
-  Future<String> newUserData(firstName, lastName, type) async{
+  Future<String> newUserData(String firstName, String lastName, String type) async{
     try{
       Map<String, dynamic> data = {
         'fistName' : firstName,
@@ -29,9 +29,44 @@ class UserDataBase{
     });
     return data.data['type'];
   }
+}
 
-  Stream<QuerySnapshot> get userData{
-    return _userData.snapshots();
+class TeacherSubjectsAndBatches{
+
+  String uid;
+  TeacherSubjectsAndBatches(this.uid);
+
+  final CollectionReference _teachers = Firestore.instance.collection('/batches');
+
+  Future<String> addSubject(String subject) async{
+    try{
+      await _teachers.document(uid).setData({'$subject' : List()});
+      return 'Success';
+    }
+    catch(e){
+      return null;
+    }
   }
+
+  Future<String> addBatch(String subject, String batch) async{
+    try{
+      List batches;
+      _teachers.document(uid).get().then((DocumentSnapshot ds) => batches = ds.data['$subject']);
+      if(batches.contains(batch))
+        {
+          return "Two batches can't have same name";
+        }
+      else
+        {
+          batches.add(batch);
+          return 'Success';
+        }
+    }
+    catch(e){
+      return null;
+    }
+  }
+
+
 
 }
