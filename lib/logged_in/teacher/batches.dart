@@ -1,5 +1,5 @@
 import 'package:attendanceapp/classes/account.dart';
-import 'package:attendanceapp/classes/firestore.dart';
+import 'package:attendanceapp/logged_in/teacher/subjects.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -25,10 +25,6 @@ class _BatchesState extends State<Batches> {
 
                 Navigator.of(context).pushReplacementNamed('/authentication');
               }
-              else
-              {
-                print(result);
-              }
             },
           )
         ],
@@ -37,53 +33,3 @@ class _BatchesState extends State<Batches> {
     );
   }
 }
-
-class Subjects extends StatefulWidget {
-  final String uid;
-  Subjects(this.uid);
-  @override
-  _SubjectsState createState() => _SubjectsState(uid);
-}
-
-class _SubjectsState extends State<Subjects> {
-  final String uid;
-  _SubjectsState(this.uid);
-  dynamic subjects;
-
-  setup() async{
-    TeacherSubjectsAndBatches tSAB = TeacherSubjectsAndBatches(uid);
-    subjects = await tSAB.getSubjectsAndBatches();
-  }
-
-  @override
-  void initState()
-  {
-    super.initState();
-    setup();
-    print("B : $subjects");
-  }
-  @override
-  Widget build(BuildContext context) {
-    print(subjects);
-    return Center(
-      child: subjects == null? Text('No subjects added') : ListView.builder(
-        itemCount: subjects.keys.length,
-        itemBuilder: (context, index){
-          return Card(
-            child: ListTile(
-              onTap: (){
-
-              },
-              title: Padding(
-                padding: EdgeInsets.all(10),
-                child: Text('${subjects.keys[index].toUpperCase()}'),
-              ),
-            ),
-          );
-        },
-      ),
-    );
-  }
-}
-
-

@@ -40,7 +40,7 @@ class TeacherSubjectsAndBatches{
 
   Future<String> addSubject(String subject) async{
     try{
-      await _teachers.document(uid).setData({'$subject' : List()});
+      await _teachers.document(uid).setData({'$subject' : List()}, merge: true);
       return 'Success';
     }
     catch(e){
@@ -71,7 +71,7 @@ class TeacherSubjectsAndBatches{
     try{
       Map subjects;
       await _teachers.document(uid).get().then((DocumentSnapshot ds) => subjects = ds.data);
-      print("A : $subjects");
+      print(subjects);
       return subjects;
     }
     catch(e){
