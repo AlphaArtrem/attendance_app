@@ -33,7 +33,7 @@ class UserDataBase{
 
 class TeacherSubjectsAndBatches{
 
-  String uid;
+  final String uid;
   TeacherSubjectsAndBatches(this.uid);
 
   final CollectionReference _teachers = Firestore.instance.collection('/batches');
@@ -51,7 +51,7 @@ class TeacherSubjectsAndBatches{
   Future<String> addBatch(String subject, String batch) async{
     try{
       List batches;
-      _teachers.document(uid).get().then((DocumentSnapshot ds) => batches = ds.data['$subject']);
+      await _teachers.document(uid).get().then((DocumentSnapshot ds) => batches = ds.data['$subject']);
       if(batches.contains(batch))
         {
           return "Two batches can't have same name";
@@ -67,6 +67,15 @@ class TeacherSubjectsAndBatches{
     }
   }
 
-
-
+  Future<Map> getSubjectsAndBatches() async{
+    try{
+      Map subjects;
+      await _teachers.document(uid).get().then((DocumentSnapshot ds) => subjects = ds.data);
+      print("A : $subjects");
+      return subjects;
+    }
+    catch(e){
+      return null;
+    }
+  }
 }
