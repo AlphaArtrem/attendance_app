@@ -20,13 +20,11 @@ class _SubjectsState extends State<Subjects> {
   String subject;
   String error = ' ';
   TeacherSubjectsAndBatches _tSAB;
-  bool loading = false;
 
-  setup() async{
+  Future setup() async{
     _tSAB = TeacherSubjectsAndBatches(uid);
     subjectsResult = await _tSAB.getSubjectsAndBatches();
     subjects = subjectsResult.keys.toList();
-    print(subjects);
   }
 
   @override
@@ -36,34 +34,39 @@ class _SubjectsState extends State<Subjects> {
   }
   @override
   Widget build(BuildContext context) {
-    return loading ? LoadingScreen() : Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: <Widget>[
-          Card(
-            child: add == false ? addSubjectButton() : addSubjectForm(),
+    return FutureBuilder(
+      future: setup(),
+      builder: (BuildContext context, AsyncSnapshot snapshot) {
+        return subjectsResult == null ? LoadingScreen() : Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              Card(
+                child: add == false ? addSubjectButton() : addSubjectForm(),
+              ),
+              SizedBox(height: 10,),
+              subjects.isEmpty ? Text('You Need To Add Subjects', style: TextStyle(color: Colors.red),) : Expanded(
+                child: ListView.builder(
+                  itemCount: subjects.length,
+                  itemBuilder: (context, index){
+                    return Card(
+                      child: ListTile(
+                        onTap: (){
+                          add = true;
+                        },
+                        title: Padding(
+                          padding: EdgeInsets.all(10),
+                          child: Text('${subjects[index]}'),
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ),
+            ],
           ),
-          SizedBox(height: 10,),
-          subjectsResult == null? Text('You Need To Add Subjects', style: TextStyle(color: Colors.red),) : Expanded(
-            child: ListView.builder(
-              itemCount: subjects.length,
-              itemBuilder: (context, index){
-                return Card(
-                  child: ListTile(
-                    onTap: (){
-                      add = true;
-                    },
-                    title: Padding(
-                      padding: EdgeInsets.all(10),
-                      child: Text('${subjects[index]}'),
-                    ),
-                  ),
-                );
-              },
-            ),
-          ),
-        ],
-      ),
+        );
+      },
     );
   }
 
@@ -99,9 +102,6 @@ class _SubjectsState extends State<Subjects> {
             ),
             IconButton(
               onPressed: () async{
-                setState(() {
-                  loading = true;
-                });
                 if(_formKey.currentState.validate())
                 {
                   if(subjects == null)
@@ -110,7 +110,6 @@ class _SubjectsState extends State<Subjects> {
                     if(result ==  null)
                     {
                       setState(() {
-                        loading = false;
                         error = "Something Went Wrong, Couldn't Add Subject";
                       });
                     }
@@ -118,7 +117,6 @@ class _SubjectsState extends State<Subjects> {
                     {
                       await setup();
                       setState((){
-                        loading = false;
                         add = false;
                       });
                     }
@@ -126,7 +124,6 @@ class _SubjectsState extends State<Subjects> {
                   else if(subjects.contains(subject))
                   {
                     setState(() {
-                      loading = false;
                       error = "Subject Alredy Present";
                     });
                   }
@@ -136,7 +133,6 @@ class _SubjectsState extends State<Subjects> {
                     if(result ==  null)
                     {
                       setState(() {
-                        loading = false;
                         error = "Something Went Wrong, Couldn't Add Subject";
                       });
                     }
@@ -144,7 +140,6 @@ class _SubjectsState extends State<Subjects> {
                     {
                       await setup();
                       setState((){
-                        loading = false;
                         add = false;
                       });
                     }

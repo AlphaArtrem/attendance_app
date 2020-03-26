@@ -71,8 +71,7 @@ class TeacherSubjectsAndBatches{
     try{
       Map subjects;
       await _teachers.document(uid).get().then((DocumentSnapshot ds) => subjects = ds.data);
-      print(subjects);
-      return subjects;
+      return subjects == null ? {} : subjects;
     }
     catch(e){
       return null;
