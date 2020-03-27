@@ -1,16 +1,16 @@
 import 'package:attendanceapp/classes/account.dart';
+import 'package:attendanceapp/logged_in/teacher/subjects.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
-class Batches extends StatefulWidget {
-
+class TeacherHome extends StatefulWidget {
   @override
-  _BatchesState createState() => _BatchesState();
+  _TeacherHomeState createState() => _TeacherHomeState();
 }
 
-class _BatchesState extends State<Batches> {
+class _TeacherHomeState extends State<TeacherHome> {
   @override
   Widget build(BuildContext context) {
-    List batches = ModalRoute.of(context).settings.arguments;
     return Scaffold(
       appBar: AppBar(
         title: Text('Home - Teacher'),
@@ -29,14 +29,7 @@ class _BatchesState extends State<Batches> {
           )
         ],
       ),
-      body: batches.isEmpty ? Text('You Need to Add A Batch') : ListView.builder(
-          itemCount: batches.length,
-          itemBuilder: (context, index){
-            return Card(
-              child: Text('${batches[index]}'),
-            );
-          }
-      ),
+      body: Subjects(Provider.of<String>(context)),
     );
   }
 }

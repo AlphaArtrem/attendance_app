@@ -18,6 +18,7 @@ class UserDataBase{
       return 'Success';
     }
     catch(e){
+      print(e.toString());
       return null;
     }
   }
@@ -36,44 +37,52 @@ class TeacherSubjectsAndBatches{
   final String uid;
   TeacherSubjectsAndBatches(this.uid);
 
-  final CollectionReference _teachers = Firestore.instance.collection('/batches');
+  final CollectionReference _teachers = Firestore.instance.collection('/teachers-data');
 
   Future<String> addSubject(String subject) async{
     try{
-      await _teachers.document(uid).setData({'$subject' : List()}, merge: true);
+      //Creating an map with subjects as keys and weather to show it or not as an boolean value
+      await _teachers.document(uid).setData({subject : true}, merge: true);
       return 'Success';
     }
     catch(e){
+      print(e.toString());
       return null;
     }
   }
 
   Future<String> addBatch(String subject, String batch) async{
     try{
-      List batches;
-      await _teachers.document(uid).get().then((DocumentSnapshot ds) => batches = ds.data['$subject']);
-      if(batches.contains(batch))
-        {
-          return "Two batches can't have same name";
-        }
-      else
-        {
-          batches.add(batch);
-          return 'Success';
-        }
+      await _teachers.document(uid).collection(subject).document(batch).setData({batch: true}, merge: true);
+      return 'Success';
     }
     catch(e){
+      print(e.toString());
       return null;
     }
   }
 
-  Future<Map> getSubjectsAndBatches() async{
+  Future<List<String>> getSubjects() async {
+    try {
+      List<String> subjects = [];
+      await _teachers.document(uid).get().then((DocumentSnapshot ds) => subjects.addAll(ds.data.keys));
+      return subjects.isEmpty || subjects == null ? [] : subjects;
+    }
+    catch (e) {
+      print(e.toString());
+      return null;
+    }
+  }
+
+  Future<List<String>> getBatches(String subject) async{
     try{
-      Map subjects;
-      await _teachers.document(uid).get().then((DocumentSnapshot ds) => subjects = ds.data);
-      return subjects == null ? {} : subjects;
+      List<String> batches = [];
+      QuerySnapshot qs = await _teachers.document(uid).collection(subject).getDocuments();
+      qs.documents.forEach((DocumentSnapshot ds) => batches.add(ds.documentID));
+      return batches.isEmpty ? [] : batches;
     }
     catch(e){
+      print(e.toString());
       return null;
     }
   }

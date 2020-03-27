@@ -1,4 +1,5 @@
 import 'package:attendanceapp/classes/firestore.dart';
+import 'package:attendanceapp/logged_in/teacher/batches.dart';
 import 'package:attendanceapp/shared/formatting.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -13,18 +14,20 @@ class Subjects extends StatefulWidget {
 class _SubjectsState extends State<Subjects> {
   final String uid;
   _SubjectsState(this.uid);
-  Map subjectsResult;
-  List subjects;
+
+  List<String> subjects = [];
   bool add = false;
   final _formKey = GlobalKey<FormState>();
-  String subject;
+  String subject = ' ';
   String error = ' ';
   TeacherSubjectsAndBatches _tSAB;
 
   Future setup() async{
     _tSAB = TeacherSubjectsAndBatches(uid);
-    subjectsResult = await _tSAB.getSubjectsAndBatches();
-    subjects = subjectsResult.keys.toList();
+    subjects = await _tSAB.getSubjects();
+    if(subjects == null){
+      subjects = ["Couldn't get subjects, try logging out"];
+    }
   }
 
   @override
@@ -37,7 +40,7 @@ class _SubjectsState extends State<Subjects> {
     return FutureBuilder(
       future: setup(),
       builder: (BuildContext context, AsyncSnapshot snapshot) {
-        return subjectsResult == null ? LoadingScreen() : Center(
+        return subjects.isEmpty ? LoadingScreen() : Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
@@ -51,8 +54,8 @@ class _SubjectsState extends State<Subjects> {
                   itemBuilder: (context, index){
                     return Card(
                       child: ListTile(
-                        onTap: (){
-                          add = true;
+                        onTap: () async{
+                          //Navigator.of(context).pushNamed('/batches', arguments: subjectsResult['${subjects[index]}']);
                         },
                         title: Padding(
                           padding: EdgeInsets.all(10),
