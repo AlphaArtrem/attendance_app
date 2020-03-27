@@ -1,6 +1,7 @@
 import 'package:attendanceapp/classes/account.dart';
 import 'package:attendanceapp/classes/firestore.dart';
 import 'package:attendanceapp/shared/formatting.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -16,18 +17,18 @@ class _BatchesState extends State<Batches> {
   List<String> batches = [];
   final _formKey = GlobalKey<FormState>();
   bool add = false;
-  String uid = '';
   String batch = '';
+  FirebaseUser user;
 
-  Future setup(String id, String sub) async{
-    _tSAB = TeacherSubjectsAndBatches(id);
+  Future setup(FirebaseUser userCurrent, String sub) async{
+    user = userCurrent;
+    _tSAB = TeacherSubjectsAndBatches(user);
     batches = await _tSAB.getBatches(sub);
     if(batches == null){
       batches = ["Couldn't get batches, try logging in again"];
     }
     setState(() {
       subject = sub;
-      uid = id;
     });
   }
 
@@ -52,7 +53,7 @@ class _BatchesState extends State<Batches> {
         ],
       ),
       body: FutureBuilder(
-        future: setup(Provider.of<String>(context), ModalRoute.of(context).settings.arguments),
+        future: setup(Provider.of<FirebaseUser>(context), ModalRoute.of(context).settings.arguments),
         builder: (BuildContext context, AsyncSnapshot snapshot) {
           return batches.isEmpty ? LoadingData() : Center(
             child: Column(
@@ -134,7 +135,7 @@ class _BatchesState extends State<Batches> {
                     }
                     else
                     {
-                      await setup(uid, subject);
+                      await setup(user, subject);
                       setState((){
                         error = ' ';
                         add = false;

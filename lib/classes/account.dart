@@ -3,25 +3,15 @@ import 'package:firebase_auth/firebase_auth.dart';
 class User{
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
-
-  Stream<String> get account{
-    return _auth.onAuthStateChanged.map(uid);
+  Stream<FirebaseUser> get account{
+    return _auth.onAuthStateChanged;
   }
 
-  String uid(FirebaseUser user){
-    try{
-      return user.uid;
-    }
-    catch(e){
-      return null;
-    }
-  }
-
-  Future<String> register(email, pass) async{
+  Future<FirebaseUser> register(email, pass) async{
     try
     {
       AuthResult account = await _auth.createUserWithEmailAndPassword(email: email, password: pass);
-      return uid(account.user);
+      return account.user;
     }
     catch(e)
     {
@@ -31,10 +21,10 @@ class User{
   }
 
 
-  Future<String> login(email, pass) async{
+  Future<FirebaseUser> login(email, pass) async{
     try {
       AuthResult account = await _auth.signInWithEmailAndPassword(email: email, password: pass);
-      return uid(account.user);
+      return account.user;
     }
     catch (e) {
       print(e.toString());
@@ -92,5 +82,4 @@ class User{
       return null;
     }
   }
-
 }

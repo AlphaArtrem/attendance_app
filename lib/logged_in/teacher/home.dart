@@ -1,7 +1,6 @@
 import 'package:attendanceapp/classes/account.dart';
 import 'package:attendanceapp/logged_in/teacher/subjects.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
 class TeacherHome extends StatefulWidget {
   @override
@@ -28,7 +27,7 @@ class _TeacherHomeState extends State<TeacherHome> {
           )
         ],
       ),
-      body: Subjects(Provider.of<String>(context)),
+      body: Subjects(),
     );
   }
 }

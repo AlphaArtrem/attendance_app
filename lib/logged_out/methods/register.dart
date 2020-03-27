@@ -1,6 +1,7 @@
 import 'package:attendanceapp/classes/account.dart';
 import 'package:attendanceapp/classes/firestore.dart';
 import 'package:attendanceapp/shared/formatting.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -123,14 +124,14 @@ class _RegisterState extends State<Register> {
                           if(_formKey.currentState.validate())
                             {
                               setState(() => loading = true);
-                              dynamic user = await _account.register(email, pass);
+                              FirebaseUser user = await _account.register(email, pass);
                               if(user != null)
                                 {
                                   UserDataBase userData = UserDataBase(user) ;
                                   dynamic userDataSet = await userData.newUserData(firstName, lastName, type);
                                   if(userDataSet != null)
                                     {
-                                      dynamic type = await UserDataBase(user).userType();
+                                      dynamic type = await userData.userType();
                                       Navigator.of(context).pushReplacementNamed('/home', arguments: type);
                                       Navigator.of(context).pushReplacementNamed('/home');
                                     }

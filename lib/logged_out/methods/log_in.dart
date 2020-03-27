@@ -1,9 +1,9 @@
 import 'package:attendanceapp/classes/account.dart';
 import 'package:attendanceapp/classes/firestore.dart';
 import 'package:attendanceapp/shared/formatting.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
 class Login extends StatefulWidget {
   @override
@@ -60,7 +60,7 @@ class _LoginState extends State<Login> {
                           if(_formKey.currentState.validate())
                           {
                             setState(() => loading = true);
-                            dynamic user = await _account.login(email, pass);
+                            FirebaseUser user = await _account.login(email, pass);
                             if(user != null)
                             {
                               dynamic type = await UserDataBase(user).userType();

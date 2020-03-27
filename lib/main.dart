@@ -1,6 +1,7 @@
 import 'package:attendanceapp/logged_in/home.dart';
 import 'package:attendanceapp/logged_in/teacher/batches.dart';
 import 'package:attendanceapp/logged_out/methods/register.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:attendanceapp/logged_out/authentication.dart';
 import 'package:attendanceapp/logged_out/methods/log_in.dart';
@@ -13,7 +14,7 @@ class LoginApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return StreamProvider<String>.value(
+    return StreamProvider<FirebaseUser>.value(
       value: User().account,
       child: MaterialApp(
         debugShowCheckedModeBanner: false,

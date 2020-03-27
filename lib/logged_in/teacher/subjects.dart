@@ -1,28 +1,27 @@
 import 'package:attendanceapp/classes/firestore.dart';
 import 'package:attendanceapp/shared/formatting.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class Subjects extends StatefulWidget {
-  final String uid;
-  Subjects(this.uid);
   @override
-  _SubjectsState createState() => _SubjectsState(uid);
+  _SubjectsState createState() => _SubjectsState();
 }
 
 class _SubjectsState extends State<Subjects> {
-  final String uid;
-  _SubjectsState(this.uid);
-
   List<String> subjects = [];
   bool add = false;
   final _formKey = GlobalKey<FormState>();
   String subject = ' ';
   String error = ' ';
   TeacherSubjectsAndBatches _tSAB;
+  FirebaseUser user;
 
-  Future setup() async{
-    _tSAB = TeacherSubjectsAndBatches(uid);
+  Future setup(FirebaseUser userCurrent) async{
+    user = userCurrent;
+    _tSAB = TeacherSubjectsAndBatches(user);
     subjects = await _tSAB.getSubjects();
     if(subjects == null){
       subjects = ["Couldn't get subjects, try logging in again"];
@@ -32,7 +31,7 @@ class _SubjectsState extends State<Subjects> {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
-      future: setup(),
+      future: setup(Provider.of<FirebaseUser>(context)),
       builder: (BuildContext context, AsyncSnapshot snapshot) {
         return subjects.isEmpty ? LoadingData() : Center(
           child: Column(
@@ -118,7 +117,7 @@ class _SubjectsState extends State<Subjects> {
                     }
                     else
                     {
-                      await setup();
+                      await setup(user);
                       setState((){
                         error = ' ';
                         add = false;

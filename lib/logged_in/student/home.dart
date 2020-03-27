@@ -1,4 +1,6 @@
 import 'package:attendanceapp/classes/account.dart';
+import 'package:attendanceapp/shared/formatting.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -8,6 +10,7 @@ class StudentHome extends StatefulWidget {
 }
 
 class _StudentHomeState extends State<StudentHome> {
+  bool loading = false;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -18,10 +21,12 @@ class _StudentHomeState extends State<StudentHome> {
           IconButton(
             icon: Icon(Icons.power_settings_new),
             onPressed: () async{
+              setState(() {
+                loading = true;
+              });
               dynamic result = await User().signOut();
               if(result == null)
               {
-
                 Navigator.of(context).pushReplacementNamed('/authentication');
               }
             },
@@ -29,7 +34,7 @@ class _StudentHomeState extends State<StudentHome> {
         ],
       ),
       body: Center(
-        child: Text('${Provider.of<String>(context)}'),
+        child: loading ? LoadingData() : Text('${Provider.of<FirebaseUser>(context).email}'),
       ),
     );
   }

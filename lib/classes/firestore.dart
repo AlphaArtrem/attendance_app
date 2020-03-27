@@ -1,9 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class UserDataBase{
 
-  final String uid;
-  UserDataBase(this.uid);
+  final FirebaseUser user;
+  UserDataBase(this.user);
 
   final CollectionReference _userData = Firestore.instance.collection('users');
 
@@ -12,9 +13,10 @@ class UserDataBase{
       Map<String, dynamic> data = {
         'fistName' : firstName,
         'lastName' : lastName,
-        'type' : type
+        'type' : type,
+        'uid' : user.uid,
       };
-      await _userData.document(uid).setData(data);
+      await _userData.document(user.email).setData(data);
       return 'Success';
     }
     catch(e){
@@ -25,7 +27,7 @@ class UserDataBase{
 
   Future userType() async{
     DocumentSnapshot data;
-    await _userData.document(uid).get().then((DocumentSnapshot ds){
+    await _userData.document(user.email).get().then((DocumentSnapshot ds){
       data = ds;
     });
     return data.data['type'];
@@ -34,15 +36,15 @@ class UserDataBase{
 
 class TeacherSubjectsAndBatches{
 
-  final String uid;
-  TeacherSubjectsAndBatches(this.uid);
+  final FirebaseUser user;
+  TeacherSubjectsAndBatches(this.user);
 
   final CollectionReference _teachers = Firestore.instance.collection('/teachers-data');
 
   Future<String> addSubject(String subject) async{
     try{
       //Creating an map with subjects as keys and weather to show it or not as an boolean value
-      await _teachers.document(uid).setData({subject : true}, merge: true);
+      await _teachers.document(user.email).setData({subject : true}, merge: true);
       return 'Success';
     }
     catch(e){
@@ -53,7 +55,7 @@ class TeacherSubjectsAndBatches{
 
   Future<String> addBatch(String subject, String batch) async{
     try{
-      await _teachers.document(uid).collection(subject).document(batch).setData({}, merge: true);
+      await _teachers.document(user.email).collection(subject).document(batch).setData({}, merge: true);
       return 'Success';
     }
     catch(e){
@@ -65,7 +67,7 @@ class TeacherSubjectsAndBatches{
   Future<List<String>> getSubjects() async {
     try {
       List<String> subjects = [];
-      await _teachers.document(uid).get().then((DocumentSnapshot ds){
+      await _teachers.document(user.email).get().then((DocumentSnapshot ds){
         if(ds.exists){
           subjects.addAll(ds.data.keys);
         }
@@ -84,7 +86,7 @@ class TeacherSubjectsAndBatches{
   Future<List<String>> getBatches(String subject) async{
     try{
       List<String> batches = [];
-      QuerySnapshot qs = await _teachers.document(uid).collection(subject).getDocuments();
+      QuerySnapshot qs = await _teachers.document(user.email).collection(subject).getDocuments();
       qs.documents.forEach((DocumentSnapshot ds) => batches.add(ds.documentID));
       return batches.isEmpty || batches == null ? ['Empty'] : batches;
     }
