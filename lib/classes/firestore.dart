@@ -79,7 +79,7 @@ class TeacherSubjectsAndBatches{
       List<String> batches = [];
       QuerySnapshot qs = await _teachers.document(uid).collection(subject).getDocuments();
       qs.documents.forEach((DocumentSnapshot ds) => batches.add(ds.documentID));
-      return batches.isEmpty ? [] : batches;
+      return batches.isEmpty || batches == null ? [] : batches;
     }
     catch(e){
       print(e.toString());
