@@ -35,3 +35,17 @@ class LoadingScreen extends StatelessWidget {
     );
   }
 }
+
+class LoadingData extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Center(
+        child: SpinKitThreeBounce(
+          color: Colors.blue,
+          size: 40,
+        ),
+      ),
+    );
+  }
+}

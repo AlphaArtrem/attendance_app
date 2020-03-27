@@ -65,7 +65,14 @@ class TeacherSubjectsAndBatches{
   Future<List<String>> getSubjects() async {
     try {
       List<String> subjects = [];
-      await _teachers.document(uid).get().then((DocumentSnapshot ds) => subjects.addAll(ds.data.keys));
+      await _teachers.document(uid).get().then((DocumentSnapshot ds){
+        if(ds.exists){
+          subjects.addAll(ds.data.keys);
+        }
+        else{
+          subjects = ['Empty'];
+        }
+      });
       return subjects.isEmpty || subjects == null ? [] : subjects;
     }
     catch (e) {
@@ -81,6 +88,7 @@ class TeacherSubjectsAndBatches{
       qs.documents.forEach((DocumentSnapshot ds) => batches.add(ds.documentID));
       return batches.isEmpty || batches == null ? [] : batches;
     }
+
     catch(e){
       print(e.toString());
       return null;

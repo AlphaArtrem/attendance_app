@@ -22,7 +22,6 @@ class _TeacherHomeState extends State<TeacherHome> {
               dynamic result = await User().signOut();
               if(result == null)
               {
-
                 Navigator.of(context).pushReplacementNamed('/authentication');
               }
             },
