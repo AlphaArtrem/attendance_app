@@ -2,12 +2,12 @@ import 'package:attendanceapp/classes/account.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-class Student extends StatefulWidget {
+class StudentHome extends StatefulWidget {
   @override
-  _StudentState createState() => _StudentState();
+  _StudentHomeState createState() => _StudentHomeState();
 }
 
-class _StudentState extends State<Student> {
+class _StudentHomeState extends State<StudentHome> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(

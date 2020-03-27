@@ -1,5 +1,7 @@
+import 'package:attendanceapp/classes/firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class Authentication extends StatefulWidget {
   @override
@@ -7,8 +9,17 @@ class Authentication extends StatefulWidget {
 }
 
 class _AuthenticationState extends State<Authentication> {
+
+  void redirect(user) async{
+    dynamic type = await UserDataBase(user).userType();
+    Navigator.of(context).pushReplacementNamed('/home', arguments: type);
+  }
   @override
   Widget build(BuildContext context) {
+    dynamic user = Provider.of<String>(context);
+    if(user != null){
+      redirect(user);
+    }
     return Scaffold(
       backgroundColor: Colors.blue,
       body: SafeArea(

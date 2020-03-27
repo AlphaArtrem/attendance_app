@@ -10,7 +10,7 @@ class Batches extends StatefulWidget {
 class _BatchesState extends State<Batches> {
   @override
   Widget build(BuildContext context) {
-    List batches = ModalRoute.of(context).settings.arguments;
+    String subject = ModalRoute.of(context).settings.arguments;
     return Scaffold(
       appBar: AppBar(
         title: Text('Home - Teacher'),
@@ -29,14 +29,7 @@ class _BatchesState extends State<Batches> {
           )
         ],
       ),
-      body: batches.isEmpty ? Text('You Need to Add A Batch') : ListView.builder(
-          itemCount: batches.length,
-          itemBuilder: (context, index){
-            return Card(
-              child: Text('${batches[index]}'),
-            );
-          }
-      ),
+      body: Text('$subject'),
     );
   }
 }

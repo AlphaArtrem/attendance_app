@@ -55,7 +55,7 @@ class _SubjectsState extends State<Subjects> {
                     return Card(
                       child: ListTile(
                         onTap: () async{
-                          //Navigator.of(context).pushNamed('/batches', arguments: subjectsResult['${subjects[index]}']);
+                          Navigator.of(context).pushNamed('/batches', arguments: subjects[index]);
                         },
                         title: Padding(
                           padding: EdgeInsets.all(10),

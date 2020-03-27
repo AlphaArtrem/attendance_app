@@ -53,7 +53,7 @@ class TeacherSubjectsAndBatches{
 
   Future<String> addBatch(String subject, String batch) async{
     try{
-      await _teachers.document(uid).collection(subject).document(batch).setData({batch: true}, merge: true);
+      await _teachers.document(uid).collection(subject).document(batch).setData({}, merge: true);
       return 'Success';
     }
     catch(e){
