@@ -120,6 +120,7 @@ class _SubjectsState extends State<Subjects> {
                     {
                       await setup();
                       setState((){
+                        error = ' ';
                         add = false;
                       });
                     }

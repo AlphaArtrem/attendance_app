@@ -54,12 +54,26 @@ class _BatchesState extends State<Batches> {
       body: FutureBuilder(
         future: setup(Provider.of<String>(context), ModalRoute.of(context).settings.arguments),
         builder: (BuildContext context, AsyncSnapshot snapshot) {
-          return Center(
+          return batches.isEmpty ? LoadingData() : Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
                 Card(
                   child: add == true ? addBatchForm() : addBatchButton(),
+                ),
+                SizedBox(height: 10,),
+                batches[0] == 'Empty' ? Text('You Need To Add Batches', style: TextStyle(color: Colors.red),) : Expanded(
+                  child: ListView.builder(
+                    itemCount: batches.length,
+                    itemBuilder: (context, index){
+                      return Card(
+                        child : ListTile(
+                          onTap: (){},
+                          title: Text('${batches[index]}'),
+                        )
+                      );
+                    },
+                  ),
                 )
               ],
             ),
@@ -111,7 +125,7 @@ class _BatchesState extends State<Batches> {
                   }
                   else
                   {
-                    dynamic result = await _tSAB.addSubject(batch);
+                    dynamic result = await _tSAB.addBatch(subject, batch);
                     if(result ==  null)
                     {
                       setState(() {
@@ -122,6 +136,7 @@ class _BatchesState extends State<Batches> {
                     {
                       await setup(uid, subject);
                       setState((){
+                        error = ' ';
                         add = false;
                       });
                     }
