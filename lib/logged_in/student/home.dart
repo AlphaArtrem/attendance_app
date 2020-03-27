@@ -11,6 +11,8 @@ class StudentHome extends StatefulWidget {
 
 class _StudentHomeState extends State<StudentHome> {
   bool loading = false;
+  List<String> subjects = [];
+  List<String> batches = [];
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -34,7 +36,17 @@ class _StudentHomeState extends State<StudentHome> {
         ],
       ),
       body: Center(
-        child: loading ? LoadingData() : Text('${Provider.of<FirebaseUser>(context).email}'),
+        child: subjects.isEmpty ? Text('You are not enrolled with any teacher') : ListView.builder(
+        itemCount: subjects.length,
+          itemBuilder: (context, index){
+            return Card(
+              child: ListTile(
+                onTap: (){},
+                title: Text('${subjects[index]} ( ${batches[index]} )'),
+              )
+            );
+          }
+        ),
       ),
     );
   }
