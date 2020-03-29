@@ -64,6 +64,17 @@ class TeacherSubjectsAndBatches{
     }
   }
 
+  Future<String> addStudent(String subject, String batch, String studentEmail) async{
+    try{
+      await _teachers.document(user.email).collection(subject).document(batch).setData({studentEmail : true}, merge: true);
+      return 'Success';
+    }
+    catch(e){
+      print(e.toString());
+      return null;
+    }
+  }
+
   Future<List<String>> getSubjects() async {
     try {
       List<String> subjects = [];
@@ -91,6 +102,25 @@ class TeacherSubjectsAndBatches{
       return batches.isEmpty || batches == null ? ['Empty'] : batches;
     }
 
+    catch(e){
+      print(e.toString());
+      return null;
+    }
+  }
+
+  Future<List<String>> getStudents(String subject, String batch) async{
+    try{
+      List<String> students = [];
+      await _teachers.document(user.email).collection(subject).document(batch).get().then((DocumentSnapshot ds){
+        if(ds.exists){
+          students.addAll(ds.data.keys);
+        }
+        else{
+          students = ["Empty"];
+        }
+      });
+      return students.isEmpty || students == null ? [] : students;
+    }
     catch(e){
       print(e.toString());
       return null;
