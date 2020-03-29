@@ -102,7 +102,7 @@ class TeacherSubjectsAndBatches{
           subjects = ['Empty'];
         }
       });
-      return subjects.isEmpty || subjects == null ? [] : subjects;
+      return subjects.isEmpty? ['Empty'] : subjects;
     }
     catch (e) {
       print(e.toString());
@@ -135,7 +135,7 @@ class TeacherSubjectsAndBatches{
           students = ["Empty"];
         }
       });
-      return students.isEmpty || students == null ? [] : students;
+      return students.isEmpty ? ['Empty'] : students;
     }
     catch(e){
       print(e.toString());

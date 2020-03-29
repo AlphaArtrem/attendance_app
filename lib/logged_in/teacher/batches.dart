@@ -25,15 +25,13 @@ class _BatchesState extends State<Batches> {
     _tSAB = TeacherSubjectsAndBatches(user);
     batches = await _tSAB.getBatches(sub);
     if(batches == null){
-      batches = ["Couldn't get batches, try logging in again"];
+      batches = ["Couldn't get batches, try again"];
     }
-    setState(() {
-      subject = sub;
-    });
   }
 
   @override
   Widget build(BuildContext context) {
+    subject = ModalRoute.of(context).settings.arguments;
     return Scaffold(
       appBar: AppBar(
         title: subject.isEmpty ? Text('Batches') : Text('Batches - $subject'),
@@ -69,7 +67,9 @@ class _BatchesState extends State<Batches> {
                     itemBuilder: (context, index){
                       return Card(
                         child : ListTile(
-                          onTap: (){},
+                          onTap: () async{
+                            Navigator.of(context).pushNamed('/enrolledStudents', arguments: {'subject' : subject, 'batch' : batches[index]});
+                          },
                           title: Text('${batches[index]}'),
                         )
                       );
