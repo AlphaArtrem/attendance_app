@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/gestures.dart';
 
 class UserDataBase{
 
@@ -31,6 +32,21 @@ class UserDataBase{
       data = ds;
     });
     return data.data['type'];
+  }
+
+  Future<List<String>> getAllStudents() async{
+    try{
+      List<String> students = [];
+      QuerySnapshot qs = await _userData.getDocuments();
+      qs.documents.forEach((DocumentSnapshot ds){
+        if(ds.data['type'] == 'Student'){ students.add(ds.documentID); }
+      });
+      return students.isEmpty ? [] : students;
+    }
+    catch(e){
+      print(e.toString());
+      return null;
+    }
   }
 }
 
