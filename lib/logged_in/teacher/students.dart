@@ -15,31 +15,36 @@ class _EnrolledStudentsState extends State<EnrolledStudents> {
   List<String> students = [];
   String subject = '';
   String batch = '';
+  final _formKey = GlobalKey<FormState>();
+  bool add = false;
 
-  Future setup(FirebaseUser user, String sub, String batchCopy) async{
+  Future setup(FirebaseUser user, String sub, String batchCopy) async {
     _tSAB = TeacherSubjectsAndBatches(user);
-    students = await _tSAB.getStudents(sub ,batchCopy);
-    if(students == null){
+    students = await _tSAB.getStudents(sub, batchCopy);
+    if (students == null) {
       students = ["Couldn't get students, try again"];
     }
   }
+
   @override
   Widget build(BuildContext context) {
-    Map data = ModalRoute.of(context).settings.arguments;
+    Map data = ModalRoute
+        .of(context)
+        .settings
+        .arguments;
     subject = data['subject'];
     batch = data['batch'];
     return Scaffold(
       appBar: AppBar(
-        title: batch.isEmpty && subject.isEmpty ? Text('Students',) : Text('$subject - $batch',),
+        title: batch.isEmpty && subject.isEmpty ? Text('Students',) : Text(
+          '$subject - $batch',),
         centerTitle: true,
         actions: <Widget>[
           IconButton(
             icon: Icon(Icons.power_settings_new),
-            onPressed: () async{
+            onPressed: () async {
               dynamic result = await User().signOut();
-              if(result == null)
-              {
-
+              if (result == null) {
                 Navigator.of(context).pushReplacementNamed('/authentication');
               }
             },
@@ -54,16 +59,17 @@ class _EnrolledStudentsState extends State<EnrolledStudents> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
                   Card(
-                    //child: add == true ? addBatchForm() : addBatchButton(),
+                    child: add == true ? addStudentForm() : addStudentButton(),
                   ),
                   SizedBox(height: 10,),
-                  students[0] == 'Empty' ? Text('You Need To Add Students', style: TextStyle(color: Colors.red),) : Expanded(
+                  students[0] == 'Empty' ? Text('You Need To Add Students',
+                    style: TextStyle(color: Colors.red),) : Expanded(
                     child: ListView.builder(
                       itemCount: students.length,
-                      itemBuilder: (context, index){
+                      itemBuilder: (context, index) {
                         return Card(
-                            child : ListTile(
-                              onTap: (){},
+                            child: ListTile(
+                              onTap: () {},
                               title: Text('${students[index]}'),
                             )
                         );
@@ -76,5 +82,27 @@ class _EnrolledStudentsState extends State<EnrolledStudents> {
           }
       ),
     );
+  }
+
+  Widget addStudentButton() {
+    return ListTile(
+      onTap: () {
+        setState(() {
+          add = true;
+        });
+      },
+      title: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: <Widget>[
+          Icon(Icons.add),
+          SizedBox(width: 10,),
+          Text('Add A Student')
+        ],
+      ),
+    );
+  }
+
+  Widget addStudentForm(){
+    return Container();
   }
 }
