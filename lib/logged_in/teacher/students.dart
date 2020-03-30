@@ -17,9 +17,14 @@ class _EnrolledStudentsState extends State<EnrolledStudents> {
   String batch = '';
   final _formKey = GlobalKey<FormState>();
   bool add = false;
+  UserDataBase _users;
+  List<String> allStudents = [];
 
   Future setup(FirebaseUser user, String sub, String batchCopy) async {
     _tSAB = TeacherSubjectsAndBatches(user);
+    _users = UserDataBase(user);
+    allStudents = await _users.getAllStudents();
+    print(allStudents);
     students = await _tSAB.getStudents(sub, batchCopy);
     if (students == null) {
       students = ["Couldn't get students, try again"];
@@ -58,12 +63,11 @@ class _EnrolledStudentsState extends State<EnrolledStudents> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
-                  Card(
-                    child: add == true ? addStudentForm() : addStudentButton(),
-                  ),
+                  add == true ? Expanded(flex : 1, child: Card(child: addStudentForm(),)) : Card(child: addStudentButton(),),
                   SizedBox(height: 10,),
                   students[0] == 'Empty' ? Text('You Need To Add Students',
                     style: TextStyle(color: Colors.red),) : Expanded(
+                    flex : 1,
                     child: ListView.builder(
                       itemCount: students.length,
                       itemBuilder: (context, index) {
@@ -103,6 +107,33 @@ class _EnrolledStudentsState extends State<EnrolledStudents> {
   }
 
   Widget addStudentForm(){
-    return Container();
+    List<String> filteredStudents = allStudents;
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: <Widget>[
+        Form(
+            key: _formKey,
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(15, 20, 15, 2),
+              child: TextFormField(
+                decoration: textInputFormatting.copyWith(hintText: 'Search Student By Email'),
+                onChanged: (val) => filteredStudents = allStudents.where((student) => student.toLowerCase().contains(val.toLowerCase())),
+              ),
+            ),
+        ),
+        Expanded(
+          child: ListView.builder(
+            itemBuilder: (context, index){
+              return Card(
+                child: ListTile(
+                  onTap: (){},
+                  title: Text('${filteredStudents[index]}'),
+                ),
+              );
+            },
+            itemCount: filteredStudents.length,),
+        )
+      ],
+    );
   }
 }
