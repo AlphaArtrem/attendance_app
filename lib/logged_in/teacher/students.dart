@@ -24,7 +24,6 @@ class _EnrolledStudentsState extends State<EnrolledStudents> {
     _tSAB = TeacherSubjectsAndBatches(user);
     _users = UserDataBase(user);
     allStudents = await _users.getAllStudents();
-    print(allStudents);
     students = await _tSAB.getStudents(sub, batchCopy);
     if (students == null) {
       students = ["Couldn't get students, try again"];
@@ -65,8 +64,9 @@ class _EnrolledStudentsState extends State<EnrolledStudents> {
                 children: <Widget>[
                   add == true ? Expanded(flex : 1, child: Card(child: addStudentForm(),)) : Card(child: addStudentButton(),),
                   SizedBox(height: 10,),
-                  students[0] == 'Empty' ? Text('You Need To Add Students',
-                    style: TextStyle(color: Colors.red),) : Expanded(
+                  students[0] == 'Empty' ? Expanded(flex: 1 ,child: Text('You Need To Add Students',
+                      style: TextStyle(color: Colors.red),),
+                  ) : Expanded(
                     flex : 1,
                     child: ListView.builder(
                       itemCount: students.length,
@@ -108,9 +108,12 @@ class _EnrolledStudentsState extends State<EnrolledStudents> {
 
   Widget addStudentForm(){
     List<String> filteredStudents = allStudents;
+    String message = ' ';
+    MaterialColor messageColor;
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: <Widget>[
+        Text(message, style: TextStyle(color: messageColor),),
         Form(
             key: _formKey,
             child: Padding(
@@ -126,13 +129,35 @@ class _EnrolledStudentsState extends State<EnrolledStudents> {
             itemBuilder: (context, index){
               return Card(
                 child: ListTile(
-                  onTap: (){},
+                  onTap: () async{
+                    if(students.contains(filteredStudents[index])){
+                      setState(() {
+                        message = 'Student Already Present';
+                        messageColor = Colors.red;
+                      });
+                    }
+                    else{
+                      dynamic result = await _tSAB.addStudent(subject, batch, filteredStudents[index]);
+                      if(result == 'Success'){
+                        setState(() {
+                          message = "Student Added Succesfully";
+                          messageColor = Colors.green;
+                        });
+                      }
+                      else{
+                        setState(() {
+                          message = "Something Went Wrong Couldn't Add Student";
+                          messageColor = Colors.red;
+                        });
+                      }
+                    }
+                  },
                   title: Text('${filteredStudents[index]}'),
                 ),
               );
             },
             itemCount: filteredStudents.length,),
-        )
+        ),
       ],
     );
   }
