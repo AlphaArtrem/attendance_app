@@ -24,14 +24,14 @@ class _AddStudentsState extends State<AddStudents> {
   Future setup(FirebaseUser user) async{
     _tSAB = TeacherSubjectsAndBatches(user);
     allStudents = await _allStudents.getAllStudents();
+    allStudents = allStudents.where((student) => !enrolledStudents.contains(student)).toList();
+    filteredStudents = allStudents;
   }
 
   @override
   Widget build(BuildContext context){
     Map data = ModalRoute.of(context).settings.arguments;
     enrolledStudents = data['enrolledStudents'];
-    allStudents = allStudents.where((student) => !enrolledStudents.contains(student)).toList();
-    filteredStudents = allStudents;
     batch = data['batch'];
     subject = data['subject'];
     return FutureBuilder(
@@ -94,6 +94,7 @@ class _AddStudentsState extends State<AddStudents> {
                                   filteredStudents.remove(filteredStudents[index]);
                                   message = "Student Added Succesfully";
                                   messageColor = Colors.green;
+                                  Navigator.pop(context, {'enrolledStudents' : enrolledStudents,});
                                 });
                               }
                               else{
