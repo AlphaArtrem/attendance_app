@@ -17,7 +17,6 @@ class _AddStudentsState extends State<AddStudents> {
   List<String> allStudents = [];
   String message = ' ';
   String batch, subject;
-  MaterialColor messageColor;
   final StudentsList _allStudents = StudentsList();
   TeacherSubjectsAndBatches _tSAB;
 
@@ -56,7 +55,6 @@ class _AddStudentsState extends State<AddStudents> {
           body: allStudents.isEmpty ? LoadingScreen() : Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
-              Text(message, style: TextStyle(color: messageColor),),
               Form(
                 key: _formKey,
                 child: Padding(
@@ -66,44 +64,34 @@ class _AddStudentsState extends State<AddStudents> {
                     onChanged: (val){
                       setState(() {
                         filteredStudents = allStudents.where((student) => student.toLowerCase().contains(val.toLowerCase())).toList();
-                        print(filteredStudents);
                       });
                     },
                   ),
                 ),
               ),
+              SizedBox(height: 15),
+              Text(message, style: TextStyle(color: Colors.red),),
               Expanded(
                 child: Padding(
-                  padding: const EdgeInsets.fromLTRB(15, 25, 15, 20),
+                  padding: const EdgeInsets.fromLTRB(15, 15, 15, 20),
                   child: ListView.builder(
                     itemBuilder: (context, index){
                       return Card(
                         child: ListTile(
                           onTap: () async{
-                            if(enrolledStudents.contains(filteredStudents[index])){
-                              setState(() {
-                                message = 'Student Already Present';
-                                messageColor = Colors.red;
-                              });
-                            }
-                            else{
                               dynamic result = await _tSAB.addStudent(subject, batch, filteredStudents[index]);
                               if(result == 'Success'){
                                 setState(() {
                                   enrolledStudents.add(filteredStudents[index]);
                                   filteredStudents.remove(filteredStudents[index]);
-                                  message = "Student Added Succesfully";
-                                  messageColor = Colors.green;
                                   Navigator.pop(context, {'enrolledStudents' : enrolledStudents,});
                                 });
                               }
                               else{
                                 setState(() {
                                   message = "Something Went Wrong Couldn't Add Student";
-                                  messageColor = Colors.red;
                                 });
                               }
-                            }
                           },
                           title: Text('${filteredStudents[index]}'),
                         ),
