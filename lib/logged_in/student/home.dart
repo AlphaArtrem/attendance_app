@@ -1,8 +1,5 @@
 import 'package:attendanceapp/classes/account.dart';
-import 'package:attendanceapp/shared/formatting.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
 class StudentHome extends StatefulWidget {
   @override

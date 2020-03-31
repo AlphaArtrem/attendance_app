@@ -1,6 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/gestures.dart';
 
 class UserDataBase{
 
@@ -83,6 +82,14 @@ class TeacherSubjectsAndBatches{
   Future<String> addStudent(String subject, String batch, String studentEmail) async{
     try{
       await _teachers.document(user.email).collection(subject).document(batch).setData({studentEmail : true}, merge: true);
+      CollectionReference _students = Firestore.instance.collection('/students-data');
+      await _students.document(studentEmail).setData({
+        DateTime.now().millisecondsSinceEpoch.toString() : {
+          'teacherEmail' : user.email,
+          'subject' : subject,
+          'batch' : batch,
+        }
+      }, merge: true);
       return 'Success';
     }
     catch(e){

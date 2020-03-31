@@ -25,6 +25,7 @@ class _EnrolledStudentsState extends State<EnrolledStudents> {
     _users = UserDataBase(user);
     allStudents = await _users.getAllStudents();
     students = await _tSAB.getStudents(sub, batchCopy);
+    allStudents = allStudents.where((student) => !students.contains(student)).toList();
     if (students == null) {
       students = ["Couldn't get students, try again"];
     }
@@ -62,12 +63,11 @@ class _EnrolledStudentsState extends State<EnrolledStudents> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
-                  add == true ? Expanded(flex : 1, child: Card(child: addStudentForm(),)) : Card(child: addStudentButton(),),
+                  add == true ? Expanded(child: Card(child: addStudentForm(),)) : Card(child: addStudentButton(),),
                   SizedBox(height: 10,),
-                  students[0] == 'Empty' ? Expanded(flex: 1 ,child: Text('You Need To Add Students',
+                  students[0] == 'Empty' ? Expanded(child: Text('You Need To Add Students',
                       style: TextStyle(color: Colors.red),),
                   ) : Expanded(
-                    flex : 1,
                     child: ListView.builder(
                       itemCount: students.length,
                       itemBuilder: (context, index) {
@@ -120,43 +120,55 @@ class _EnrolledStudentsState extends State<EnrolledStudents> {
               padding: const EdgeInsets.fromLTRB(15, 20, 15, 2),
               child: TextFormField(
                 decoration: textInputFormatting.copyWith(hintText: 'Search Student By Email'),
-                onChanged: (val) => filteredStudents = allStudents.where((student) => student.toLowerCase().contains(val.toLowerCase())),
+                onChanged: (val){
+                  setState(() {
+                    filteredStudents = allStudents.where((student){
+                      student = student.toLowerCase();
+                      return student.contains(val.toLowerCase());
+                    }).toList();
+                  });
+                },
               ),
             ),
         ),
         Expanded(
-          child: ListView.builder(
-            itemBuilder: (context, index){
-              return Card(
-                child: ListTile(
-                  onTap: () async{
-                    if(students.contains(filteredStudents[index])){
-                      setState(() {
-                        message = 'Student Already Present';
-                        messageColor = Colors.red;
-                      });
-                    }
-                    else{
-                      dynamic result = await _tSAB.addStudent(subject, batch, filteredStudents[index]);
-                      if(result == 'Success'){
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(15, 25, 15, 20),
+            child: ListView.builder(
+              itemBuilder: (context, index){
+                return Card(
+                  child: ListTile(
+                    onTap: () async{
+                      if(students.contains(filteredStudents[index])){
                         setState(() {
-                          message = "Student Added Succesfully";
-                          messageColor = Colors.green;
-                        });
-                      }
-                      else{
-                        setState(() {
-                          message = "Something Went Wrong Couldn't Add Student";
+                          message = 'Student Already Present';
                           messageColor = Colors.red;
                         });
                       }
-                    }
-                  },
-                  title: Text('${filteredStudents[index]}'),
-                ),
-              );
-            },
-            itemCount: filteredStudents.length,),
+                      else{
+                        dynamic result = await _tSAB.addStudent(subject, batch, filteredStudents[index]);
+                        if(result == 'Success'){
+                          setState(() {
+                            students.add(filteredStudents[index]);
+                            filteredStudents.remove(filteredStudents[index]);
+                            message = "Student Added Succesfully";
+                            messageColor = Colors.green;
+                          });
+                        }
+                        else{
+                          setState(() {
+                            message = "Something Went Wrong Couldn't Add Student";
+                            messageColor = Colors.red;
+                          });
+                        }
+                      }
+                    },
+                    title: Text('${filteredStudents[index]}'),
+                  ),
+                );
+              },
+              itemCount: filteredStudents.length,),
+          ),
         ),
       ],
     );

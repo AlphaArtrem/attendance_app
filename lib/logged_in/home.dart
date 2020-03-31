@@ -10,8 +10,9 @@ class Home extends StatefulWidget {
 class _HomeState extends State<Home> {
   @override
   Widget build(BuildContext context) {
-    dynamic type = ModalRoute.of(context).settings.arguments;
-    Widget homeScreen = type == "Student" ? StudentHome() : TeacherHome();
+    String type = ModalRoute.of(context).settings.arguments;
+    Widget homeScreen;
+    homeScreen = type == 'Student' ? StudentHome() : TeacherHome();
     return homeScreen;
   }
 }

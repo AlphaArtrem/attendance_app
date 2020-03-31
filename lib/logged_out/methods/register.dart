@@ -133,7 +133,6 @@ class _RegisterState extends State<Register> {
                                     {
                                       dynamic type = await userData.userType();
                                       Navigator.of(context).pushReplacementNamed('/home', arguments: type);
-                                      Navigator.of(context).pushReplacementNamed('/home');
                                     }
                                   else
                                     {
