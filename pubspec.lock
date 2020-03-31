@@ -85,6 +85,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.1.3"
+  enhanced_future_builder:
+    dependency: "direct main"
+    description:
+      name: enhanced_future_builder
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.0.2"
   firebase:
     dependency: transitive
     description:
@@ -145,7 +152,7 @@ packages:
       name: flutter_spinkit
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "4.1.2"
+    version: "4.1.2+1"
   flutter_test:
     dependency: "direct dev"
     description: flutter
@@ -169,7 +176,7 @@ packages:
       name: http_parser
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "3.1.3"
+    version: "3.1.4"
   image:
     dependency: transitive
     description:
