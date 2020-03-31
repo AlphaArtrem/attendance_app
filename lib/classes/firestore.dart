@@ -32,7 +32,10 @@ class UserDataBase{
     });
     return data.data['type'];
   }
+}
 
+class StudentsList{
+  final CollectionReference _userData = Firestore.instance.collection('users');
   Future<List<String>> getAllStudents() async{
     try{
       List<String> students = [];
