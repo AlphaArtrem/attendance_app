@@ -101,6 +101,17 @@ class TeacherSubjectsAndBatches{
     }
   }
 
+  Future<String> addAttendance(String subject, String batch, String studentEmail, String dateTime, bool attendance) async{
+    try{
+      await _teachers.document(user.email).collection(subject).document(batch).collection('attendance').document(studentEmail).setData({dateTime : attendance}, merge: true);
+      return 'Success';
+    }
+    catch(e){
+      print(e.toString());
+      return null;
+    }
+  }
+
   Future<List<String>> getSubjects() async {
     try {
       List<String> subjects = [];
@@ -172,6 +183,23 @@ class StudentEnrollmentAndAttendance{
         }
       });
       return enrollmentDetails.isEmpty ? {'empty' : {'subject' : "You are not enrolled in any subject", 'batch' : '-_-', 'teacherEmail' : 'Try contacting your teachers'}} : enrollmentDetails;
+    }
+    catch(e){
+      print(e.toString());
+      return null;
+    }
+  }
+
+  Future<Map> getAttendance(String subject, String batch, String studentEmail, String dateTime, bool attendance) async{
+    try{
+      Map attendanceList = {};
+      CollectionReference teachers = Firestore.instance.collection('teachers-data');
+      await teachers.document(user.email).collection(subject).document(batch).collection('attendance').document(studentEmail).get().then((DocumentSnapshot ds){
+        if(ds.exists){
+          attendanceList = ds.data;
+        }
+      });
+      return attendanceList.isEmpty ? {'error' : 'No attendances found'} : attendanceList;
     }
     catch(e){
       print(e.toString());
