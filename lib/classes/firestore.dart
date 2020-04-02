@@ -168,10 +168,10 @@ class StudentEnrollmentAndAttendance{
           enrollmentDetails = ds.data;
         }
         else{
-          enrollmentDetails = {'empty' : true};
+          enrollmentDetails = {'empty' : {'subject' : "You are not enrolled in any subject", 'batch' : '-_-', 'teacherEmail' : 'Try contacting your teachers'}};
         }
       });
-      return enrollmentDetails.isEmpty ? {'empty' : true} : enrollmentDetails;
+      return enrollmentDetails.isEmpty ? {'empty' : {'subject' : "You are not enrolled in any subject", 'batch' : '-_-', 'teacherEmail' : 'Try contacting your teachers'}} : enrollmentDetails;
     }
     catch(e){
       print(e.toString());

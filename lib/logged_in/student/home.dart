@@ -21,7 +21,7 @@ class _StudentHomeState extends State<StudentHome> {
     _sEAA = StudentEnrollmentAndAttendance(user);
     enrollmentDetails = await _sEAA.enrollmentList();
     if(enrollmentDetails == null){
-      enrollmentDetails = {'error' : "Couldn't load subject list , try again "};
+      enrollmentDetails = {'error' : {'subject' : "Couldn't load subject list", 'batch' : 'Try Again', 'teacherEmail' : ' '}};
     }
     keys = enrollmentDetails.keys.toList();
   }
