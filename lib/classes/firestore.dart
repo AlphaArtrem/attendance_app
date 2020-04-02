@@ -153,3 +153,29 @@ class TeacherSubjectsAndBatches{
     }
   }
 }
+
+class StudentEnrollmentAndAttendance{
+  final FirebaseUser user;
+  StudentEnrollmentAndAttendance(this.user);
+  
+  final CollectionReference _students = Firestore.instance.collection('students-data');
+  
+  Future<Map> enrollmentList() async{
+    try{
+      Map enrollmentDetails = {};
+      await _students.document(user.email).get().then((DocumentSnapshot ds){
+        if(ds.exists){
+          enrollmentDetails = ds.data;
+        }
+        else{
+          enrollmentDetails = {'empty' : true};
+        }
+      });
+      return enrollmentDetails.isEmpty ? {'empty' : true} : enrollmentDetails;
+    }
+    catch(e){
+      print(e.toString());
+      return null;
+    }
+  }
+}
