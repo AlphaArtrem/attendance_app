@@ -1,5 +1,10 @@
 import 'package:attendanceapp/classes/account.dart';
+import 'package:attendanceapp/classes/firestore.dart';
+import 'package:attendanceapp/shared/formatting.dart';
+import 'package:enhanced_future_builder/enhanced_future_builder.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class StudentHome extends StatefulWidget {
   @override
@@ -8,8 +13,19 @@ class StudentHome extends StatefulWidget {
 
 class _StudentHomeState extends State<StudentHome> {
   bool loading = false;
-  List<String> subjects = [];
-  List<String> batches = [];
+  StudentEnrollmentAndAttendance _sEAA;
+  Map enrollmentDetails = {};
+  List keys = [];
+
+  Future setup(FirebaseUser user) async{
+    _sEAA = StudentEnrollmentAndAttendance(user);
+    enrollmentDetails = await _sEAA.enrollmentList();
+    if(enrollmentDetails == null){
+      enrollmentDetails = {'error' : "Couldn't load subject list , try again "};
+    }
+    keys = enrollmentDetails.keys.toList();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -32,19 +48,31 @@ class _StudentHomeState extends State<StudentHome> {
           )
         ],
       ),
-      body: Center(
-        child: subjects.isEmpty ? Text('You are not enrolled with any teacher') : ListView.builder(
-        itemCount: subjects.length,
-          itemBuilder: (context, index){
-            return Card(
-              child: ListTile(
-                onTap: (){},
-                title: Text('${subjects[index]} ( ${batches[index]} )'),
-              )
-            );
-          }
-        ),
-      ),
+      body: EnhancedFutureBuilder(
+        future: setup(Provider.of<FirebaseUser>(context)),
+        rememberFutureResult: false,
+        whenNotDone: LoadingScreen(),
+        whenDone: (arg) => enrollmentList(),
+      )
+    );
+  }
+  Widget enrollmentList(){
+    return ListView.builder(
+      itemCount: keys.length,
+      itemBuilder: (context, index){
+        return Card(
+          child: ListTile(
+            onTap: (){},
+            title: Column(
+              children: <Widget>[
+                Text('${enrollmentDetails[keys[index]]['subject']} (${enrollmentDetails[keys[index]]['batch']})'),
+                SizedBox(height: 5,),
+                Text('${enrollmentDetails[keys[index]]['teacherEmail']}', style: TextStyle(fontSize: 10, color: Colors.grey[700]),),
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 }
