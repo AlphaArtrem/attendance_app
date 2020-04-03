@@ -1,6 +1,8 @@
 import 'package:attendanceapp/classes/account.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
+import 'package:intl/intl.dart';
 
 class UpdateAttendance extends StatefulWidget {
   @override
@@ -9,13 +11,15 @@ class UpdateAttendance extends StatefulWidget {
 
 class _UpdateAttendanceState extends State<UpdateAttendance> {
   bool chooseClass = true;
-  String date ;
   DateTime current = DateTime.now();
+  String date = 'Choose Class Date';
+  String start = 'Choose Start Time';
+  String end = 'Choose Stop Time';
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: chooseClass ? Text('Choose class') : Text('Update Attendance'),
+        title: chooseClass ? Text('Class Duration') : Text('Update Attendance'),
         centerTitle: true,
         actions: <Widget>[
           IconButton(
@@ -34,29 +38,94 @@ class _UpdateAttendanceState extends State<UpdateAttendance> {
   }
 
   Widget chooseClassDuration(){
-    return Center(
+    return Container(
+      margin: EdgeInsets.symmetric(horizontal: 25),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: <Widget>[
-          RaisedButton(
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(5),
+          Card(
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(15, 5, 0, 5),
+              child: Row(
+                children: <Widget>[
+                  Icon(Icons.calendar_today,),
+                  SizedBox(width: 20,),
+                  Expanded(child: Text('$date')),
+                  IconButton(
+                    icon: Icon(Icons.edit, color: Colors.blue,),
+                    onPressed: (){
+                        DatePicker.showDatePicker(
+                        context,
+                        theme: DatePickerTheme(containerHeight: 200, backgroundColor: Colors.white,),
+                        showTitleActions: true,
+                        minTime: DateTime(current.year, current.month - 1, current.day),
+                        maxTime: DateTime(current.year, current.month, current.day),
+                        onConfirm: (dt) {
+                          setState(() {
+                            date =dt.toString().substring(0,10);
+                          });
+                        },
+                      );
+                    },
+                  )
+                ],
+              ),
             ),
-            elevation: 5,
-            onPressed: (){
-              DatePicker.showDatePicker(context,
-                theme: DatePickerTheme(
-                  containerHeight: 200,
-                  backgroundColor: Colors.transparent,
-                ),
-                showTitleActions: true,
-                minTime: DateTime(current.year, current.month - 1, current.day),
-                maxTime: DateTime(current.year, current.month, current.day),
-                onConfirm: (date) {
-                },
-                currentTime: current,
-              );
-            },
+          ),
+          Card(
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(15, 5, 0, 5),
+              child: Row(
+                children: <Widget>[
+                  Icon(Icons.calendar_today,),
+                  SizedBox(width: 20,),
+                  Expanded(child: Text('$start')),
+                  IconButton(
+                    icon: Icon(Icons.edit, color: Colors.blue,),
+                    onPressed: (){
+                      DatePicker.showTime12hPicker(
+                        context,
+                        theme: DatePickerTheme(containerHeight: 200, backgroundColor: Colors.white,),
+                        showTitleActions: true,
+                        onConfirm: (time) {
+                          setState(() {
+                            start = DateFormat.jm().format(time);
+                          });
+                        },
+                      );
+                    },
+                  )
+                ],
+              ),
+            ),
+          ),
+          Card(
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(15, 5, 0, 5),
+              child: Row(
+                children: <Widget>[
+                  Icon(Icons.calendar_today,),
+                  SizedBox(width: 20,),
+                  Expanded(child: Text('$end')),
+                  IconButton(
+                    icon: Icon(Icons.edit, color: Colors.blue,),
+                    onPressed: (){
+                      DatePicker.showTime12hPicker(
+                        context,
+                        theme: DatePickerTheme(containerHeight: 200, backgroundColor: Colors.white,),
+                        showTitleActions: true,
+                        onConfirm: (time) {
+                          setState(() {
+                            end = DateFormat.jm().format(time);
+                          });
+                        },
+                      );
+                    },
+                  )
+                ],
+              ),
+            ),
           )
         ],
       ),

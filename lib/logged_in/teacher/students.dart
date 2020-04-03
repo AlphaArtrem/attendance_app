@@ -84,24 +84,50 @@ class _EnrolledStudentsState extends State<EnrolledStudents> {
   }
 
   Widget addStudentButton() {
-    return Card(
-      child: ListTile(
-        onTap: () async{
-          dynamic data = await Navigator.pushNamed(context, '/addStudents', arguments: {'enrolledStudents' : students, 'batch' : batch, 'subject': subject});
-          if(dynamic != null) {
-            setState(() {
-              students = data['enrolledStudents'];
-            });
-          }
-        },
-        title: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Icon(Icons.add),
-            SizedBox(width: 10,),
-            Text('Add A Student')
-          ],
-        ),
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(5, 10, 5, 0),
+      child: Row(
+        children: <Widget>[
+          Expanded(
+            child: Card(
+              child: ListTile(
+                onTap: () async{
+                  dynamic data = await Navigator.pushNamed(context, '/addStudents', arguments: {'enrolledStudents' : students, 'batch' : batch, 'subject': subject});
+                  if(dynamic != null) {
+                    setState(() {
+                      students = data['enrolledStudents'];
+                    });
+                  }
+                },
+                title: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    Icon(Icons.add),
+                    SizedBox(width: 10,),
+                    Text('Student')
+                  ],
+                ),
+              ),
+            ),
+          ),
+          Expanded(
+            child: Card(
+              child: ListTile(
+                onTap: () {
+                  Navigator.pushNamed(context, '/updateAttendance');
+                },
+                title: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    Icon(Icons.add),
+                    SizedBox(width: 10,),
+                    Text('Attendance')
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
