@@ -1,5 +1,6 @@
 import 'package:attendanceapp/logged_in/home.dart';
 import 'package:attendanceapp/logged_in/teacher/add_students.dart';
+import 'package:attendanceapp/logged_in/teacher/attendance.dart';
 import 'package:attendanceapp/logged_in/teacher/batches.dart';
 import 'package:attendanceapp/logged_in/teacher/students.dart';
 import 'package:attendanceapp/logged_out/methods/register.dart';
@@ -28,6 +29,7 @@ class LoginApp extends StatelessWidget {
           '/batches' : (context) => Batches(),
           '/enrolledStudents' : (context) => EnrolledStudents(),
           '/addStudents' : (context) => AddStudents(),
+          '/updateAttendance' : (context) => UpdateAttendance(),
           '/home' : (context) => Home(),
           '/authentication': (context) => Authentication(),
         },

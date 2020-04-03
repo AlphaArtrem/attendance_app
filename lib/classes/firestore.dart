@@ -190,7 +190,7 @@ class StudentEnrollmentAndAttendance{
     }
   }
 
-  Future<Map> getAttendance(String subject, String batch, String studentEmail, String dateTime, bool attendance) async{
+  Future<Map> getAttendance(String subject, String batch, String studentEmail, String dateTime) async{
     try{
       Map attendanceList = {};
       CollectionReference teachers = Firestore.instance.collection('teachers-data');
