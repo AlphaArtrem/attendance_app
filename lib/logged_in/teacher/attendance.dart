@@ -1,8 +1,11 @@
 import 'package:attendanceapp/classes/account.dart';
+import 'package:attendanceapp/classes/firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 
 class UpdateAttendance extends StatefulWidget {
   @override
@@ -15,12 +18,18 @@ class _UpdateAttendanceState extends State<UpdateAttendance> {
   String date = '';
   String start = '';
   String end = '';
+  String subject, batch;
   List<String> enrolledStudents = [];
   Map attendance = {};
+  TeacherSubjectsAndBatches _tSAB;
   @override
   Widget build(BuildContext context) {
-    enrolledStudents = ModalRoute.of(context).settings.arguments;
+    Map data = ModalRoute.of(context).settings.arguments;
+    subject = data['subject'];
+    batch = data['batch'];
+    enrolledStudents = data['enrolledStudents'];
     attendance = attendance.isEmpty ? Map.fromIterable(enrolledStudents, key: (student) => student, value: (student) => false ) : attendance;
+    _tSAB = TeacherSubjectsAndBatches(Provider.of<FirebaseUser>(context));
     return Scaffold(
       appBar: AppBar(
         title: chooseClass ? Text('Class Duration') : Text('Update Attendance'),
@@ -169,7 +178,7 @@ class _UpdateAttendanceState extends State<UpdateAttendance> {
                           icon: attendance[enrolledStudents[index]] ? Icon(Icons.check_circle_outline, color: Colors.blue,) : Icon(Icons.check_circle_outline, color: Colors.grey,),
                           onPressed: () {
                             setState(() {
-                              attendance[enrolledStudents[index]] = true;
+                              attendance[enrolledStudents[index]] = !attendance[enrolledStudents[index]];
                             });
                           },
                         ),
@@ -182,7 +191,9 @@ class _UpdateAttendanceState extends State<UpdateAttendance> {
           ),
           RaisedButton(
             color: Colors.blue,
-            onPressed: (){
+            onPressed: () async{
+              String dateTime = date + ' : ' + start + ' - ' + end;
+              dynamic result = await _tSAB.addAttendance(subject, batch, dateTime, attendance);
             },
             child: Text('Update Attendance', style: TextStyle(color: Colors.white),),
           )

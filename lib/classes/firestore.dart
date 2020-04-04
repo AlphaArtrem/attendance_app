@@ -101,9 +101,12 @@ class TeacherSubjectsAndBatches{
     }
   }
 
-  Future<String> addAttendance(String subject, String batch, String studentEmail, String dateTime, bool attendance) async{
+  Future<String> addAttendance(String subject, String batch, String dateTime, Map attendance) async{
     try{
-      await _teachers.document(user.email).collection(subject).document(batch).collection('attendance').document(studentEmail).setData({dateTime : attendance}, merge: true);
+      CollectionReference attendanceReference = _teachers.document(user.email).collection(subject).document(batch).collection('attendance');
+      for(String studentEmail in attendance.keys){
+        await attendanceReference.document(studentEmail).setData({dateTime : attendance[studentEmail]}, merge: true);
+      }
       return 'Success';
     }
     catch(e){
