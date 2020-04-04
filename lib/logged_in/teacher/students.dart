@@ -113,8 +113,8 @@ class _EnrolledStudentsState extends State<EnrolledStudents> {
           Expanded(
             child: Card(
               child: ListTile(
-                onTap: () {
-                  Navigator.pushNamed(context, '/updateAttendance', arguments: {'enrolledStudents' : students, 'subject' : subject, 'batch' : batch);
+                onTap: () async{
+                  await Navigator.pushNamed(context, '/updateAttendance', arguments: {'enrolledStudents' : students, 'subject' : subject, 'batch' : batch});
                 },
                 title: Row(
                   mainAxisAlignment: MainAxisAlignment.center,

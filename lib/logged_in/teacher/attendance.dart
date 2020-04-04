@@ -19,6 +19,7 @@ class _UpdateAttendanceState extends State<UpdateAttendance> {
   String start = '';
   String end = '';
   String subject, batch;
+  String error = ' ';
   List<String> enrolledStudents = [];
   Map attendance = {};
   TeacherSubjectsAndBatches _tSAB;
@@ -46,7 +47,15 @@ class _UpdateAttendanceState extends State<UpdateAttendance> {
           )
         ],
       ),
-      body: chooseClass ? chooseClassDuration() : updateAttendance(),
+      body: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: <Widget>[
+          Text('$error', style: TextStyle(color: Colors.red),),
+          SizedBox(height: 5,),
+          Expanded(child: chooseClass ? chooseClassDuration() : updateAttendance()),
+        ],
+      ),
     );
   }
 
@@ -144,9 +153,18 @@ class _UpdateAttendanceState extends State<UpdateAttendance> {
           RaisedButton(
             color: Colors.blue,
             onPressed: (){
+              if(date.isNotEmpty && start.isNotEmpty && start.isNotEmpty)
+                {
+                  setState(() {
+                    chooseClass = false;
+                    error = ' ';
+                  });
+                }
+              else{
                 setState(() {
-                  chooseClass = false;
+                  error = 'All three fields are required';
                 });
+              }
             },
             child: Text('Submit', style: TextStyle(color: Colors.white),),
           )
@@ -194,6 +212,14 @@ class _UpdateAttendanceState extends State<UpdateAttendance> {
             onPressed: () async{
               String dateTime = date + ' : ' + start + ' - ' + end;
               dynamic result = await _tSAB.addAttendance(subject, batch, dateTime, attendance);
+              if(result == null){
+                setState(() {
+                  error = 'Something went wrong try again';
+                });
+              }
+              else{
+                Navigator.pop(context);
+              }
             },
             child: Text('Update Attendance', style: TextStyle(color: Colors.white),),
           )
