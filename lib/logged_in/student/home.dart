@@ -62,7 +62,14 @@ class _StudentHomeState extends State<StudentHome> {
       itemBuilder: (context, index){
         return Card(
           child: ListTile(
-            onTap: (){},
+            onTap: (){
+              Navigator.pushNamed(context, '/attendanceList', arguments: {
+                'teacherEmail' :enrollmentDetails[keys[index]]['teacherEmail'] ,
+                'subject': enrollmentDetails[keys[index]]['subject'],
+                'batch' : enrollmentDetails[keys[index]]['batch'],
+                'studentEmail' : Provider.of<FirebaseUser>(context, listen: false).email,
+              });
+            },
             title: Column(
               children: <Widget>[
                 Text('${enrollmentDetails[keys[index]]['subject']} (${enrollmentDetails[keys[index]]['batch']})'),
