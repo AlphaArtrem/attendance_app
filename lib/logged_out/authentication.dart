@@ -1,3 +1,4 @@
+import 'package:attendanceapp/logged_out/methods/log_in.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -7,50 +8,65 @@ class Authentication extends StatefulWidget {
 }
 
 class _AuthenticationState extends State<Authentication> {
+  bool _login = false;
   @override
   Widget build(BuildContext context){
     return Scaffold(
       backgroundColor: Colors.blue,
       body: SafeArea(
-        child: Center(
+        child: Card(
+          margin: EdgeInsets.symmetric(horizontal: 25, vertical: 140),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: <Widget>[
-              RaisedButton.icon(
-                onPressed: (){
-                  Navigator.of(context).pushNamed('/login');
-                },
-                icon: Icon(Icons.account_circle, color: Colors.blue, size: 35),
-                label: Text(
-                  '   Log In   ',
-                  style: TextStyle(
-                      color: Colors.blue,
-                      fontSize: 20,
-                      fontWeight: FontWeight.w400),
-                ),
-                elevation: 0,
-                color: Colors.white,
-              ),
-              RaisedButton.icon(
-                icon: Icon(Icons.person_add, color: Colors.blue, size: 35),
-                label: Text(
-                  '  Register',
-                  style: TextStyle(
-                      color: Colors.blue,
-                      fontSize: 20,
-                      fontWeight: FontWeight.w400),
-                ),
-                elevation: 0,
-                color: Colors.white,
-                onPressed: (){
-                  Navigator.of(context).pushNamed('/register');
-                }
-              ),
+              Login(),
+              otherMethod(),
             ],
           ),
         ),
       ),
     );
+  }
+  Widget otherMethod()
+  {
+    if(_login)
+      {
+        return RaisedButton.icon(
+            icon: Icon(Icons.person_add, color: Colors.white, size: 25),
+            label: Text(
+              '  Login',
+              style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 20,
+                  fontWeight: FontWeight.w400),
+            ),
+            elevation: 0,
+            color: Colors.blue,
+            onPressed: (){
+              setState(() {
+                _login = false;
+              });
+            }
+        );
+      }
+    else
+      {
+        return RaisedButton.icon(
+            icon: Icon(Icons.person_add, color: Colors.white, size: 25),
+            label: Text(
+              '  Register',
+              style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 20,
+                  fontWeight: FontWeight.w400),
+            ),
+            elevation: 0,
+            color: Colors.blue,
+            onPressed: (){
+              Navigator.pushNamed(context, '/register');
+            }
+        );
+      }
   }
 }

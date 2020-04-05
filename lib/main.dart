@@ -25,7 +25,6 @@ class LoginApp extends StatelessWidget {
         title: 'Attendance App ',
         home: Authentication(),
         routes: {
-          '/login': (context) => Login(),
           '/register': (context) => Register(),
           '/batches' : (context) => Batches(),
           '/enrolledStudents' : (context) => EnrolledStudents(),
