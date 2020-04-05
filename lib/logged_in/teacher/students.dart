@@ -68,7 +68,14 @@ class _EnrolledStudentsState extends State<EnrolledStudents> {
                       itemBuilder: (context, index) {
                         return Card(
                             child: ListTile(
-                              onTap: () {},
+                              onTap: () {
+                                Navigator.pushNamed(context, '/attendanceList', arguments: {
+                                  'teacherEmail' : Provider.of<FirebaseUser>(context, listen: false).email ,
+                                  'subject': subject,
+                                  'batch' : batch,
+                                  'studentEmail' : students[index],
+                                });
+                              },
                               title: Text('${students[index]}'),
                             )
                         );

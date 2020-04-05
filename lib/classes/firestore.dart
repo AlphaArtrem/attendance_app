@@ -192,17 +192,21 @@ class StudentEnrollmentAndAttendance{
       return null;
     }
   }
+}
 
-  Future<Map> getAttendance(String subject, String batch, String studentEmail, String dateTime) async{
+class GetAttendance{
+
+  final CollectionReference _teachers = Firestore.instance.collection('teachers-data');
+
+  Future<Map> getAttendance(String teacherEmail, String subject, String batch, String studentEmail) async{
     try{
       Map attendanceList = {};
-      CollectionReference teachers = Firestore.instance.collection('teachers-data');
-      await teachers.document(user.email).collection(subject).document(batch).collection('attendance').document(studentEmail).get().then((DocumentSnapshot ds){
+      await _teachers.document(teacherEmail).collection(subject).document(batch).collection('attendance').document(studentEmail).get().then((DocumentSnapshot ds){
         if(ds.exists){
           attendanceList = ds.data;
         }
       });
-      return attendanceList.isEmpty ? {'error' : 'No attendances found'} : attendanceList;
+      return attendanceList.isEmpty ? null : attendanceList;
     }
     catch(e){
       print(e.toString());

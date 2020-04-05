@@ -193,7 +193,7 @@ class _UpdateAttendanceState extends State<UpdateAttendance> {
                             child: Text('${enrolledStudents[index]}'),
                         ),
                         IconButton(
-                          icon: attendance[enrolledStudents[index]] ? Icon(Icons.check_circle_outline, color: Colors.blue,) : Icon(Icons.check_circle_outline, color: Colors.grey,),
+                          icon: attendance[enrolledStudents[index]] ? Icon(Icons.check_circle_outline, color: Colors.green,) : Icon(Icons.check_circle_outline, color: Colors.red,),
                           onPressed: () {
                             setState(() {
                               attendance[enrolledStudents[index]] = !attendance[enrolledStudents[index]];
