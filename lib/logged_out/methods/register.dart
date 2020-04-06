@@ -19,14 +19,12 @@ class _RegisterState extends State<Register> {
   String type = '';
   List<String> _types = ['', 'Student', 'Teacher'];
 
-  bool loading = false;
-
   @override
   Widget build(BuildContext context) {
-    return loading ? LoadingScreen() : Form(
+    return Form(
       key: _formKey,
       child: Padding(
-        padding: const EdgeInsets.fromLTRB(15, 90, 15, 15),
+        padding: const EdgeInsets.fromLTRB(15, 30, 15, 15),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
@@ -118,7 +116,6 @@ class _RegisterState extends State<Register> {
               onPressed: () async{
                 if(_formKey.currentState.validate())
                 {
-                  setState(() => loading = true);
                   FirebaseUser user = await _account.register(email, pass);
                   if(user != null)
                   {
@@ -133,7 +130,6 @@ class _RegisterState extends State<Register> {
                     {
                       await _account.deleteUser();
                       setState(() {
-                        loading = false;
                         error = "Couldn't add user details to database";
                       });
                     }
@@ -141,7 +137,6 @@ class _RegisterState extends State<Register> {
                   else
                   {
                     setState(() {
-                      loading = false;
                       error = "Please provide an valid E-mail";
                     });
                   }
@@ -155,7 +150,7 @@ class _RegisterState extends State<Register> {
                     fontSize: 20,
                     fontWeight: FontWeight.w400),
               ),
-              elevation: 0,
+              elevation: 2,
               color: Colors.blue,
             ),
           ],

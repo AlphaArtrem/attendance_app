@@ -18,11 +18,9 @@ class _LoginState extends State<Login> {
   String pass;
   String error = '';
 
-  bool loading = false;
-
   @override
   Widget build(BuildContext context){
-    return loading ? LoadingScreen() : Form(
+    return Form(
       key: _formKey,
       child: Padding(
         padding: const EdgeInsets.fromLTRB(15, 15, 15, 5),
@@ -51,7 +49,6 @@ class _LoginState extends State<Login> {
               onPressed: () async{
                 if(_formKey.currentState.validate())
                 {
-                  setState(() => loading = true);
                   FirebaseUser user = await _account.login(email, pass);
                   if(user != null)
                   {
@@ -61,7 +58,6 @@ class _LoginState extends State<Login> {
                   else
                   {
                     setState(() {
-                      loading = false;
                       error = 'Email and/or password is incorrect';
                     });
                   }
@@ -75,7 +71,7 @@ class _LoginState extends State<Login> {
                     fontSize: 18,
                     fontWeight: FontWeight.w400),
               ),
-              elevation: 0,
+              elevation: 3,
               color: Colors.blue,
             ),
           ],

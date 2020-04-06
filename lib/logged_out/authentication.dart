@@ -39,12 +39,12 @@ class _AuthenticationState extends State<Authentication> {
     if(_register)
       {
         return RaisedButton.icon(
-            icon: Icon(Icons.person, color: Colors.white,),
+            icon: Icon(Icons.person, color: Colors.white, size: 15,),
             label: Text(
               'Log In',
               style: TextStyle(
                   color: Colors.white,
-                  fontSize: 18,
+                  fontSize: 15,
                   fontWeight: FontWeight.w400),
             ),
             elevation: 0,
@@ -61,12 +61,12 @@ class _AuthenticationState extends State<Authentication> {
     else
       {
         return RaisedButton.icon(
-            icon: Icon(Icons.person_add, color: Colors.white, size: 25),
+            icon: Icon(Icons.person_add, color: Colors.white, size: 15),
             label: Text(
-              '  Register',
+              ' Register',
               style: TextStyle(
                   color: Colors.white,
-                  fontSize: 20,
+                  fontSize: 15,
                   fontWeight: FontWeight.w400),
             ),
             elevation: 0,
@@ -74,7 +74,7 @@ class _AuthenticationState extends State<Authentication> {
             onPressed: (){
               setState(() {
                 _register = true;
-                _height = 50;
+                _height = 80;
                 _width = 20;
               });
             }
