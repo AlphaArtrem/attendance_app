@@ -1,4 +1,5 @@
 import 'package:attendanceapp/logged_out/methods/log_in.dart';
+import 'package:attendanceapp/logged_out/methods/register.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -8,44 +9,51 @@ class Authentication extends StatefulWidget {
 }
 
 class _AuthenticationState extends State<Authentication> {
-  bool _login = false;
+  bool _register = false;
+  double _height = 170;
+  double _width = 20;
   @override
   Widget build(BuildContext context){
     return Scaffold(
       backgroundColor: Colors.blue,
-      body: SafeArea(
-        child: Card(
-          margin: EdgeInsets.symmetric(horizontal: 25, vertical: 140),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: <Widget>[
-              Login(),
-              otherMethod(),
-            ],
+      body: ListView(
+        children: <Widget>[
+          Container(
+            margin: EdgeInsets.symmetric(horizontal: _width, vertical: _height),
+            child: Card(
+              child: Column(
+                children: <Widget>[
+                  _register ? Register() : Login(),
+                  otherMethod(),
+                  SizedBox(height: 20,)
+                ],
+              ),
+            ),
           ),
-        ),
+        ],
       ),
     );
   }
   Widget otherMethod()
   {
-    if(_login)
+    if(_register)
       {
         return RaisedButton.icon(
-            icon: Icon(Icons.person_add, color: Colors.white, size: 25),
+            icon: Icon(Icons.person, color: Colors.white,),
             label: Text(
-              '  Login',
+              'Log In',
               style: TextStyle(
                   color: Colors.white,
-                  fontSize: 20,
+                  fontSize: 18,
                   fontWeight: FontWeight.w400),
             ),
             elevation: 0,
-            color: Colors.blue,
+            color: Colors.lightBlue,
             onPressed: (){
               setState(() {
-                _login = false;
+                _register = false;
+                _height = 170;
+                _width = 20;
               });
             }
         );
@@ -62,9 +70,13 @@ class _AuthenticationState extends State<Authentication> {
                   fontWeight: FontWeight.w400),
             ),
             elevation: 0,
-            color: Colors.blue,
+            color: Colors.lightBlue,
             onPressed: (){
-              Navigator.pushNamed(context, '/register');
+              setState(() {
+                _register = true;
+                _height = 50;
+                _width = 20;
+              });
             }
         );
       }
