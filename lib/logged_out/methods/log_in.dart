@@ -14,25 +14,26 @@ class _LoginState extends State<Login> {
   final User _account = User();
   final _formKey = GlobalKey<FormState>();
 
-  String email;
-  String pass;
-  String error = '';
+  String _email;
+  String _pass;
+  String _error = '';
+  bool _loading = false;
 
   @override
   Widget build(BuildContext context){
-    return Form(
+    return _loading ? AuthLoading() : Form(
       key: _formKey,
       child: Padding(
         padding: const EdgeInsets.fromLTRB(15, 15, 15, 5),
         child: Column(
           children: <Widget>[
-            Text(error, style: TextStyle(color: Colors.red),),
+            Text(_error, style: TextStyle(color: Colors.red),),
             SizedBox(height: 30,),
             TextFormField(
               decoration: textInputFormatting.copyWith(helperText: "Enter Email"),
               validator: _account.validateId,
               onChanged: (val){
-                email = val;
+                _email = val;
               },
             ),
             SizedBox(height: 10,),
@@ -41,7 +42,7 @@ class _LoginState extends State<Login> {
               validator: _account.validateLoginPass,
               obscureText: true,
               onChanged: (val){
-                pass = val;
+                _pass = val;
               },
             ),
             SizedBox(height: 30,),
@@ -49,7 +50,8 @@ class _LoginState extends State<Login> {
               onPressed: () async{
                 if(_formKey.currentState.validate())
                 {
-                  FirebaseUser user = await _account.login(email, pass);
+                  setState(() => _loading = true);
+                  FirebaseUser user = await _account.login(_email, _pass);
                   if(user != null)
                   {
                     dynamic type = await UserDataBase(user).userType();
@@ -58,7 +60,8 @@ class _LoginState extends State<Login> {
                   else
                   {
                     setState(() {
-                      error = 'Email and/or password is incorrect';
+                      _loading = false;
+                      _error = 'Email and/or password is incorrect';
                     });
                   }
                 }

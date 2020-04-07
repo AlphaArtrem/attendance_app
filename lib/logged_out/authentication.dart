@@ -12,6 +12,7 @@ class _AuthenticationState extends State<Authentication> {
   bool _register = false;
   double _height = 170;
   double _width = 20;
+
   @override
   Widget build(BuildContext context){
     return Scaffold(

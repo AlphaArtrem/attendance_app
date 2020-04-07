@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 
@@ -49,3 +50,19 @@ class LoadingData extends StatelessWidget {
     );
   }
 }
+
+class AuthLoading extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: 25, vertical: 170),
+      child: Center(
+        child: SpinKitThreeBounce(
+          color: Colors.blue,
+          size: 40,
+        ),
+      ),
+    );
+  }
+}
+
