@@ -26,6 +26,20 @@ class _LoginState extends State<Login> {
     return Column(
       children: <Widget>[
         _toLogin ? loginForm() : Register(),
+        GestureDetector(
+          onTap: () => setState(() => _toLogin = !_toLogin),
+          child: Container(
+            height: 50,
+            margin: EdgeInsets.symmetric(horizontal: 70),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(50),
+              color: Colors.cyan[100],
+            ),
+            child: Center(
+              child: Text("${_toLogin ? 'Register' : 'Login'}", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, letterSpacing: 1.5, fontSize: 17),),
+            ),
+          ),
+        ),
       ],
     );
   }
