@@ -21,6 +21,12 @@ const textInputFormatting = InputDecoration(
   focusedBorder: focused,
 );
 
+const authInputFormatting = InputDecoration(
+  fillColor: Colors.white,
+  filled : true,
+  border: InputBorder.none,
+);
+
 
 // For loading screen
 class LoadingScreen extends StatelessWidget {

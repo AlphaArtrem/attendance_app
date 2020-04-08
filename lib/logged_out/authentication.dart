@@ -1,5 +1,4 @@
 import 'package:attendanceapp/logged_out/methods/log_in.dart';
-import 'package:attendanceapp/logged_out/methods/register.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -9,12 +8,9 @@ class Authentication extends StatefulWidget {
 }
 
 class _AuthenticationState extends State<Authentication> {
-  bool _register = false;
-  double _height = 170;
-  double _width = 0;
 
   @override
-  Widget build(BuildContext context){
+  Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.blue,
       body: Container(
@@ -23,79 +19,30 @@ class _AuthenticationState extends State<Authentication> {
                 begin: Alignment.topLeft,
                 colors: [
                   Colors.blue[800],
-                  Colors.blue[600],
-                  Colors.blue[400]
+                  Colors.blue[400],
+                  Colors.blue[200]
                 ]
             )
         ),
         child: Container(
           margin: EdgeInsets.fromLTRB(0, 200, 0, 0),
+          padding: const EdgeInsets.fromLTRB(15, 20, 15, 0),
           decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.only(topLeft: Radius.circular(50), topRight: Radius.circular(50))
+              color: Colors.white,
+              borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(50), topRight: Radius.circular(50))
           ),
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(15, 20, 15, 0),
-            child: ListView(
-              children: <Widget>[
-                Column(
-                  children: <Widget>[
-                    _register ? Register() : Login(),
-                    otherMethod(),
-                  ],
-                ),
-              ],
-            ),
+          child: ListView(
+            children: <Widget>[
+              Column(
+                children: <Widget>[
+                  Login(),
+                ],
+              ),
+            ],
           ),
         ),
       ),
     );
-  }
-  Widget otherMethod()
-  {
-    if(_register)
-      {
-        return RaisedButton.icon(
-            icon: Icon(Icons.person, color: Colors.white, size: 15,),
-            label: Text(
-              'Log In',
-              style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 15,
-                  fontWeight: FontWeight.w400),
-            ),
-            elevation: 0,
-            color: Colors.lightBlue,
-            onPressed: (){
-              setState(() {
-                _register = false;
-                _height = 170;
-                _width = 20;
-              });
-            }
-        );
-      }
-    else
-      {
-        return RaisedButton.icon(
-            icon: Icon(Icons.person_add, color: Colors.white, size: 15),
-            label: Text(
-              ' Register',
-              style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 15,
-                  fontWeight: FontWeight.w400),
-            ),
-            elevation: 0,
-            color: Colors.lightBlue,
-            onPressed: (){
-              setState(() {
-                _register = true;
-                _height = 80;
-                _width = 20;
-              });
-            }
-        );
-      }
   }
 }
