@@ -52,10 +52,12 @@ class LoadingData extends StatelessWidget {
 }
 
 class AuthLoading extends StatelessWidget {
+  final double _height, _width;
+  AuthLoading(this._height, this._width);
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 25, vertical: 170),
+      padding: EdgeInsets.symmetric(horizontal: _width, vertical: _height),
       child: Center(
         child: SpinKitThreeBounce(
           color: Colors.blue,

@@ -21,10 +21,10 @@ class _LoginState extends State<Login> {
 
   @override
   Widget build(BuildContext context){
-    return _loading ? AuthLoading() : Form(
+    return _loading ? AuthLoading(135, 20) : Form(
       key: _formKey,
       child: Padding(
-        padding: const EdgeInsets.fromLTRB(15, 15, 15, 5),
+        padding: const EdgeInsets.fromLTRB(15, 45, 15, 5),
         child: Column(
           children: <Widget>[
             Text(_error, style: TextStyle(color: Colors.red),),

@@ -22,10 +22,10 @@ class _RegisterState extends State<Register> {
 
   @override
   Widget build(BuildContext context) {
-    return loading ? AuthLoading() : Form(
+    return loading ? AuthLoading(230, 20) : Form(
       key: _formKey,
       child: Padding(
-        padding: const EdgeInsets.fromLTRB(15, 30, 15, 15),
+        padding: const EdgeInsets.fromLTRB(15, 0, 15, 15),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
@@ -140,6 +140,7 @@ class _RegisterState extends State<Register> {
                   else
                   {
                     setState(() {
+                      type = '';
                       loading = false;
                       error = "Please provide an valid E-mail";
                     });

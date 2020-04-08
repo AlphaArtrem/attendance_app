@@ -11,27 +11,43 @@ class Authentication extends StatefulWidget {
 class _AuthenticationState extends State<Authentication> {
   bool _register = false;
   double _height = 170;
-  double _width = 20;
+  double _width = 0;
 
   @override
   Widget build(BuildContext context){
     return Scaffold(
       backgroundColor: Colors.blue,
-      body: ListView(
-        children: <Widget>[
-          Container(
-            margin: EdgeInsets.symmetric(horizontal: _width, vertical: _height),
-            child: Card(
-              child: Column(
-                children: <Widget>[
-                  _register ? Register() : Login(),
-                  otherMethod(),
-                  SizedBox(height: 20,)
-                ],
-              ),
+      body: Container(
+        decoration: BoxDecoration(
+            gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                colors: [
+                  Colors.blue[800],
+                  Colors.blue[600],
+                  Colors.blue[400]
+                ]
+            )
+        ),
+        child: Container(
+          margin: EdgeInsets.fromLTRB(0, 200, 0, 0),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.only(topLeft: Radius.circular(50), topRight: Radius.circular(50))
+          ),
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(15, 20, 15, 0),
+            child: ListView(
+              children: <Widget>[
+                Column(
+                  children: <Widget>[
+                    _register ? Register() : Login(),
+                    otherMethod(),
+                  ],
+                ),
+              ],
             ),
           ),
-        ],
+        ),
       ),
     );
   }
