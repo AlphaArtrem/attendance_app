@@ -23,9 +23,100 @@ class _LoginState extends State<Login> {
 
   @override
   Widget build(BuildContext context){
-    return Column(
+    return _toLogin ? loginForm() : Register();
+  }
+
+  Widget loginForm(){
+    return _loading ? AuthLoading(135, 20) : Column(
       children: <Widget>[
-        _toLogin ? loginForm() : Register(),
+        Form(
+          key: _formKey,
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(0, 45, 0, 5),
+            child: Column(
+              children: <Widget>[
+                Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(20),
+                    boxShadow: [BoxShadow(
+                      color: Color.fromRGBO(51, 204, 255, 0.3),
+                      blurRadius: 20,
+                      offset: Offset(0, 10),
+                    )],
+                  ),
+                  child: Column(
+                    children: <Widget>[
+                      Container(
+                        padding: EdgeInsets.all(10.0),
+                        decoration: BoxDecoration(
+                            border: Border(bottom: BorderSide(color: Colors.grey[200]))
+                        ),
+                        child: TextFormField(
+                          decoration: authInputFormatting.copyWith(hintText: "Enter Email"),
+                          validator: _account.validateId,
+                          onChanged: (val){
+                            _email = val;
+                          },
+                        ),
+                      ),
+                      Container(
+                        padding: EdgeInsets.all(10.0),
+                        decoration: BoxDecoration(
+                            border: Border(bottom: BorderSide(color: Colors.grey[200]))
+                        ),
+                        child: TextFormField(
+                          decoration: authInputFormatting.copyWith(hintText: "Enter Password"),
+                          validator: _account.validateLoginPass,
+                          obscureText: true,
+                          onChanged: (val){
+                            _pass = val;
+                          },
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                SizedBox(height: 30,),
+                Text(_error, style: TextStyle(color: Colors.red),),
+                SizedBox(height: 30,),
+                GestureDetector(
+                  onTap: () async{
+                    if(_formKey.currentState.validate())
+                    {
+                      setState(() => _loading = true);
+                      FirebaseUser user = await _account.login(_email, _pass);
+                      if(user != null)
+                      {
+                        dynamic type = await UserDataBase(user).userType();
+                        Navigator.of(context).pushReplacementNamed('/home', arguments: type);
+                      }
+                      else
+                      {
+                        setState(() {
+                          _loading = false;
+                          _error = 'Email and/or password is incorrect';
+                        });
+                      }
+                    }
+                  },
+                  child: Container(
+                    height: 50,
+                    margin: EdgeInsets.symmetric(horizontal: 50),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(50),
+                      color: Color.fromRGBO(51, 204, 255, 1),
+                    ),
+                    child: Center(
+                      child: Text("Login", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, letterSpacing: 1.5, fontSize: 17),),
+                    ),
+                  ),
+                ),
+                SizedBox(height : 30),
+              ],
+            ),
+          ),
+        ),
         GestureDetector(
           onTap: () => setState(() => _toLogin = !_toLogin),
           child: Container(
@@ -36,102 +127,11 @@ class _LoginState extends State<Login> {
               color: Colors.cyan[100],
             ),
             child: Center(
-              child: Text("${_toLogin ? 'Register' : 'Login'}", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, letterSpacing: 1.5, fontSize: 17),),
+              child: Text("Register", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, letterSpacing: 1.5, fontSize: 17),),
             ),
           ),
         ),
       ],
-    );
-  }
-
-  Widget loginForm(){
-    return _loading ? AuthLoading(135, 20) : Form(
-      key: _formKey,
-      child: Padding(
-        padding: const EdgeInsets.fromLTRB(0, 45, 0, 5),
-        child: Column(
-          children: <Widget>[
-            Container(
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(20),
-                boxShadow: [BoxShadow(
-                  color: Color.fromRGBO(51, 204, 255, 0.3),
-                  blurRadius: 20,
-                  offset: Offset(0, 10),
-                )],
-              ),
-              child: Column(
-                children: <Widget>[
-                  Container(
-                    padding: EdgeInsets.all(10.0),
-                    decoration: BoxDecoration(
-                        border: Border(bottom: BorderSide(color: Colors.grey[200]))
-                    ),
-                    child: TextFormField(
-                      decoration: authInputFormatting.copyWith(hintText: "Enter Email"),
-                      validator: _account.validateId,
-                      onChanged: (val){
-                        _email = val;
-                      },
-                    ),
-                  ),
-                  Container(
-                    padding: EdgeInsets.all(10.0),
-                    decoration: BoxDecoration(
-                        border: Border(bottom: BorderSide(color: Colors.grey[200]))
-                    ),
-                    child: TextFormField(
-                      decoration: authInputFormatting.copyWith(hintText: "Enter Password"),
-                      validator: _account.validateLoginPass,
-                      obscureText: true,
-                      onChanged: (val){
-                        _pass = val;
-                      },
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            SizedBox(height: 30,),
-            Text(_error, style: TextStyle(color: Colors.red),),
-            SizedBox(height: 30,),
-            GestureDetector(
-              onTap: () async{
-                if(_formKey.currentState.validate())
-                {
-                  setState(() => _loading = true);
-                  FirebaseUser user = await _account.login(_email, _pass);
-                  if(user != null)
-                  {
-                    dynamic type = await UserDataBase(user).userType();
-                    Navigator.of(context).pushReplacementNamed('/home', arguments: type);
-                  }
-                  else
-                  {
-                    setState(() {
-                      _loading = false;
-                      _error = 'Email and/or password is incorrect';
-                    });
-                  }
-                }
-              },
-              child: Container(
-                height: 50,
-                margin: EdgeInsets.symmetric(horizontal: 50),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(50),
-                  color: Color.fromRGBO(51, 204, 255, 1),
-                ),
-                child: Center(
-                  child: Text("Login", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, letterSpacing: 1.5, fontSize: 17),),
-                ),
-              ),
-            ),
-            SizedBox(height : 30),
-          ],
-        ),
-      ),
     );
   }
 }
