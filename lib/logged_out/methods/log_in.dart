@@ -28,7 +28,7 @@ class _LoginState extends State<Login> {
   }
 
   Widget loginForm(){
-    return _loading ? AuthLoading(135, 20) : Column(
+    return _loading ? AuthLoading(185, 20) : Column(
       children: <Widget>[
         Form(
           key: _formKey,

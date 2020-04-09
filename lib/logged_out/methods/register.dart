@@ -31,7 +31,7 @@ class _RegisterState extends State<Register> {
 
   @override
   Widget build(BuildContext context) {
-    return loading ? AuthLoading(135, 20) : Column(
+    return loading ? AuthLoading(185, 20) : Column(
       children: <Widget>[
         Padding(
           padding: const EdgeInsets.fromLTRB(0, 45, 0, 5),
@@ -133,13 +133,13 @@ class _RegisterState extends State<Register> {
           Text(error, style: TextStyle(color: Colors.red),),
           SizedBox(height: 30,),
           GestureDetector(
-            onTap: () async{
+            onTap: () {
               if(_formKey.currentState.validate())
-              {
-                setState(() {
-                  _currentForm = _registerPasswordType();
-                });
-              }
+                {
+                  setState(() {
+                    _currentForm = _registerPasswordType();
+                  });
+                }
             },
             child: Container(
               height: 50,
@@ -232,52 +232,80 @@ class _RegisterState extends State<Register> {
           SizedBox(height: 30,),
           Text(error, style: TextStyle(color: Colors.red),),
           SizedBox(height: 30,),
-          GestureDetector(
-            onTap: () async{
-              if(_formKey.currentState.validate())
-              {
-                setState(() => loading = true);
-                FirebaseUser user = await _account.register(email, pass);
-                if(user != null)
-                {
-                  UserDataBase userData = UserDataBase(user) ;
-                  dynamic userDataSet = await userData.newUserData(firstName, lastName, type);
-                  if(userDataSet != null)
-                  {
-                    dynamic type = await userData.userType();
-                    Navigator.of(context).pushReplacementNamed('/home', arguments: type);
-                  }
-                  else
-                  {
-                    await _account.deleteUser();
+          Row(
+            children: <Widget>[
+              Expanded(
+                flex: 1,
+                child: GestureDetector(
+                  onTap: () {
                     setState(() {
-                      loading = false;
-                      error = "Couldn't add user details to database";
+                      _currentForm = _registerNameEmail();
                     });
-                  }
-                }
-                else
-                {
-                  setState(() {
-                    type = '';
-                    loading = false;
-                    error = "Please provide an valid E-mail";
-                    _currentForm = _registerNameEmail();
-                  });
-                }
-              }
-            },
-            child: Container(
-              height: 50,
-              margin: EdgeInsets.symmetric(horizontal: 50),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(50),
-                color: Colors.cyan,
+                  },
+                  child: Container(
+                    height: 50,
+                    margin: EdgeInsets.symmetric(horizontal: 10),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(50),
+                      color: Colors.cyan,
+                    ),
+                    child: Center(
+                      child: Text("Back", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, letterSpacing: 1.5, fontSize: 17),),
+                    ),
+                  ),
+                ),
               ),
-              child: Center(
-                child: Text("Register", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, letterSpacing: 1.5, fontSize: 17),),
+              Expanded(
+                flex: 1,
+                child: GestureDetector(
+                  onTap: () async{
+                    if(_formKey.currentState.validate())
+                    {
+                      setState(() => loading = true);
+                      FirebaseUser user = await _account.register(email, pass);
+                      if(user != null)
+                      {
+                        UserDataBase userData = UserDataBase(user) ;
+                        dynamic userDataSet = await userData.newUserData(firstName, lastName, type);
+                        if(userDataSet != null)
+                        {
+                          dynamic type = await userData.userType();
+                          Navigator.of(context).pushReplacementNamed('/home', arguments: type);
+                        }
+                        else
+                        {
+                          await _account.deleteUser();
+                          setState(() {
+                            loading = false;
+                            error = "Couldn't add user details to database";
+                          });
+                        }
+                      }
+                      else
+                      {
+                        setState(() {
+                          type = '';
+                          loading = false;
+                          error = "Please provide an valid E-mail";
+                          _currentForm = _registerNameEmail();
+                        });
+                      }
+                    }
+                  },
+                  child: Container(
+                    height: 50,
+                    margin: EdgeInsets.symmetric(horizontal: 10),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(50),
+                      color: Colors.cyan,
+                    ),
+                    child: Center(
+                      child: Text("Register", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, letterSpacing: 1.5, fontSize: 17),),
+                    ),
+                  ),
+                ),
               ),
-            ),
+            ],
           ),
         ],
       ),

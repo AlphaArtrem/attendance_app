@@ -66,7 +66,7 @@ class AuthLoading extends StatelessWidget {
       padding: EdgeInsets.symmetric(horizontal: _width, vertical: _height),
       child: Center(
         child: SpinKitThreeBounce(
-          color: Colors.blue,
+          color: Colors.cyan,
           size: 40,
         ),
       ),

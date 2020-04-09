@@ -34,7 +34,7 @@ class _AuthenticationState extends State<Authentication> with SingleTickerProvid
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
             Padding(
-              padding: const EdgeInsets.fromLTRB(35, 50, 15, 0),
+              padding: const EdgeInsets.fromLTRB(35, 70, 15, 0),
               child: Text('${_login ? 'Login.' : 'Register.'}', style: TextStyle(color: Colors.white, fontSize: 50, letterSpacing: 2, fontWeight: FontWeight.bold),),
             ),
             Padding(
