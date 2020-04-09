@@ -26,7 +26,7 @@ class _RegisterState extends State<Register> {
   @override
   void initState() {
     super.initState();
-    _currentForm = _registerNameEmail();
+    _currentForm = _registerPasswordType();
   }
 
   @override
@@ -162,101 +162,124 @@ class _RegisterState extends State<Register> {
   {
     return Form(
       key: _formKey,
-      child: Padding(
-        padding: const EdgeInsets.fromLTRB(15, 0, 15, 15),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: <Widget>[
-            Text(error, style: TextStyle(color: Colors.red),),
-            SizedBox(height: 20,),
-            TextFormField(
-              decoration: textInputFormatting.copyWith(helperText: "Enter Password"),
-              validator: _account.validateRegisterPass,
-              obscureText: true,
-              onChanged: (val){
-                pass = val;
-              },
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: <Widget>[
+          Container(
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(20),
+              boxShadow: [BoxShadow(
+                color: Color.fromRGBO(51, 204, 255, 0.3),
+                blurRadius: 20,
+                offset: Offset(0, 10),
+              )],
             ),
-            SizedBox(height: 10,),
-            Container(
-              height: 80,
-              child: FormField<String>(
-                validator: (val) => val.isEmpty ? "Choose A Category" : null,
-                builder: (FormFieldState<String> state) {
-                  return InputDecorator(
-                    decoration: textInputFormatting.copyWith(helperText: 'Choose Account Type'),
-                    isEmpty: type == '',
-                    child: DropdownButtonHideUnderline(
-                      child: DropdownButton<String>(
-                        value: type,
-                        isDense: true,
-                        onChanged: (value) {
-                          setState(() {
-                            type = value;
-                            state.didChange(value);
-                          });
-                        },
-                        items: _types.map((value) {
-                          return DropdownMenuItem<String>(
-                            value: value,
-                            child: Text(value),
-                          );
-                        }).toList(),
-                      ),
-                    ),
-                  );
-                },
-              ),
+            child: Column(
+              children: <Widget>[
+                Container(
+                  padding: EdgeInsets.all(10.0),
+                  decoration: BoxDecoration(
+                      border: Border(bottom: BorderSide(color: Colors.grey[200]))
+                  ),
+                  child: TextFormField(
+                    decoration: authInputFormatting.copyWith(hintText: "Enter Password"),
+                    validator: _account.validateRegisterPass,
+                    obscureText: true,
+                    onChanged: (val){
+                      pass = val;
+                    },
+                  ),
+                ),
+                Container(
+                  padding: EdgeInsets.all(10.0),
+                  decoration: BoxDecoration(
+                      border: Border(bottom: BorderSide(color: Colors.grey[200]))
+                  ),
+                  height: 70,
+                  child: FormField<String>(
+                    validator: (val) => val.isEmpty ? "Choose A Category" : null,
+                    builder: (FormFieldState<String> state) {
+                      return InputDecorator(
+                        decoration: authInputFormatting.copyWith(hintText: 'Choose Account Type'),
+                        isEmpty: type == '',
+                        child: DropdownButtonHideUnderline(
+                          child: DropdownButton<String>(
+                            value: type,
+                            isDense: true,
+                            onChanged: (value) {
+                              setState(() {
+                                type = value;
+                                state.didChange(value);
+                              });
+                            },
+                            items: _types.map((value) {
+                              return DropdownMenuItem<String>(
+                                value: value,
+                                child: Text(value),
+                              );
+                            }).toList(),
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+              ],
             ),
-            SizedBox(height: 30,),
-            RaisedButton.icon(
-              onPressed: () async{
-                if(_formKey.currentState.validate())
+          ),
+          SizedBox(height: 30,),
+          Text(error, style: TextStyle(color: Colors.red),),
+          SizedBox(height: 30,),
+          GestureDetector(
+            onTap: () async{
+              if(_formKey.currentState.validate())
+              {
+                setState(() => loading = true);
+                FirebaseUser user = await _account.register(email, pass);
+                if(user != null)
                 {
-                  setState(() => loading = true);
-                  FirebaseUser user = await _account.register(email, pass);
-                  if(user != null)
+                  UserDataBase userData = UserDataBase(user) ;
+                  dynamic userDataSet = await userData.newUserData(firstName, lastName, type);
+                  if(userDataSet != null)
                   {
-                    UserDataBase userData = UserDataBase(user) ;
-                    dynamic userDataSet = await userData.newUserData(firstName, lastName, type);
-                    if(userDataSet != null)
-                    {
-                      dynamic type = await userData.userType();
-                      Navigator.of(context).pushReplacementNamed('/home', arguments: type);
-                    }
-                    else
-                    {
-                      await _account.deleteUser();
-                      setState(() {
-                        loading = false;
-                        error = "Couldn't add user details to database";
-                      });
-                    }
+                    dynamic type = await userData.userType();
+                    Navigator.of(context).pushReplacementNamed('/home', arguments: type);
                   }
                   else
                   {
+                    await _account.deleteUser();
                     setState(() {
-                      type = '';
                       loading = false;
-                      error = "Please provide an valid E-mail";
+                      error = "Couldn't add user details to database";
                     });
                   }
                 }
-              },
-              icon: Icon(Icons.person_add, color: Colors.white, size: 25),
-              label: Text(
-                '  Register',
-                style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 20,
-                    fontWeight: FontWeight.w400),
+                else
+                {
+                  setState(() {
+                    type = '';
+                    loading = false;
+                    error = "Please provide an valid E-mail";
+                    _currentForm = _registerNameEmail();
+                  });
+                }
+              }
+            },
+            child: Container(
+              height: 50,
+              margin: EdgeInsets.symmetric(horizontal: 50),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(50),
+                color: Colors.cyan,
               ),
-              elevation: 0,
-              color: Colors.blue,
+              child: Center(
+                child: Text("Register", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, letterSpacing: 1.5, fontSize: 17),),
+              ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
