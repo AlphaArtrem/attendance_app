@@ -3,12 +3,10 @@ import 'package:attendanceapp/logged_in/teacher/add_students.dart';
 import 'package:attendanceapp/logged_in/teacher/attendance.dart';
 import 'package:attendanceapp/logged_in/teacher/batches.dart';
 import 'package:attendanceapp/logged_in/teacher/students.dart';
-import 'package:attendanceapp/logged_out/methods/register.dart';
 import 'package:attendanceapp/shared/attendance_list.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:attendanceapp/logged_out/authentication.dart';
-import 'package:attendanceapp/logged_out/methods/log_in.dart';
 import 'package:provider/provider.dart';
 import 'package:attendanceapp/classes/account.dart';
 

@@ -1,12 +1,13 @@
 import 'package:attendanceapp/classes/account.dart';
 import 'package:attendanceapp/classes/firestore.dart';
-import 'package:attendanceapp/logged_out/methods/register.dart';
 import 'package:attendanceapp/shared/formatting.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class Login extends StatefulWidget {
+  final ValueChanged<bool> updateTitle;
+  Login(this.updateTitle);
   @override
   _LoginState createState() => _LoginState();
 }
@@ -15,15 +16,15 @@ class _LoginState extends State<Login> {
   final User _account = User();
   final _formKey = GlobalKey<FormState>();
 
+
   String _email;
   String _pass;
   String _error = '';
   bool _loading = false;
-  bool _toLogin = true;
 
   @override
   Widget build(BuildContext context){
-    return _toLogin ? loginForm() : Register();
+    return loginForm();
   }
 
   Widget loginForm(){
@@ -105,7 +106,7 @@ class _LoginState extends State<Login> {
                     margin: EdgeInsets.symmetric(horizontal: 50),
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(50),
-                      color: Color.fromRGBO(51, 204, 255, 1),
+                      color: Colors.cyan,
                     ),
                     child: Center(
                       child: Text("Login", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, letterSpacing: 1.5, fontSize: 17),),
@@ -118,13 +119,13 @@ class _LoginState extends State<Login> {
           ),
         ),
         GestureDetector(
-          onTap: () => setState(() => _toLogin = !_toLogin),
+          onTap: () => widget.updateTitle(false),
           child: Container(
             height: 50,
             margin: EdgeInsets.symmetric(horizontal: 70),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(50),
-              color: Colors.cyan[100],
+              color: Colors.cyan[300],
             ),
             child: Center(
               child: Text("Register", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, letterSpacing: 1.5, fontSize: 17),),

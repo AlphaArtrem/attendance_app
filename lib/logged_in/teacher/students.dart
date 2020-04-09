@@ -100,7 +100,7 @@ class _EnrolledStudentsState extends State<EnrolledStudents> {
               child: ListTile(
                 onTap: () async{
                   dynamic data = await Navigator.pushNamed(context, '/addStudents', arguments: {'enrolledStudents' : students, 'batch' : batch, 'subject': subject});
-                  if(dynamic != null) {
+                  if(data != null) {
                     setState(() {
                       students = data['enrolledStudents'];
                     });
