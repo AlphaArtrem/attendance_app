@@ -29,30 +29,57 @@ class _StudentHomeState extends State<StudentHome> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Home - Student'),
-        centerTitle: true,
-        actions: <Widget>[
-          IconButton(
-            icon: Icon(Icons.power_settings_new),
-            onPressed: () async{
-              setState(() {
-                loading = true;
-              });
-              dynamic result = await User().signOut();
-              if(result == null)
-              {
-                Navigator.of(context).pushReplacementNamed('/authentication');
-              }
-            },
-          )
+      body: Column(
+        children: <Widget>[
+          Stack(
+            children: <Widget>[
+              Align(
+                child: Container(
+                  padding: EdgeInsets.fromLTRB(45,70, 30, 50),
+                  decoration: BoxDecoration(
+                    color: Colors.cyan,
+                    borderRadius: BorderRadius.only(
+                      bottomLeft: Radius.circular(50),
+                      bottomRight: Radius.circular(50)
+                    )
+                  ),
+                  child: Row(
+                    children: <Widget>[
+                      Expanded(child: Text('Subjects', style: TextStyle(color: Colors.white, fontSize: 25, fontWeight: FontWeight.bold),)),
+                      Container(
+                        padding: EdgeInsets.symmetric(horizontal: 10),
+                        decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.all(Radius.circular(50))
+                        ),
+                        child: FlatButton.icon(
+                          label: Text('Log Out', style: TextStyle(color: Colors.cyan, fontWeight: FontWeight.bold)),
+                          icon: Icon(Icons.exit_to_app, color: Colors.cyan, size: 15,),
+                          onPressed: () async {
+                            dynamic result = await User().signOut();
+                            if (result == null) {
+                              Navigator.of(context).pushReplacementNamed('/authentication');
+                            }
+                          },
+                        ),
+                      )
+                    ],
+                  ),
+                ),
+              )
+            ],
+          ),
+          Expanded(
+            child: Container(
+              child: EnhancedFutureBuilder(
+                future: setup(Provider.of<FirebaseUser>(context)),
+                rememberFutureResult: false,
+                whenNotDone: LoadingScreen(),
+                whenDone: (arg) => enrollmentList(),
+              ),
+            ),
+          ),
         ],
-      ),
-      body: EnhancedFutureBuilder(
-        future: setup(Provider.of<FirebaseUser>(context)),
-        rememberFutureResult: false,
-        whenNotDone: LoadingScreen(),
-        whenDone: (arg) => enrollmentList(),
       )
     );
   }
