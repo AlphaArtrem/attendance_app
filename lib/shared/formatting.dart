@@ -49,8 +49,8 @@ class LoadingData extends StatelessWidget {
     return Scaffold(
       body: Center(
         child: SpinKitThreeBounce(
-          color: Colors.blue,
-          size: 40,
+          color: Colors.cyan,
+          size: 30,
         ),
       ),
     );

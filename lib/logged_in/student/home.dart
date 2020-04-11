@@ -15,6 +15,7 @@ class _StudentHomeState extends State<StudentHome> {
   bool loading = false;
   StudentEnrollmentAndAttendance _sEAA;
   Map enrollmentDetails = {};
+  Map enrollmentDetailsVisible = {};
   List keys = [];
 
   Future setup(FirebaseUser user) async{
@@ -23,7 +24,8 @@ class _StudentHomeState extends State<StudentHome> {
     if(enrollmentDetails == null){
       enrollmentDetails = {'error' : {'subject' : "Couldn't load subject list", 'batch' : 'Try Again', 'teacherEmail' : ' '}};
     }
-    keys = enrollmentDetails.keys.toList();
+    enrollmentDetailsVisible = enrollmentDetails;
+    keys = enrollmentDetailsVisible.keys.toList();
   }
 
   @override
@@ -31,11 +33,12 @@ class _StudentHomeState extends State<StudentHome> {
     return Scaffold(
       body: Column(
         children: <Widget>[
-          Stack(
-            children: <Widget>[
-              Align(
-                child: Container(
-                  padding: EdgeInsets.fromLTRB(45,70, 30, 50),
+          Container(
+            color: Colors.white,
+            child: Stack(
+              children: <Widget>[
+                Container(
+                  padding: EdgeInsets.fromLTRB(45, 60, 30, 50),
                   decoration: BoxDecoration(
                     color: Colors.cyan,
                     borderRadius: BorderRadius.only(
@@ -66,14 +69,42 @@ class _StudentHomeState extends State<StudentHome> {
                     ],
                   ),
                 ),
-              )
-            ],
+                Container(
+                  margin: EdgeInsets.fromLTRB(40, 130, 40, 20),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(20),
+                    boxShadow: [BoxShadow(
+                      color: Color.fromRGBO(51, 204, 255, 0.3),
+                      blurRadius: 20,
+                      offset: Offset(0, 10),
+                    )],
+                  ),
+                  child: Container(
+                    padding: EdgeInsets.all(6.5),
+                    child: TextFormField(
+                      decoration: authInputFormatting.copyWith(hintText: "Search...."),
+                      onChanged: (val){
+                        setState(() {
+                          enrollmentDetailsVisible = Map.from(enrollmentDetails)..removeWhere((k, v) => !(
+                              v['subject'].toString().toLowerCase().startsWith(val.toLowerCase()) ||
+                                  v['teacherEmail'].toString().toLowerCase().startsWith(val.toLowerCase()) ||
+                                  v['batch'].toString().toLowerCase().startsWith(val.toLowerCase())));
+                          keys = enrollmentDetailsVisible.keys.toList();
+                        });
+                      },
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
           Expanded(
             child: Container(
+              color: Colors.white,
               child: EnhancedFutureBuilder(
                 future: setup(Provider.of<FirebaseUser>(context)),
-                rememberFutureResult: false,
+                rememberFutureResult: true,
                 whenNotDone: LoadingScreen(),
                 whenDone: (arg) => enrollmentList(),
               ),
@@ -88,20 +119,21 @@ class _StudentHomeState extends State<StudentHome> {
       itemCount: keys.length,
       itemBuilder: (context, index){
         return Card(
+          elevation: 2,
           child: ListTile(
             onTap: (){
               Navigator.pushNamed(context, '/attendanceList', arguments: {
-                'teacherEmail' :enrollmentDetails[keys[index]]['teacherEmail'] ,
-                'subject': enrollmentDetails[keys[index]]['subject'],
-                'batch' : enrollmentDetails[keys[index]]['batch'],
+                'teacherEmail' :enrollmentDetailsVisible[keys[index]]['teacherEmail'] ,
+                'subject': enrollmentDetailsVisible[keys[index]]['subject'],
+                'batch' : enrollmentDetailsVisible[keys[index]]['batch'],
                 'studentEmail' : Provider.of<FirebaseUser>(context, listen: false).email,
               });
             },
             title: Column(
               children: <Widget>[
-                Text('${enrollmentDetails[keys[index]]['subject']} (${enrollmentDetails[keys[index]]['batch']})'),
+                Text('${enrollmentDetailsVisible[keys[index]]['subject']} (${enrollmentDetailsVisible[keys[index]]['batch']})'),
                 SizedBox(height: 5,),
-                Text('${enrollmentDetails[keys[index]]['teacherEmail']}', style: TextStyle(fontSize: 10, color: Colors.grey[700]),),
+                Text('${enrollmentDetailsVisible[keys[index]]['teacherEmail']}', style: TextStyle(fontSize: 10, color: Colors.grey[700]),),
               ],
             ),
           ),
