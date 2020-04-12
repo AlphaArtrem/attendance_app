@@ -13,9 +13,11 @@ class _AttendanceListState extends State<AttendanceList> {
   final GetAttendance _attendance = GetAttendance();
 
   Map _attendanceList = {};
+  Map _attendanceListVisible ={};
 
   Future setup(String teacherEmail, String subject, String batch, String studentEmail) async{
     _attendanceList = await _attendance.getAttendance(teacherEmail, subject, batch, studentEmail);
+    _attendanceListVisible = _attendanceList;
   }
 
   @override
@@ -74,8 +76,11 @@ class _AttendanceListState extends State<AttendanceList> {
                     child: Container(
                       padding: EdgeInsets.all(6.5),
                       child: TextFormField(
-                        decoration: authInputFormatting.copyWith(hintText: "Search By Date"),
+                        decoration: authInputFormatting.copyWith(hintText: "Search By Date or Time"),
                         onChanged: (val){
+                          setState(() {
+                            _attendanceListVisible = Map.from(_attendanceList)..removeWhere((k, v) => !k.toString().contains(val));
+                          });
                         },
                       ),
                     ),
@@ -103,38 +108,38 @@ class _AttendanceListState extends State<AttendanceList> {
   Widget showAttendance(){
     if(_attendanceList == null) {
       return Center(
-        child: Text('No Attendance Found'),
+        child: Text('No Attendance Found !', style: TextStyle(color: Colors.cyan, fontWeight: FontWeight.bold, fontSize: 20),),
       );
     }
     else{
-      List<String> time = _attendanceList.keys.toList();
+      List time = _attendanceListVisible.keys.toList();
       return Center(
         child: Column(
           children: <Widget>[
             Card(
               child: Padding(
-                padding: const EdgeInsets.fromLTRB(15, 10, 15, 10),
+                padding: const EdgeInsets.fromLTRB(15, 20, 15, 20),
                 child: Row(
                   children: <Widget>[
-                    Expanded(flex : 3, child: Text('Date')),
-                    Expanded(flex : 3, child: Text('Time')),
-                    Expanded(flex : 2, child: Text('Attendance'),),
+                    Expanded(flex : 3, child: Text('Date', style: TextStyle(color: Colors.cyan, fontWeight: FontWeight.bold, fontSize: 16),),),
+                    Expanded(flex : 3, child: Text('Time', style: TextStyle(color: Colors.grey[500], fontWeight: FontWeight.bold, fontSize: 16))),
+                    Expanded(flex : 1, child: Text('A/P', style: TextStyle(color: Colors.green, fontWeight: FontWeight.bold, fontSize: 16)),),
                   ],
                 ),
               ),
             ),
-            SizedBox(height: 10,),
             Expanded(
               child: ListView.builder(
                 itemCount: time.length,
                 itemBuilder: (context, index){
                   return Card(
+                    elevation: 3,
                     child: Padding(
-                      padding: const EdgeInsets.fromLTRB(15, 10, 15, 10),
+                      padding: const EdgeInsets.fromLTRB(15, 20, 15, 20),
                       child: Row(
                         children: <Widget>[
-                          Expanded(flex : 2,child: Text('${time[index].substring(0,10)}')),
-                          Expanded(flex : 3,child: Text('${time[index].substring(12,(time[index].length))}')),
+                          Expanded(flex : 3,child: Text('${time[index].substring(0,10)}', style: TextStyle(color: Colors.cyan,))),
+                          Expanded(flex : 3,child: Text('${time[index].substring(12,21)} \n ${time[index].substring(24,(time[index].length))}', style: TextStyle(color: Colors.grey[500]))),
                           Expanded(flex : 1,child: _attendanceList[time[index]] ? Icon(Icons.check_circle_outline, color: Colors.green,) : Icon(Icons.check_circle_outline, color: Colors.red,),),
                         ],
                       ),
