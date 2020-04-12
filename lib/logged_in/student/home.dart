@@ -83,7 +83,7 @@ class _StudentHomeState extends State<StudentHome> {
                   child: Container(
                     padding: EdgeInsets.all(6.5),
                     child: TextFormField(
-                      decoration: authInputFormatting.copyWith(hintText: "Search...."),
+                      decoration: authInputFormatting.copyWith(hintText: "Subject, Batch Or Teacher"),
                       onChanged: (val){
                         setState(() {
                           enrollmentDetailsVisible = Map.from(enrollmentDetails)..removeWhere((k, v) => !(
@@ -101,6 +101,7 @@ class _StudentHomeState extends State<StudentHome> {
           ),
           Expanded(
             child: Container(
+              padding: EdgeInsets.symmetric(horizontal: 20),
               color: Colors.white,
               child: EnhancedFutureBuilder(
                 future: setup(Provider.of<FirebaseUser>(context)),
@@ -119,22 +120,34 @@ class _StudentHomeState extends State<StudentHome> {
       itemCount: keys.length,
       itemBuilder: (context, index){
         return Card(
-          elevation: 2,
-          child: ListTile(
-            onTap: (){
-              Navigator.pushNamed(context, '/attendanceList', arguments: {
-                'teacherEmail' :enrollmentDetailsVisible[keys[index]]['teacherEmail'] ,
-                'subject': enrollmentDetailsVisible[keys[index]]['subject'],
-                'batch' : enrollmentDetailsVisible[keys[index]]['batch'],
-                'studentEmail' : Provider.of<FirebaseUser>(context, listen: false).email,
-              });
-            },
-            title: Column(
-              children: <Widget>[
-                Text('${enrollmentDetailsVisible[keys[index]]['subject']} (${enrollmentDetailsVisible[keys[index]]['batch']})'),
-                SizedBox(height: 5,),
-                Text('${enrollmentDetailsVisible[keys[index]]['teacherEmail']}', style: TextStyle(fontSize: 10, color: Colors.grey[700]),),
-              ],
+          margin: EdgeInsets.symmetric(vertical: 7),
+          elevation: 4,
+          child: Padding(
+            padding: const EdgeInsets.all(10.0),
+            child: ListTile(
+              onTap: (){
+                Navigator.pushNamed(context, '/attendanceList', arguments: {
+                  'teacherEmail' :enrollmentDetailsVisible[keys[index]]['teacherEmail'] ,
+                  'subject': enrollmentDetailsVisible[keys[index]]['subject'],
+                  'batch' : enrollmentDetailsVisible[keys[index]]['batch'],
+                  'studentEmail' : Provider.of<FirebaseUser>(context, listen: false).email,
+                });
+              },
+              title: Row(
+                children: <Widget>[
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        Text('${enrollmentDetailsVisible[keys[index]]['subject']} (${enrollmentDetailsVisible[keys[index]]['batch']})', style: TextStyle(color: Colors.cyan),),
+                        SizedBox(height: 5,),
+                        Text('${enrollmentDetailsVisible[keys[index]]['teacherEmail']}', style: TextStyle(fontSize: 10, color: Colors.grey[700]),),
+                      ],
+                    ),
+                  ),
+                  Icon(Icons.forward, color: Colors.grey[700],)
+                ],
+              ),
             ),
           ),
         );

@@ -35,8 +35,8 @@ class LoadingScreen extends StatelessWidget {
     return Scaffold(
       body: Center(
         child: SpinKitDoubleBounce(
-          color: Colors.blue,
-          size: 100,
+          color: Colors.cyan,
+          size: 50,
         ),
       ),
     );
