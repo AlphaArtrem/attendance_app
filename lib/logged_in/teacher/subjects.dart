@@ -14,6 +14,7 @@ class Subjects extends StatefulWidget {
 
 class _SubjectsState extends State<Subjects> {
   List<String> _subjects = [];
+  List<String> _subjectsVisible = [];
   bool _add = false;
   final _formKey = GlobalKey<FormState>();
   String _subject = ' ';
@@ -28,6 +29,7 @@ class _SubjectsState extends State<Subjects> {
     if(_subjects == null){
       _subjects = ["Couldn't get subjects, try logging in again"];
     }
+    _subjectsVisible = _subjects;
   }
 
   @override
@@ -88,7 +90,7 @@ class _SubjectsState extends State<Subjects> {
                         decoration: authInputFormatting.copyWith(hintText: "Search By Subject"),
                         onChanged: (val){
                           setState(() {
-                            //_attendanceListVisible = Map.from(_attendanceList)..removeWhere((k, v) => !k.toString().contains(val));
+                            _subjectsVisible = _subjects.where((subject) => subject.toLowerCase().contains(val.toLowerCase()));
                           });
                         },
                       ),
@@ -123,19 +125,24 @@ class _SubjectsState extends State<Subjects> {
             padding: const EdgeInsets.all(8.0),
             child: _add == false ? addSubjectButton() : addSubjectForm(),
           ),
-          SizedBox(height: 10,),
-          _subjects[0] == 'Empty' ? Text('You Need To Add Subjects', style: TextStyle(color: Colors.red),) : Expanded(
+          _subjectsVisible[0] == 'Empty' ? Text('You Need To Add Subjects', style: TextStyle(color: Colors.red),) : Expanded(
             child: ListView.builder(
               itemCount: _subjects.length,
               itemBuilder: (context, index){
                 return Card(
+                  elevation: 3,
                   child: Padding(
                     padding: const EdgeInsets.all(10.0),
                     child: ListTile(
                       onTap: () async{
-                        Navigator.of(context).pushNamed('/batches', arguments: _subjects[index]);
+                        Navigator.of(context).pushNamed('/batches', arguments: _subjectsVisible[index]);
                       },
-                      title: Text('${_subjects[index]}', style: TextStyle(color: Colors.cyan),),
+                      title: Row(
+                        children: <Widget>[
+                          Expanded(child: Text('${_subjectsVisible[index]}', style: TextStyle(color: Colors.cyan),)),
+                          Icon(Icons.forward, color: Colors.grey[700],)
+                        ],
+                      ),
                     ),
                   ),
                 );
@@ -265,6 +272,7 @@ class _SubjectsState extends State<Subjects> {
                           {
                             setState((){
                               _subjects.add(_subject);
+                              _subjectsVisible.add(_subject);
                               _error = ' ';
                               _add = false;
                             });
