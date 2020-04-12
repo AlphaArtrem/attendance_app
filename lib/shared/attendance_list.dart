@@ -1,3 +1,4 @@
+import 'package:attendanceapp/classes/account.dart';
 import 'package:attendanceapp/classes/firestore.dart';
 import 'package:attendanceapp/shared/formatting.dart';
 import 'package:enhanced_future_builder/enhanced_future_builder.dart';
@@ -21,16 +22,81 @@ class _AttendanceListState extends State<AttendanceList> {
   Widget build(BuildContext context) {
     Map data = ModalRoute.of(context).settings.arguments;
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Attendance'),
-        centerTitle: true,
-      ),
-      body: EnhancedFutureBuilder(
-        future: setup(data['teacherEmail'], data['subject'], data['batch'], data['studentEmail']),
-        rememberFutureResult: true,
-        whenNotDone: LoadingScreen(),
-        whenDone: (arg) => showAttendance(),
-      ),
+        body: Column(
+          children: <Widget>[
+            Container(
+              color: Colors.white,
+              child: Stack(
+                children: <Widget>[
+                  Container(
+                    padding: EdgeInsets.fromLTRB(45, 60, 30, 50),
+                    decoration: BoxDecoration(
+                        color: Colors.cyan,
+                        borderRadius: BorderRadius.only(
+                            bottomLeft: Radius.circular(50),
+                            bottomRight: Radius.circular(50)
+                        )
+                    ),
+                    child: Row(
+                      children: <Widget>[
+                        Expanded(child: Text('Attendance', style: TextStyle(color: Colors.white, fontSize: 25, fontWeight: FontWeight.bold),)),
+                        Container(
+                          padding: EdgeInsets.symmetric(horizontal: 10),
+                          decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.all(Radius.circular(50))
+                          ),
+                          child: FlatButton.icon(
+                            label: Text('Log Out', style: TextStyle(color: Colors.cyan, fontWeight: FontWeight.bold)),
+                            icon: Icon(Icons.exit_to_app, color: Colors.cyan, size: 15,),
+                            onPressed: () async {
+                              dynamic result = await User().signOut();
+                              if (result == null) {
+                                Navigator.of(context).pushReplacementNamed('/authentication');
+                              }
+                            },
+                          ),
+                        )
+                      ],
+                    ),
+                  ),
+                  Container(
+                    margin: EdgeInsets.fromLTRB(40, 130, 40, 20),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(20),
+                      boxShadow: [BoxShadow(
+                        color: Color.fromRGBO(51, 204, 255, 0.3),
+                        blurRadius: 10,
+                        offset: Offset(0, 10),
+                      )],
+                    ),
+                    child: Container(
+                      padding: EdgeInsets.all(6.5),
+                      child: TextFormField(
+                        decoration: authInputFormatting.copyWith(hintText: "Search By Date"),
+                        onChanged: (val){
+                        },
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Expanded(
+              child: Container(
+                padding: EdgeInsets.symmetric(horizontal: 20),
+                color: Colors.white,
+                child: EnhancedFutureBuilder(
+                  future: setup(data['teacherEmail'], data['subject'], data['batch'], data['studentEmail']),
+                  rememberFutureResult: true,
+                  whenNotDone: LoadingScreen(),
+                  whenDone: (arg) => showAttendance(),
+                ),
+              ),
+            ),
+          ],
+        )
     );
   }
 

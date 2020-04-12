@@ -12,20 +12,20 @@ class StudentHome extends StatefulWidget {
 }
 
 class _StudentHomeState extends State<StudentHome> {
-  bool loading = false;
+  bool _loading = false;
   StudentEnrollmentAndAttendance _sEAA;
-  Map enrollmentDetails = {};
-  Map enrollmentDetailsVisible = {};
-  List keys = [];
+  Map _enrollmentDetails = {};
+  Map _enrollmentDetailsVisible = {};
+  List _keys = [];
 
   Future setup(FirebaseUser user) async{
     _sEAA = StudentEnrollmentAndAttendance(user);
-    enrollmentDetails = await _sEAA.enrollmentList();
-    if(enrollmentDetails == null){
-      enrollmentDetails = {'error' : {'subject' : "Couldn't load subject list", 'batch' : 'Try Again', 'teacherEmail' : ' '}};
+    _enrollmentDetails = await _sEAA.enrollmentList();
+    if(_enrollmentDetails == null){
+      _enrollmentDetails = {'error' : {'subject' : "Couldn't load subject list", 'batch' : 'Try Again', 'teacherEmail' : ' '}};
     }
-    enrollmentDetailsVisible = enrollmentDetails;
-    keys = enrollmentDetailsVisible.keys.toList();
+    _enrollmentDetailsVisible = _enrollmentDetails;
+    _keys = _enrollmentDetailsVisible.keys.toList();
   }
 
   @override
@@ -76,7 +76,7 @@ class _StudentHomeState extends State<StudentHome> {
                     borderRadius: BorderRadius.circular(20),
                     boxShadow: [BoxShadow(
                       color: Color.fromRGBO(51, 204, 255, 0.3),
-                      blurRadius: 20,
+                      blurRadius: 10,
                       offset: Offset(0, 10),
                     )],
                   ),
@@ -86,11 +86,11 @@ class _StudentHomeState extends State<StudentHome> {
                       decoration: authInputFormatting.copyWith(hintText: "Subject, Batch Or Teacher"),
                       onChanged: (val){
                         setState(() {
-                          enrollmentDetailsVisible = Map.from(enrollmentDetails)..removeWhere((k, v) => !(
+                          _enrollmentDetailsVisible = Map.from(_enrollmentDetails)..removeWhere((k, v) => !(
                               v['subject'].toString().toLowerCase().startsWith(val.toLowerCase()) ||
                                   v['teacherEmail'].toString().toLowerCase().startsWith(val.toLowerCase()) ||
                                   v['batch'].toString().toLowerCase().startsWith(val.toLowerCase())));
-                          keys = enrollmentDetailsVisible.keys.toList();
+                          _keys = _enrollmentDetailsVisible.keys.toList();
                         });
                       },
                     ),
@@ -117,7 +117,7 @@ class _StudentHomeState extends State<StudentHome> {
   }
   Widget enrollmentList(){
     return ListView.builder(
-      itemCount: keys.length,
+      itemCount: _keys.length,
       itemBuilder: (context, index){
         return Card(
           margin: EdgeInsets.symmetric(vertical: 7),
@@ -127,9 +127,9 @@ class _StudentHomeState extends State<StudentHome> {
             child: ListTile(
               onTap: (){
                 Navigator.pushNamed(context, '/attendanceList', arguments: {
-                  'teacherEmail' :enrollmentDetailsVisible[keys[index]]['teacherEmail'] ,
-                  'subject': enrollmentDetailsVisible[keys[index]]['subject'],
-                  'batch' : enrollmentDetailsVisible[keys[index]]['batch'],
+                  'teacherEmail' :_enrollmentDetailsVisible[_keys[index]]['teacherEmail'] ,
+                  'subject': _enrollmentDetailsVisible[_keys[index]]['subject'],
+                  'batch' : _enrollmentDetailsVisible[_keys[index]]['batch'],
                   'studentEmail' : Provider.of<FirebaseUser>(context, listen: false).email,
                 });
               },
@@ -139,9 +139,9 @@ class _StudentHomeState extends State<StudentHome> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
-                        Text('${enrollmentDetailsVisible[keys[index]]['subject']} (${enrollmentDetailsVisible[keys[index]]['batch']})', style: TextStyle(color: Colors.cyan),),
+                        Text('${_enrollmentDetailsVisible[_keys[index]]['subject']} (${_enrollmentDetailsVisible[_keys[index]]['batch']})', style: TextStyle(color: Colors.cyan),),
                         SizedBox(height: 5,),
-                        Text('${enrollmentDetailsVisible[keys[index]]['teacherEmail']}', style: TextStyle(fontSize: 10, color: Colors.grey[700]),),
+                        Text('${_enrollmentDetailsVisible[_keys[index]]['teacherEmail']}', style: TextStyle(fontSize: 10, color: Colors.grey[700]),),
                       ],
                     ),
                   ),
