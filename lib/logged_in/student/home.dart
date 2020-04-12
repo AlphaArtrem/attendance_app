@@ -12,7 +12,6 @@ class StudentHome extends StatefulWidget {
 }
 
 class _StudentHomeState extends State<StudentHome> {
-  bool _loading = false;
   StudentEnrollmentAndAttendance _sEAA;
   Map _enrollmentDetails = {};
   Map _enrollmentDetailsVisible = {};

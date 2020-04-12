@@ -1,6 +1,7 @@
 import 'package:attendanceapp/classes/account.dart';
 import 'package:attendanceapp/classes/firestore.dart';
 import 'package:attendanceapp/shared/formatting.dart';
+import 'package:enhanced_future_builder/enhanced_future_builder.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -12,20 +13,20 @@ class Subjects extends StatefulWidget {
 }
 
 class _SubjectsState extends State<Subjects> {
-  List<String> subjects = [];
-  bool add = false;
+  List<String> _subjects = [];
+  bool _add = false;
   final _formKey = GlobalKey<FormState>();
-  String subject = ' ';
-  String error = ' ';
+  String _subject = ' ';
+  String _error = ' ';
   TeacherSubjectsAndBatches _tSAB;
-  FirebaseUser user;
+  FirebaseUser _user;
 
   Future setup(FirebaseUser userCurrent) async{
-    user = userCurrent;
-    _tSAB = TeacherSubjectsAndBatches(user);
-    subjects = await _tSAB.getSubjects();
-    if(subjects == null){
-      subjects = ["Couldn't get subjects, try logging in again"];
+    _user = userCurrent;
+    _tSAB = TeacherSubjectsAndBatches(_user);
+    _subjects = await _tSAB.getSubjects();
+    if(_subjects == null){
+      _subjects = ["Couldn't get subjects, try logging in again"];
     }
   }
 
@@ -100,39 +101,11 @@ class _SubjectsState extends State<Subjects> {
               child: Container(
                 padding: EdgeInsets.symmetric(horizontal: 20),
                 color: Colors.white,
-                child: FutureBuilder(
+                child: EnhancedFutureBuilder(
                   future: setup(Provider.of<FirebaseUser>(context)),
-                  builder: (BuildContext context, AsyncSnapshot snapshot) {
-                    return subjects.isEmpty ? LoadingData() : Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: <Widget>[
-                          Card(
-                            child: add == false ? addSubjectButton() : addSubjectForm(),
-                          ),
-                          SizedBox(height: 10,),
-                          subjects[0] == 'Empty' ? Text('You Need To Add Subjects', style: TextStyle(color: Colors.red),) : Expanded(
-                            child: ListView.builder(
-                              itemCount: subjects.length,
-                              itemBuilder: (context, index){
-                                return Card(
-                                  child: ListTile(
-                                    onTap: () async{
-                                      Navigator.of(context).pushNamed('/batches', arguments: subjects[index]);
-                                    },
-                                    title: Padding(
-                                      padding: EdgeInsets.all(10),
-                                      child: Text('${subjects[index]}'),
-                                    ),
-                                  ),
-                                );
-                              },
-                            ),
-                          ),
-                        ],
-                      ),
-                    );
-                  },
+                  rememberFutureResult: true,
+                  whenNotDone: LoadingData(),
+                  whenDone: (arg) => subjectsList(),
                 ),
               ),
             ),
@@ -141,12 +114,44 @@ class _SubjectsState extends State<Subjects> {
     );
   }
 
+  Widget subjectsList(){
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: <Widget>[
+          Card(
+            child: _add == false ? addSubjectButton() : addSubjectForm(),
+          ),
+          SizedBox(height: 10,),
+          _subjects[0] == 'Empty' ? Text('You Need To Add Subjects', style: TextStyle(color: Colors.red),) : Expanded(
+            child: ListView.builder(
+              itemCount: _subjects.length,
+              itemBuilder: (context, index){
+                return Card(
+                  child: ListTile(
+                    onTap: () async{
+                      Navigator.of(context).pushNamed('/batches', arguments: _subjects[index]);
+                    },
+                    title: Padding(
+                      padding: EdgeInsets.all(10),
+                      child: Text('${_subjects[index]}'),
+                    ),
+                  ),
+                );
+              },
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget addSubjectButton()
   {
     return ListTile(
       onTap: (){
         setState(() {
-          add = true;
+          _add = true;
         });
       },
       title: Row(
@@ -168,34 +173,34 @@ class _SubjectsState extends State<Subjects> {
               child: TextFormField(
                 decoration: textInputFormatting.copyWith(hintText: 'Add Subject Name'),
                 validator: (val) => val.isEmpty ? 'Subject Name Can\'t Be Empty' : null,
-                onChanged: (val) => subject = val,
+                onChanged: (val) => _subject = val,
               ),
             ),
             IconButton(
               onPressed: () async{
                 if(_formKey.currentState.validate())
                 {
-                  if(subjects.contains(subject))
+                  if(_subjects.contains(_subject))
                   {
                     setState(() {
-                      error = "Subject Already Present";
+                      _error = "Subject Already Present";
                     });
                   }
                   else
                   {
-                    dynamic result = await _tSAB.addSubject(subject);
+                    dynamic result = await _tSAB.addSubject(_subject);
                     if(result ==  null)
                     {
                       setState(() {
-                        error = "Something Went Wrong, Couldn't Add Subject";
+                        _error = "Something Went Wrong, Couldn't Add Subject";
                       });
                     }
                     else
                     {
-                      await setup(user);
                       setState((){
-                        error = ' ';
-                        add = false;
+                        _subjects.add(_subject);
+                        _error = ' ';
+                        _add = false;
                       });
                     }
                   }
@@ -203,7 +208,7 @@ class _SubjectsState extends State<Subjects> {
               },
               icon: Icon(Icons.add_box),
             ),
-            Text('$error', style: TextStyle(color: Colors.red),)
+            Text('$_error', style: TextStyle(color: Colors.red),)
           ],
         )
     );
