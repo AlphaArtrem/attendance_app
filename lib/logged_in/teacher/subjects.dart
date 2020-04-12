@@ -119,7 +119,8 @@ class _SubjectsState extends State<Subjects> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
-          Card(
+          Padding(
+            padding: const EdgeInsets.all(8.0),
             child: _add == false ? addSubjectButton() : addSubjectForm(),
           ),
           SizedBox(height: 10,),
@@ -128,13 +129,13 @@ class _SubjectsState extends State<Subjects> {
               itemCount: _subjects.length,
               itemBuilder: (context, index){
                 return Card(
-                  child: ListTile(
-                    onTap: () async{
-                      Navigator.of(context).pushNamed('/batches', arguments: _subjects[index]);
-                    },
-                    title: Padding(
-                      padding: EdgeInsets.all(10),
-                      child: Text('${_subjects[index]}'),
+                  child: Padding(
+                    padding: const EdgeInsets.all(10.0),
+                    child: ListTile(
+                      onTap: () async{
+                        Navigator.of(context).pushNamed('/batches', arguments: _subjects[index]);
+                      },
+                      title: Text('${_subjects[index]}', style: TextStyle(color: Colors.cyan),),
                     ),
                   ),
                 );
@@ -148,16 +149,54 @@ class _SubjectsState extends State<Subjects> {
 
   Widget addSubjectButton()
   {
-    return ListTile(
-      onTap: (){
-        setState(() {
-          _add = true;
-        });
-      },
-      title: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: <Widget>[Icon(Icons.add),SizedBox(width: 10,) ,Text('Add A Subject')],
-      ),
+    return Row(
+      children: <Widget>[
+        Expanded(
+          child: GestureDetector(
+            onTap:(){
+              setState(() {
+                _add = true;
+              });
+            },
+            child: Container(
+              padding: EdgeInsets.symmetric(horizontal: 15, vertical: 15),
+              decoration: BoxDecoration(
+                  color: Colors.cyan,
+                  borderRadius: BorderRadius.all(Radius.circular(50))
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  Icon(Icons.add, color: Colors.white, size: 25,),
+                  SizedBox(width: 10,) ,
+                  Text('Add', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18),)
+                ],
+              ),
+            ),
+          ),
+        ),
+        SizedBox(width: 15,),
+        Expanded(
+          child: GestureDetector(
+            onTap:(){},
+            child: Container(
+              padding: EdgeInsets.symmetric(horizontal: 15, vertical: 15),
+              decoration: BoxDecoration(
+                  color: Colors.cyan,
+                  borderRadius: BorderRadius.all(Radius.circular(50))
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  Icon(Icons.add, color: Colors.white, size: 25,),
+                  SizedBox(width: 10,) ,
+                  Text('Remove', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18),)
+                ],
+              ),
+            ),
+          ),
+        ),
+      ],
     );
   }
 
@@ -166,49 +205,77 @@ class _SubjectsState extends State<Subjects> {
     return Form(
         key: _formKey,
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            Padding(
-              padding: const EdgeInsets.fromLTRB(15, 20, 15, 2),
-              child: TextFormField(
-                decoration: textInputFormatting.copyWith(hintText: 'Add Subject Name'),
-                validator: (val) => val.isEmpty ? 'Subject Name Can\'t Be Empty' : null,
-                onChanged: (val) => _subject = val,
-              ),
+            Center(child: Text('$_error', style: TextStyle(color: Colors.red),)),
+            SizedBox(height: 15,),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                Expanded(
+                  flex: 3,
+                  child: Container(
+                    padding: EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.all(Radius.circular(20)),
+                      boxShadow: [BoxShadow(
+                        color: Color.fromRGBO(51, 204, 255, 0.3),
+                        blurRadius: 10,
+                        offset: Offset(0, 10),
+                      )],
+                    ),
+                    child: TextFormField(
+                      decoration: authInputFormatting.copyWith(hintText: 'Add Subject Name'),
+                      validator: (val) => val.isEmpty ? 'Subject Name Can\'t Be Empty' : null,
+                      onChanged: (val) => _subject = val,
+                    ),
+                  ),
+                ),
+                SizedBox(width: 10,),
+                Expanded(
+                  flex: 1,
+                  child: GestureDetector(
+                    child: Container(
+                      padding: EdgeInsets.symmetric(horizontal: 15, vertical: 20),
+                      decoration: BoxDecoration(
+                          color: Colors.cyan,
+                          borderRadius: BorderRadius.all(Radius.circular(20)),
+                      ),
+                      child: Icon(Icons.add, color: Colors.white, size: 25,),
+                    ),
+                    onTap: () async{
+                      if(_formKey.currentState.validate())
+                      {
+                        if(_subjects.contains(_subject))
+                        {
+                          setState(() {
+                            _error = "Subject Already Present";
+                          });
+                        }
+                        else
+                        {
+                          dynamic result = await _tSAB.addSubject(_subject);
+                          if(result ==  null)
+                          {
+                            setState(() {
+                              _error = "Something Went Wrong, Couldn't Add Subject";
+                            });
+                          }
+                          else
+                          {
+                            setState((){
+                              _subjects.add(_subject);
+                              _error = ' ';
+                              _add = false;
+                            });
+                          }
+                        }
+                      }
+                    },
+                  ),
+                ),
+              ],
             ),
-            IconButton(
-              onPressed: () async{
-                if(_formKey.currentState.validate())
-                {
-                  if(_subjects.contains(_subject))
-                  {
-                    setState(() {
-                      _error = "Subject Already Present";
-                    });
-                  }
-                  else
-                  {
-                    dynamic result = await _tSAB.addSubject(_subject);
-                    if(result ==  null)
-                    {
-                      setState(() {
-                        _error = "Something Went Wrong, Couldn't Add Subject";
-                      });
-                    }
-                    else
-                    {
-                      setState((){
-                        _subjects.add(_subject);
-                        _error = ' ';
-                        _add = false;
-                      });
-                    }
-                  }
-                }
-              },
-              icon: Icon(Icons.add_box),
-            ),
-            Text('$_error', style: TextStyle(color: Colors.red),)
           ],
         )
     );
