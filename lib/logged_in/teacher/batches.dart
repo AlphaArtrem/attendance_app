@@ -13,26 +13,28 @@ class Batches extends StatefulWidget {
 
 class _BatchesState extends State<Batches> {
   TeacherSubjectsAndBatches _tSAB;
-  String subject = '';
-  String error  = '';
-  List<String> batches = [];
+  String _subject = '';
+  String _error  = '';
+  List<String> _batches = [];
+  List<String> _batchesVisible = [];
   final _formKey = GlobalKey<FormState>();
   bool _add = false;
-  String batch = '';
-  FirebaseUser user;
+  String _batch = '';
+  FirebaseUser _user;
 
   Future setup(FirebaseUser userCurrent, String sub) async{
-    user = userCurrent;
-    _tSAB = TeacherSubjectsAndBatches(user);
-    batches = await _tSAB.getBatches(sub);
-    if(batches == null){
-      batches = ["Couldn't get batches, try again"];
+    _user = userCurrent;
+    _tSAB = TeacherSubjectsAndBatches(_user);
+    _batches = await _tSAB.getBatches(sub);
+    if(_batches == null){
+      _batches = ["Couldn't get batches, try again"];
     }
+    _batchesVisible = _batches;
   }
 
   @override
   Widget build(BuildContext context) {
-    subject = ModalRoute.of(context).settings.arguments;
+    _subject = ModalRoute.of(context).settings.arguments;
     return Scaffold(
         body: Column(
           children: <Widget>[
@@ -88,6 +90,9 @@ class _BatchesState extends State<Batches> {
                       child: TextFormField(
                         decoration: authInputFormatting.copyWith(hintText: "Search By Batch"),
                         onChanged: (val){
+                          setState(() {
+                            _batchesVisible = _batches.where((batch) => batch.toLowerCase().startsWith(val.toLowerCase())).toList();
+                          });
                         },
                       ),
                     ),
@@ -121,17 +126,26 @@ class _BatchesState extends State<Batches> {
             padding: const EdgeInsets.all(8.0),
             child: _add == false ? addBatchButton() : addBatchForm(),
           ),
-          batches[0] == 'Empty' ? Text('You Need To Add Batches', style: TextStyle(color: Colors.red),) : Expanded(
+          _batches[0] == 'Empty' ? Text('You Need To Add Batches', style: TextStyle(color: Colors.red),) : Expanded(
             child: ListView.builder(
-              itemCount: batches.length,
+              itemCount: _batchesVisible.length,
               itemBuilder: (context, index){
                 return Card(
-                    child : ListTile(
+                  elevation: 3,
+                  child: Padding(
+                    padding: const EdgeInsets.all(10.0),
+                    child: ListTile(
                       onTap: () async{
-                        Navigator.of(context).pushNamed('/enrolledStudents', arguments: {'subject' : subject, 'batch' : batches[index]});
+                        Navigator.of(context).pushNamed('/enrolledStudents', arguments: {'subject' : _subject, 'batch' : _batchesVisible[index]});
                       },
-                      title: Text('${batches[index]}'),
-                    )
+                      title: Row(
+                        children: <Widget>[
+                          Expanded(child: Text('${_batchesVisible[index]}', style: TextStyle(color: Colors.cyan),)),
+                          Icon(Icons.forward, color: Colors.grey[700],)
+                        ],
+                      ),
+                    ),
+                  ),
                 );
               },
             ),
@@ -200,7 +214,7 @@ class _BatchesState extends State<Batches> {
         key: _formKey,
         child: Column(
           children: <Widget>[
-            Center(child: Text('$error', style: TextStyle(color: Colors.red),)),
+            Center(child: Text('$_error', style: TextStyle(color: Colors.red),)),
             SizedBox(height: 15,),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -221,7 +235,7 @@ class _BatchesState extends State<Batches> {
                     child: TextFormField(
                       decoration: authInputFormatting.copyWith(hintText: 'Add Batch Name'),
                       validator: (val) => val.isEmpty ? 'Batch Name Can\'t Be Empty' : null,
-                      onChanged: (val) => batch = val,
+                      onChanged: (val) => _batch = val,
                     ),
                   ),
                 ),
@@ -240,26 +254,26 @@ class _BatchesState extends State<Batches> {
                     onTap: () async{
                       if(_formKey.currentState.validate())
                       {
-                        if(batches.contains(batch))
+                        if(_batches.contains(_batch))
                         {
                           setState(() {
-                            error = "Batch Already Present";
+                            _error = "Batch Already Present";
                           });
                         }
                         else
                         {
-                          dynamic result = await _tSAB.addBatch(subject, batch);
+                          dynamic result = await _tSAB.addBatch(_subject, _batch);
                           if(result ==  null)
                           {
                             setState(() {
-                              error = "Something Went Wrong, Couldn't Add Batch";
+                              _error = "Something Went Wrong, Couldn't Add Batch";
                             });
                           }
                           else
                           {
-                            await setup(user, subject);
+                            await setup(_user, _subject);
                             setState((){
-                              error = ' ';
+                              _error = ' ';
                               _add = false;
                             });
                           }

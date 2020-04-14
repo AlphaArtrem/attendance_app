@@ -90,7 +90,7 @@ class _SubjectsState extends State<Subjects> {
                         decoration: authInputFormatting.copyWith(hintText: "Search By Subject"),
                         onChanged: (val){
                           setState(() {
-                            _subjectsVisible = _subjects.where((subject) => subject.toLowerCase().contains(val.toLowerCase()));
+                            _subjectsVisible = _subjects.where((subject) => subject.toLowerCase().contains(val.toLowerCase())).toList();
                           });
                         },
                       ),
@@ -125,9 +125,9 @@ class _SubjectsState extends State<Subjects> {
             padding: const EdgeInsets.all(8.0),
             child: _add == false ? addSubjectButton() : addSubjectForm(),
           ),
-          _subjectsVisible[0] == 'Empty' ? Text('You Need To Add Subjects', style: TextStyle(color: Colors.red),) : Expanded(
+          _subjects[0] == 'Empty' ? Text('You Need To Add Subjects', style: TextStyle(color: Colors.red),) : Expanded(
             child: ListView.builder(
-              itemCount: _subjects.length,
+              itemCount: _subjectsVisible.length,
               itemBuilder: (context, index){
                 return Card(
                   elevation: 3,
