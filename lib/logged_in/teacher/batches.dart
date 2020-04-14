@@ -33,54 +33,106 @@ class _BatchesState extends State<Batches> {
   Widget build(BuildContext context) {
     subject = ModalRoute.of(context).settings.arguments;
     return Scaffold(
-      appBar: AppBar(
-        title: subject.isEmpty ? Text('Batches') : Text('Batches - $subject'),
-        centerTitle: true,
-        actions: <Widget>[
-          IconButton(
-            icon: Icon(Icons.power_settings_new),
-            onPressed: () async{
-              dynamic result = await User().signOut();
-              if(result == null)
-              {
-
-                Navigator.of(context).pushReplacementNamed('/authentication');
-              }
-            },
-          )
-        ],
-      ),
-      body: FutureBuilder(
-        future: setup(Provider.of<FirebaseUser>(context), ModalRoute.of(context).settings.arguments),
-        builder: (BuildContext context, AsyncSnapshot snapshot) {
-          return batches.isEmpty ? LoadingData() : Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                Card(
-                  child: add == true ? addBatchForm() : addBatchButton(),
-                ),
-                SizedBox(height: 10,),
-                batches[0] == 'Empty' ? Text('You Need To Add Batches', style: TextStyle(color: Colors.red),) : Expanded(
-                  child: ListView.builder(
-                    itemCount: batches.length,
-                    itemBuilder: (context, index){
-                      return Card(
-                        child : ListTile(
-                          onTap: () async{
-                            Navigator.of(context).pushNamed('/enrolledStudents', arguments: {'subject' : subject, 'batch' : batches[index]});
-                          },
-                          title: Text('${batches[index]}'),
+        body: Column(
+          children: <Widget>[
+            Container(
+              color: Colors.white,
+              child: Stack(
+                children: <Widget>[
+                  Container(
+                    padding: EdgeInsets.fromLTRB(45, 60, 30, 50),
+                    decoration: BoxDecoration(
+                        color: Colors.cyan,
+                        borderRadius: BorderRadius.only(
+                            bottomLeft: Radius.circular(50),
+                            bottomRight: Radius.circular(50)
                         )
-                      );
-                    },
+                    ),
+                    child: Row(
+                      children: <Widget>[
+                        Expanded(child: Text('Subjects', style: TextStyle(color: Colors.white, fontSize: 25, fontWeight: FontWeight.bold),)),
+                        Container(
+                          padding: EdgeInsets.symmetric(horizontal: 10),
+                          decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.all(Radius.circular(50))
+                          ),
+                          child: FlatButton.icon(
+                            label: Text('Log Out', style: TextStyle(color: Colors.cyan, fontWeight: FontWeight.bold)),
+                            icon: Icon(Icons.exit_to_app, color: Colors.cyan, size: 15,),
+                            onPressed: () async {
+                              dynamic result = await User().signOut();
+                              if (result == null) {
+                                Navigator.of(context).pushReplacementNamed('/authentication');
+                              }
+                            },
+                          ),
+                        )
+                      ],
+                    ),
                   ),
-                )
-              ],
+                  Container(
+                    margin: EdgeInsets.fromLTRB(40, 130, 40, 20),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(20),
+                      boxShadow: [BoxShadow(
+                        color: Color.fromRGBO(51, 204, 255, 0.3),
+                        blurRadius: 10,
+                        offset: Offset(0, 10),
+                      )],
+                    ),
+                    child: Container(
+                      padding: EdgeInsets.all(6.5),
+                      child: TextFormField(
+                        decoration: authInputFormatting.copyWith(hintText: "Search By Batch"),
+                        onChanged: (val){
+                        },
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
-          );
-        }
-      ),
+            Expanded(
+              child: Container(
+                padding: EdgeInsets.symmetric(horizontal: 20),
+                color: Colors.white,
+                child: FutureBuilder(
+                    future: setup(Provider.of<FirebaseUser>(context), ModalRoute.of(context).settings.arguments),
+                    builder: (BuildContext context, AsyncSnapshot snapshot) {
+                      return batches.isEmpty ? LoadingData() : Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: <Widget>[
+                            Card(
+                              child: add == true ? addBatchForm() : addBatchButton(),
+                            ),
+                            SizedBox(height: 10,),
+                            batches[0] == 'Empty' ? Text('You Need To Add Batches', style: TextStyle(color: Colors.red),) : Expanded(
+                              child: ListView.builder(
+                                itemCount: batches.length,
+                                itemBuilder: (context, index){
+                                  return Card(
+                                      child : ListTile(
+                                        onTap: () async{
+                                          Navigator.of(context).pushNamed('/enrolledStudents', arguments: {'subject' : subject, 'batch' : batches[index]});
+                                        },
+                                        title: Text('${batches[index]}'),
+                                      )
+                                  );
+                                },
+                              ),
+                            )
+                          ],
+                        ),
+                      );
+                    }
+                ),
+              ),
+            ),
+          ],
+        )
     );
   }
 

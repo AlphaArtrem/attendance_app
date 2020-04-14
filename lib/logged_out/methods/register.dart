@@ -26,7 +26,7 @@ class _RegisterState extends State<Register> {
   @override
   void initState() {
     super.initState();
-    _currentForm = _registerPasswordType();
+    _currentForm = _registerNameEmail();
   }
 
   @override
