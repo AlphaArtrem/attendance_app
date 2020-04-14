@@ -1,6 +1,7 @@
 import 'package:attendanceapp/classes/account.dart';
 import 'package:attendanceapp/classes/firestore.dart';
 import 'package:attendanceapp/shared/formatting.dart';
+import 'package:enhanced_future_builder/enhanced_future_builder.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -16,7 +17,7 @@ class _BatchesState extends State<Batches> {
   String error  = '';
   List<String> batches = [];
   final _formKey = GlobalKey<FormState>();
-  bool add = false;
+  bool _add = false;
   String batch = '';
   FirebaseUser user;
 
@@ -50,7 +51,7 @@ class _BatchesState extends State<Batches> {
                     ),
                     child: Row(
                       children: <Widget>[
-                        Expanded(child: Text('Subjects', style: TextStyle(color: Colors.white, fontSize: 25, fontWeight: FontWeight.bold),)),
+                        Expanded(child: Text('Batches', style: TextStyle(color: Colors.white, fontSize: 25, fontWeight: FontWeight.bold),)),
                         Container(
                           padding: EdgeInsets.symmetric(horizontal: 10),
                           decoration: BoxDecoration(
@@ -98,36 +99,11 @@ class _BatchesState extends State<Batches> {
               child: Container(
                 padding: EdgeInsets.symmetric(horizontal: 20),
                 color: Colors.white,
-                child: FutureBuilder(
-                    future: setup(Provider.of<FirebaseUser>(context), ModalRoute.of(context).settings.arguments),
-                    builder: (BuildContext context, AsyncSnapshot snapshot) {
-                      return batches.isEmpty ? LoadingData() : Center(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: <Widget>[
-                            Card(
-                              child: add == true ? addBatchForm() : addBatchButton(),
-                            ),
-                            SizedBox(height: 10,),
-                            batches[0] == 'Empty' ? Text('You Need To Add Batches', style: TextStyle(color: Colors.red),) : Expanded(
-                              child: ListView.builder(
-                                itemCount: batches.length,
-                                itemBuilder: (context, index){
-                                  return Card(
-                                      child : ListTile(
-                                        onTap: () async{
-                                          Navigator.of(context).pushNamed('/enrolledStudents', arguments: {'subject' : subject, 'batch' : batches[index]});
-                                        },
-                                        title: Text('${batches[index]}'),
-                                      )
-                                  );
-                                },
-                              ),
-                            )
-                          ],
-                        ),
-                      );
-                    }
+                child: EnhancedFutureBuilder(
+                  future: setup(Provider.of<FirebaseUser>(context), ModalRoute.of(context).settings.arguments),
+                  rememberFutureResult: true,
+                  whenNotDone: LoadingData(),
+                  whenDone: (arg) => batchList(),
                 ),
               ),
             ),
@@ -136,18 +112,85 @@ class _BatchesState extends State<Batches> {
     );
   }
 
+  Widget batchList(){
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: <Widget>[
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: _add == false ? addBatchButton() : addBatchForm(),
+          ),
+          batches[0] == 'Empty' ? Text('You Need To Add Batches', style: TextStyle(color: Colors.red),) : Expanded(
+            child: ListView.builder(
+              itemCount: batches.length,
+              itemBuilder: (context, index){
+                return Card(
+                    child : ListTile(
+                      onTap: () async{
+                        Navigator.of(context).pushNamed('/enrolledStudents', arguments: {'subject' : subject, 'batch' : batches[index]});
+                      },
+                      title: Text('${batches[index]}'),
+                    )
+                );
+              },
+            ),
+          )
+        ],
+      ),
+    );
+  }
+
   Widget addBatchButton()
   {
-    return ListTile(
-      onTap: (){
-        setState(() {
-          add = true;
-        });
-      },
-      title: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: <Widget>[Icon(Icons.add),SizedBox(width: 10,) ,Text('Add A Batch')],
-      ),
+    return Row(
+      children: <Widget>[
+        Expanded(
+          child: GestureDetector(
+            onTap:(){
+              setState(() {
+                _add = true;
+              });
+            },
+            child: Container(
+              padding: EdgeInsets.symmetric(horizontal: 15, vertical: 15),
+              decoration: BoxDecoration(
+                  color: Colors.cyan,
+                  borderRadius: BorderRadius.all(Radius.circular(50))
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  Icon(Icons.add, color: Colors.white, size: 25,),
+                  SizedBox(width: 10,) ,
+                  Text('Add', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18),)
+                ],
+              ),
+            ),
+          ),
+        ),
+        SizedBox(width: 15,),
+        Expanded(
+          child: GestureDetector(
+            onTap:(){},
+            child: Container(
+              padding: EdgeInsets.symmetric(horizontal: 15, vertical: 15),
+              decoration: BoxDecoration(
+                  color: Colors.cyan,
+                  borderRadius: BorderRadius.all(Radius.circular(50))
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  Icon(Icons.add, color: Colors.white, size: 25,),
+                  SizedBox(width: 10,) ,
+                  Text('Remove', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18),)
+                ],
+              ),
+            ),
+          ),
+        ),
+      ],
     );
   }
 
@@ -190,7 +233,7 @@ class _BatchesState extends State<Batches> {
                       await setup(user, subject);
                       setState((){
                         error = ' ';
-                        add = false;
+                        _add = false;
                       });
                     }
                   }
