@@ -146,51 +146,59 @@ class _EnrolledStudentsState extends State<EnrolledStudents> {
   }
 
   Widget addStudentButton() {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(5, 10, 5, 0),
-      child: Row(
-        children: <Widget>[
-          Expanded(
-            child: Card(
-              child: ListTile(
-                onTap: () async{
-                  dynamic data = await Navigator.pushNamed(context, '/addStudents', arguments: {'enrolledStudents' : students, 'batch' : batch, 'subject': subject});
-                  if(data != null) {
-                    setState(() {
-                      students = data['enrolledStudents'];
-                    });
-                  }
-                },
-                title: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    Icon(Icons.add),
-                    SizedBox(width: 5,),
-                    Text('Student')
-                  ],
-                ),
+    return Row(
+      children: <Widget>[
+        Expanded(
+          child: GestureDetector(
+            onTap:() async{
+              dynamic data = await Navigator.pushNamed(context, '/addStudents', arguments: {'enrolledStudents' : students, 'batch' : batch, 'subject': subject});
+              if(data != null) {
+                setState(() {
+                  students = data['enrolledStudents'];
+                });
+              }
+            },
+            child: Container(
+              padding: EdgeInsets.symmetric(horizontal: 15, vertical: 15),
+              decoration: BoxDecoration(
+                  color: Colors.cyan,
+                  borderRadius: BorderRadius.all(Radius.circular(50))
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  Icon(Icons.add, color: Colors.white, size: 25,),
+                  SizedBox(width: 5,) ,
+                  Text('Student', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18),)
+                ],
               ),
             ),
           ),
-          Expanded(
-            child: Card(
-              child: ListTile(
-                onTap: () async{
-                  await Navigator.pushNamed(context, '/updateAttendance', arguments: {'enrolledStudents' : students, 'subject' : subject, 'batch' : batch});
-                },
-                title: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    Icon(Icons.add),
-                    SizedBox(width: 5,),
-                    Text('Attendance')
-                  ],
-                ),
+        ),
+        SizedBox(width: 5,),
+        Expanded(
+          child: GestureDetector(
+            onTap:() async{
+              await Navigator.pushNamed(context, '/updateAttendance', arguments: {'enrolledStudents' : students, 'subject' : subject, 'batch' : batch});
+            },
+            child: Container(
+              padding: EdgeInsets.symmetric(horizontal: 15, vertical: 15),
+              decoration: BoxDecoration(
+                  color: Colors.cyan,
+                  borderRadius: BorderRadius.all(Radius.circular(50))
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  Icon(Icons.add, color: Colors.white, size: 25,),
+                  SizedBox(width: 5,) ,
+                  Text('Attendance', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18),)
+                ],
               ),
             ),
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }
