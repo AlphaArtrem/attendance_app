@@ -199,49 +199,77 @@ class _BatchesState extends State<Batches> {
     return Form(
         key: _formKey,
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            Padding(
-              padding: const EdgeInsets.fromLTRB(15, 20, 15, 2),
-              child: TextFormField(
-                decoration: textInputFormatting.copyWith(hintText: 'Add Batch Name'),
-                validator: (val) => val.isEmpty ? 'Batch Name Can\'t Be Empty' : null,
-                onChanged: (val) => batch = val,
-              ),
+            Center(child: Text('$error', style: TextStyle(color: Colors.red),)),
+            SizedBox(height: 15,),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                Expanded(
+                  flex: 3,
+                  child: Container(
+                    padding: EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.all(Radius.circular(20)),
+                      boxShadow: [BoxShadow(
+                        color: Color.fromRGBO(51, 204, 255, 0.3),
+                        blurRadius: 10,
+                        offset: Offset(0, 10),
+                      )],
+                    ),
+                    child: TextFormField(
+                      decoration: authInputFormatting.copyWith(hintText: 'Add Batch Name'),
+                      validator: (val) => val.isEmpty ? 'Batch Name Can\'t Be Empty' : null,
+                      onChanged: (val) => batch = val,
+                    ),
+                  ),
+                ),
+                SizedBox(width: 10,),
+                Expanded(
+                  flex: 1,
+                  child: GestureDetector(
+                    child: Container(
+                      padding: EdgeInsets.symmetric(horizontal: 15, vertical: 20),
+                      decoration: BoxDecoration(
+                        color: Colors.cyan,
+                        borderRadius: BorderRadius.all(Radius.circular(20)),
+                      ),
+                      child: Icon(Icons.add, color: Colors.white, size: 25,),
+                    ),
+                    onTap: () async{
+                      if(_formKey.currentState.validate())
+                      {
+                        if(batches.contains(batch))
+                        {
+                          setState(() {
+                            error = "Batch Already Present";
+                          });
+                        }
+                        else
+                        {
+                          dynamic result = await _tSAB.addBatch(subject, batch);
+                          if(result ==  null)
+                          {
+                            setState(() {
+                              error = "Something Went Wrong, Couldn't Add Batch";
+                            });
+                          }
+                          else
+                          {
+                            await setup(user, subject);
+                            setState((){
+                              error = ' ';
+                              _add = false;
+                            });
+                          }
+                        }
+                      }
+                    },
+                  ),
+                ),
+              ],
             ),
-            IconButton(
-              onPressed: () async{
-                if(_formKey.currentState.validate())
-                {
-                  if(batches.contains(batch))
-                  {
-                    setState(() {
-                      error = "Batch Already Present";
-                    });
-                  }
-                  else
-                  {
-                    dynamic result = await _tSAB.addBatch(subject, batch);
-                    if(result ==  null)
-                    {
-                      setState(() {
-                        error = "Something Went Wrong, Couldn't Add Batch";
-                      });
-                    }
-                    else
-                    {
-                      await setup(user, subject);
-                      setState((){
-                        error = ' ';
-                        _add = false;
-                      });
-                    }
-                  }
-                }
-              },
-              icon: Icon(Icons.add_box),
-            ),
-            Text('$error', style: TextStyle(color: Colors.red),)
           ],
         )
     );
