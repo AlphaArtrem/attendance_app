@@ -31,7 +31,7 @@ class _AttendanceListState extends State<AttendanceList> {
               child: Stack(
                 children: <Widget>[
                   Container(
-                    padding: EdgeInsets.fromLTRB(45, 60, 30, 50),
+                    padding: EdgeInsets.fromLTRB(5, 60, 30, 50),
                     decoration: BoxDecoration(
                         color: Colors.cyan,
                         borderRadius: BorderRadius.only(
@@ -41,6 +41,7 @@ class _AttendanceListState extends State<AttendanceList> {
                     ),
                     child: Row(
                       children: <Widget>[
+                        BackButton(color: Colors.white70,),
                         Expanded(child: Text('Attendance', style: TextStyle(color: Colors.white, fontSize: 25, fontWeight: FontWeight.bold),)),
                         Container(
                           padding: EdgeInsets.symmetric(horizontal: 10),
