@@ -1,6 +1,7 @@
 import 'package:attendanceapp/classes/account.dart';
 import 'package:attendanceapp/classes/firestore.dart';
 import 'package:attendanceapp/shared/formatting.dart';
+import 'package:enhanced_future_builder/enhanced_future_builder.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -12,17 +13,19 @@ class EnrolledStudents extends StatefulWidget {
 
 class _EnrolledStudentsState extends State<EnrolledStudents> {
   TeacherSubjectsAndBatches _tSAB;
-  List<String> students = [];
-  String subject = '';
-  String batch = '';
-  List<String> allStudents = [];
+  List<String> _students = [];
+  List<String> _studentsVisible = [];
+  String _subject = '';
+  String _batch = '';
+  List<String> _allStudents = [];
 
   Future setup(FirebaseUser user, String sub, String batchCopy) async {
     _tSAB = TeacherSubjectsAndBatches(user);
-    students = await _tSAB.getStudents(sub, batchCopy);
-    if (students == null) {
-      students = ["Couldn't get students, try again"];
+    _students = await _tSAB.getStudents(sub, batchCopy);
+    if (_students == null) {
+      _students = ["Couldn't get students, try again"];
     }
+    _studentsVisible = _students;
   }
 
   @override
@@ -31,8 +34,8 @@ class _EnrolledStudentsState extends State<EnrolledStudents> {
         .of(context)
         .settings
         .arguments;
-    subject = data['subject'];
-    batch = data['batch'];
+    _subject = data['subject'];
+    _batch = data['batch'];
     return Scaffold(
         body: Column(
           children: <Widget>[
@@ -41,7 +44,7 @@ class _EnrolledStudentsState extends State<EnrolledStudents> {
               child: Stack(
                 children: <Widget>[
                   Container(
-                    padding: EdgeInsets.fromLTRB(45, 60, 30, 50),
+                    padding: EdgeInsets.fromLTRB(5, 60, 30, 50),
                     decoration: BoxDecoration(
                         color: Colors.cyan,
                         borderRadius: BorderRadius.only(
@@ -51,6 +54,7 @@ class _EnrolledStudentsState extends State<EnrolledStudents> {
                     ),
                     child: Row(
                       children: <Widget>[
+                        BackButton(color: Colors.white70,),
                         Expanded(child: Text('Students', style: TextStyle(color: Colors.white, fontSize: 25, fontWeight: FontWeight.bold),)),
                         Container(
                           padding: EdgeInsets.symmetric(horizontal: 10),
@@ -89,6 +93,7 @@ class _EnrolledStudentsState extends State<EnrolledStudents> {
                         decoration: authInputFormatting.copyWith(hintText: "Search By ID"),
                         onChanged: (val){
                           setState(() {
+                            _studentsVisible = _students.where((student) => student.toLowerCase().startsWith(val.toLowerCase())).toList();
                           });
                         },
                       ),
@@ -101,47 +106,59 @@ class _EnrolledStudentsState extends State<EnrolledStudents> {
               child: Container(
                 padding: EdgeInsets.symmetric(horizontal: 20),
                 color: Colors.white,
-                child: FutureBuilder(
-                    future: setup(Provider.of<FirebaseUser>(context), subject, batch),
-                    builder: (BuildContext context, AsyncSnapshot snapshot) {
-                      return students.isEmpty ? LoadingData() : Center(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: <Widget>[
-                            addStudentButton(),
-                            SizedBox(height: 10,),
-                            students[0] == 'Empty' ? Expanded(
-                              child: Text('You Need To Add Students',
-                                style: TextStyle(color: Colors.red),),
-                            ) : Expanded(
-                              child: ListView.builder(
-                                itemCount: students.length,
-                                itemBuilder: (context, index) {
-                                  return Card(
-                                      child: ListTile(
-                                        onTap: () {
-                                          Navigator.pushNamed(context, '/attendanceList', arguments: {
-                                            'teacherEmail' : Provider.of<FirebaseUser>(context, listen: false).email ,
-                                            'subject': subject,
-                                            'batch' : batch,
-                                            'studentEmail' : students[index],
-                                          });
-                                        },
-                                        title: Text('${students[index]}'),
-                                      )
-                                  );
-                                },
-                              ),
-                            )
-                          ],
-                        ),
-                      );
-                    }
+                child: EnhancedFutureBuilder(
+                    future: setup(Provider.of<FirebaseUser>(context), _subject, _batch),
+                    rememberFutureResult: true,
+                    whenNotDone: LoadingData(),
+                    whenDone: (arg) => studentList(),
                 ),
               ),
             ),
           ],
         )
+    );
+  }
+
+  Widget studentList(){
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: <Widget>[
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: addStudentButton(),
+          ),
+          _students[0] == 'Empty' ? Expanded(child: Text('You Need To Add Students', style: TextStyle(color: Colors.red),),) : Expanded(
+            child: ListView.builder(
+              itemCount: _studentsVisible.length,
+              itemBuilder: (context, index){
+                return Card(
+                  elevation: 3,
+                  child: Padding(
+                    padding: const EdgeInsets.all(10.0),
+                    child: ListTile(
+                      onTap: () async{
+                        Navigator.pushNamed(context, '/attendanceList', arguments: {
+                          'teacherEmail' : Provider.of<FirebaseUser>(context, listen: false).email ,
+                          'subject': _subject,
+                          'batch' : _batch,
+                          'studentEmail' : _studentsVisible[index],
+                        });
+                      },
+                      title: Row(
+                        children: <Widget>[
+                          Expanded(child: Text('${_studentsVisible[index]}', style: TextStyle(color: Colors.cyan),)),
+                          Icon(Icons.forward, color: Colors.grey[700],)
+                        ],
+                      ),
+                    ),
+                  ),
+                );
+              },
+            ),
+          ),
+        ],
+      ),
     );
   }
 
@@ -151,10 +168,11 @@ class _EnrolledStudentsState extends State<EnrolledStudents> {
         Expanded(
           child: GestureDetector(
             onTap:() async{
-              dynamic data = await Navigator.pushNamed(context, '/addStudents', arguments: {'enrolledStudents' : students, 'batch' : batch, 'subject': subject});
+              dynamic data = await Navigator.pushNamed(context, '/addStudents', arguments: {'enrolledStudents' : _students, 'batch' : _batch, 'subject': _subject});
               if(data != null) {
                 setState(() {
-                  students = data['enrolledStudents'];
+                  _students = data['enrolledStudents'];
+                  _studentsVisible = data['enrolledStudents'];
                 });
               }
             },
@@ -167,7 +185,7 @@ class _EnrolledStudentsState extends State<EnrolledStudents> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
-                  Icon(Icons.add, color: Colors.white, size: 25,),
+                  Icon(Icons.add, color: Colors.white, size: 20,),
                   SizedBox(width: 5,) ,
                   Text('Student', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18),)
                 ],
@@ -179,7 +197,7 @@ class _EnrolledStudentsState extends State<EnrolledStudents> {
         Expanded(
           child: GestureDetector(
             onTap:() async{
-              await Navigator.pushNamed(context, '/updateAttendance', arguments: {'enrolledStudents' : students, 'subject' : subject, 'batch' : batch});
+              await Navigator.pushNamed(context, '/updateAttendance', arguments: {'enrolledStudents' : _students, 'subject' : _subject, 'batch' : _batch});
             },
             child: Container(
               padding: EdgeInsets.symmetric(horizontal: 15, vertical: 15),
@@ -190,7 +208,7 @@ class _EnrolledStudentsState extends State<EnrolledStudents> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
-                  Icon(Icons.add, color: Colors.white, size: 25,),
+                  Icon(Icons.add, color: Colors.white, size: 20,),
                   SizedBox(width: 5,) ,
                   Text('Attendance', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18),)
                 ],
