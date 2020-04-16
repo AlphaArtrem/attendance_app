@@ -27,10 +27,10 @@ class _SubjectsState extends State<Subjects> {
     _user = userCurrent;
     _tSAB = TeacherSubjectsAndBatches(_user);
     _subjects = await _tSAB.getSubjects();
+    _subjectsVisible = _subjects;
     if(_subjects == null){
       _subjects = ["Couldn't get subjects, try logging in again"];
     }
-    _subjectsVisible = _subjects;
   }
 
   @override
@@ -355,7 +355,6 @@ class _SubjectsState extends State<Subjects> {
                           {
                             setState((){
                               _subjects.add(_subject);
-                              _subjectsVisible.add(_subject);
                               _error = ' ';
                               _add = false;
                             });

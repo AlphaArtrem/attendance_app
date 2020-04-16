@@ -168,6 +168,29 @@ class _EnrolledStudentsState extends State<EnrolledStudents> {
         Expanded(
           child: GestureDetector(
             onTap:() async{
+              await Navigator.pushNamed(context, '/updateAttendance', arguments: {'enrolledStudents' : _students, 'subject' : _subject, 'batch' : _batch});
+            },
+            child: Container(
+              padding: EdgeInsets.symmetric(horizontal: 15, vertical: 15),
+              decoration: BoxDecoration(
+                  color: Colors.cyan,
+                  borderRadius: BorderRadius.all(Radius.circular(50))
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  Icon(Icons.add, color: Colors.white, size: 20,),
+                  SizedBox(width: 5,) ,
+                  Text('Attendance', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18),)
+                ],
+              ),
+            ),
+          ),
+        ),
+        SizedBox(width: 5,),
+        Expanded(
+          child: GestureDetector(
+            onTap:() async{
               dynamic data = await Navigator.pushNamed(context, '/addStudents', arguments: {'enrolledStudents' : _students, 'batch' : _batch, 'subject': _subject});
               if(data != null) {
                 setState(() {
@@ -185,32 +208,9 @@ class _EnrolledStudentsState extends State<EnrolledStudents> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
-                  Icon(Icons.add, color: Colors.white, size: 20,),
-                  SizedBox(width: 5,) ,
-                  Text('Student', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18),)
-                ],
-              ),
-            ),
-          ),
-        ),
-        SizedBox(width: 5,),
-        Expanded(
-          child: GestureDetector(
-            onTap:() async{
-              await Navigator.pushNamed(context, '/updateAttendance', arguments: {'enrolledStudents' : _students, 'subject' : _subject, 'batch' : _batch});
-            },
-            child: Container(
-              padding: EdgeInsets.symmetric(horizontal: 15, vertical: 15),
-              decoration: BoxDecoration(
-                  color: Colors.cyan,
-                  borderRadius: BorderRadius.all(Radius.circular(50))
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  Icon(Icons.add, color: Colors.white, size: 20,),
-                  SizedBox(width: 5,) ,
-                  Text('Attendance', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18),)
+                  Text('Student', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18),),
+                  SizedBox(width: 5,),
+                  Icon(Icons.more_vert, color: Colors.white, size: 20,),
                 ],
               ),
             ),
