@@ -17,7 +17,7 @@ class _EnrolledStudentsState extends State<EnrolledStudents> {
   List<String> _studentsVisible = [];
   String _subject = '';
   String _batch = '';
-  List<String> _allStudents = [];
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey();
 
   Future setup(FirebaseUser user, String sub, String batchCopy) async {
     _tSAB = TeacherSubjectsAndBatches(user);
@@ -37,86 +37,107 @@ class _EnrolledStudentsState extends State<EnrolledStudents> {
     _subject = data['subject'];
     _batch = data['batch'];
     return Scaffold(
-        body: Column(
+      key: _scaffoldKey,
+      drawer: Drawer(
+        child: ListView(
           children: <Widget>[
-            Container(
-              color: Colors.white,
-              child: Stack(
-                children: <Widget>[
-                  Container(
-                    padding: EdgeInsets.fromLTRB(5, 60, 30, 50),
-                    decoration: BoxDecoration(
-                        color: Colors.cyan,
-                        borderRadius: BorderRadius.only(
-                            bottomLeft: Radius.circular(50),
-                            bottomRight: Radius.circular(50)
-                        )
-                    ),
-                    child: Row(
-                      children: <Widget>[
-                        BackButton(color: Colors.white70,),
-                        Expanded(child: Text('Students', style: TextStyle(color: Colors.white, fontSize: 25, fontWeight: FontWeight.bold),)),
-                        Container(
-                          padding: EdgeInsets.symmetric(horizontal: 10),
-                          decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.all(Radius.circular(50))
-                          ),
-                          child: FlatButton.icon(
-                            label: Text('Log Out', style: TextStyle(color: Colors.cyan, fontWeight: FontWeight.bold)),
-                            icon: Icon(Icons.exit_to_app, color: Colors.cyan, size: 15,),
-                            onPressed: () async {
-                              dynamic result = await User().signOut();
-                              if (result == null) {
-                                Navigator.of(context).pushReplacementNamed('/authentication');
-                              }
-                            },
-                          ),
-                        )
-                      ],
-                    ),
-                  ),
-                  Container(
-                    margin: EdgeInsets.fromLTRB(40, 130, 40, 20),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(20),
-                      boxShadow: [BoxShadow(
-                        color: Color.fromRGBO(51, 204, 255, 0.3),
-                        blurRadius: 10,
-                        offset: Offset(0, 10),
-                      )],
-                    ),
-                    child: Container(
-                      padding: EdgeInsets.all(6.5),
-                      child: TextFormField(
-                        decoration: authInputFormatting.copyWith(hintText: "Search By ID"),
-                        onChanged: (val){
-                          setState(() {
-                            _studentsVisible = _students.where((student) => student.toLowerCase().startsWith(val.toLowerCase())).toList();
-                          });
-                        },
-                      ),
-                    ),
-                  ),
-                ],
-              ),
+            ListTile(
+              title: Text('Add Student'),
             ),
-            Expanded(
-              child: Container(
-                padding: EdgeInsets.symmetric(horizontal: 20),
-                color: Colors.white,
-                child: EnhancedFutureBuilder(
-                    future: setup(Provider.of<FirebaseUser>(context), _subject, _batch),
-                    rememberFutureResult: true,
-                    whenNotDone: LoadingData(),
-                    whenDone: (arg) => studentList(),
-                ),
-              ),
+            ListTile(
+              title: Text('Remove Student'),
             ),
+            ListTile(
+              title: Text('Add Attendance'),
+            ),
+            ListTile(
+              title: Text('Update Attendance'),
+            ),
+
           ],
-        )
-    );
+        ),
+      ),
+      body: Column(
+        children: <Widget>[
+          Container(
+            color: Colors.white,
+            child: Stack(
+              children: <Widget>[
+                Container(
+                  padding: EdgeInsets.fromLTRB(5, 60, 30, 50),
+                  decoration: BoxDecoration(
+                      color: Colors.cyan,
+                      borderRadius: BorderRadius.only(
+                          bottomLeft: Radius.circular(50),
+                          bottomRight: Radius.circular(50)
+                      )
+                  ),
+                  child: Row(
+                    children: <Widget>[
+                      IconButton(onPressed: () => _scaffoldKey.currentState.openDrawer(), icon: Icon(Icons.menu, color: Colors.white70,)),
+                      //BackButton(color: Colors.white70,),
+                      Expanded(child: Text('Students', style: TextStyle(color: Colors.white, fontSize: 25, fontWeight: FontWeight.bold),)),
+                      Container(
+                        padding: EdgeInsets.symmetric(horizontal: 10),
+                        decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.all(Radius.circular(50))
+                        ),
+                        child: FlatButton.icon(
+                          label: Text('Log Out', style: TextStyle(color: Colors.cyan, fontWeight: FontWeight.bold)),
+                          icon: Icon(Icons.exit_to_app, color: Colors.cyan, size: 15,),
+                          onPressed: () async {
+                            dynamic result = await User().signOut();
+                            if (result == null) {
+                              Navigator.of(context).pushReplacementNamed('/authentication');
+                            }
+                          },
+                        ),
+                      )
+                    ],
+                  ),
+                ),
+                Container(
+                  margin: EdgeInsets.fromLTRB(40, 130, 40, 20),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(20),
+                    boxShadow: [BoxShadow(
+                      color: Color.fromRGBO(51, 204, 255, 0.3),
+                      blurRadius: 10,
+                      offset: Offset(0, 10),
+                    )],
+                  ),
+                  child: Container(
+                    padding: EdgeInsets.all(6.5),
+                    child: TextFormField(
+                      decoration: authInputFormatting.copyWith(hintText: "Search By ID"),
+                      onChanged: (val){
+                        setState(() {
+                          _studentsVisible = _students.where((student) => student.toLowerCase().startsWith(val.toLowerCase())).toList();
+                        });
+                      },
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Expanded(
+            child: Container(
+              padding: EdgeInsets.symmetric(horizontal: 20),
+              color: Colors.white,
+              child: EnhancedFutureBuilder(
+                  future: setup(Provider.of<FirebaseUser>(context), _subject, _batch),
+                  rememberFutureResult: true,
+                  whenNotDone: LoadingData(),
+                  whenDone: (arg) => studentList(),
+              ),
+            ),
+          ),
+        ],
+      )
+  );
   }
 
   Widget studentList(){
