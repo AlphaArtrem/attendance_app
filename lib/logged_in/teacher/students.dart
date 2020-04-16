@@ -39,22 +39,64 @@ class _EnrolledStudentsState extends State<EnrolledStudents> {
     return Scaffold(
       key: _scaffoldKey,
       drawer: Drawer(
-        child: ListView(
-          children: <Widget>[
-            ListTile(
-              title: Text('Add Student'),
-            ),
-            ListTile(
-              title: Text('Remove Student'),
-            ),
-            ListTile(
-              title: Text('Add Attendance'),
-            ),
-            ListTile(
-              title: Text('Update Attendance'),
-            ),
+        child: Container(
+          color: Colors.white,
+          child: Column(
+            children: <Widget>[
+              Container(
+                padding: EdgeInsets.symmetric(vertical: 0, horizontal: 0),
+                color: Colors.cyan,
+                child: Row(
+                  children: <Widget>[
+                    Container(
+                      margin: EdgeInsets.fromLTRB(0, 40, 20, 20),
+                      child: BackButton(color: Colors.white)
+                    ),
+                    Expanded(child: Container(),),
+                    Container(
+                      margin: EdgeInsets.fromLTRB(0, 40, 20, 20),
+                      padding: EdgeInsets.symmetric(horizontal: 10),
+                      decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.all(Radius.circular(50))
+                      ),
+                      child: FlatButton.icon(
+                        label: Text('Log Out', style: TextStyle(color: Colors.cyan, fontWeight: FontWeight.bold)),
+                        icon: Icon(Icons.exit_to_app, color: Colors.cyan, size: 15,),
+                        onPressed: () async {
+                          dynamic result = await User().signOut();
+                          if (result == null) {
+                            Navigator.of(context).pushReplacementNamed('/authentication');
+                          }
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Expanded(
+                child: Container(
+                  child: ListView(
+                    children: <Widget>[
+                      ListTile(
+                        title: Text('Add Student'),
+                      ),
+                      ListTile(
+                        title: Text('Remove Student'),
+                      ),
+                      ListTile(
+                        title: Text('Add Attendance'),
+                      ),
+                      ListTile(
+                        title: Text('Update Attendance'),
+                      ),
 
-          ],
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
       body: Column(
