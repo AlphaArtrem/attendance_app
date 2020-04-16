@@ -323,12 +323,21 @@ class _BatchesState extends State<Batches> {
                             }
                             else
                             {
-                              setState((){
-                                _batches.add(_subject);
-                                _batchesVisible.add(_subject);
-                                _error = ' ';
-                                _add = false;
-                              });
+                              if(_batches[0] == 'EMPTY'){
+                                setState((){
+                                  _batches.clear();
+                                  _batches.add(_batch);
+                                  _error = ' ';
+                                  _add = false;
+                                });
+                              }
+                              else{
+                                setState((){
+                                  _batches.add(_batch);
+                                  _error = ' ';
+                                  _add = false;
+                                });
+                              }
                             }
                           }
                         }

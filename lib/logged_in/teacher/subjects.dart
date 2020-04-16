@@ -353,11 +353,21 @@ class _SubjectsState extends State<Subjects> {
                           }
                           else
                           {
-                            setState((){
-                              _subjects.add(_subject);
-                              _error = ' ';
-                              _add = false;
-                            });
+                            if(_subjects[0] == 'EMPTY'){
+                              setState((){
+                                _subjects.clear();
+                                _subjects.add(_subject);
+                                _error = ' ';
+                                _add = false;
+                              });
+                            }
+                            else{
+                              setState((){
+                                _subjects.add(_subject);
+                                _error = ' ';
+                                _add = false;
+                              });
+                            }
                           }
                         }
                       }
