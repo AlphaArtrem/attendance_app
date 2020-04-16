@@ -16,6 +16,7 @@ class _SubjectsState extends State<Subjects> {
   List<String> _subjects = [];
   List<String> _subjectsVisible = [];
   bool _add = false;
+  bool _delete = false;
   final _formKey = GlobalKey<FormState>();
   String _subject = ' ';
   String _error = ' ';
@@ -135,12 +136,54 @@ class _SubjectsState extends State<Subjects> {
                     padding: const EdgeInsets.all(10.0),
                     child: ListTile(
                       onTap: () async{
-                        Navigator.of(context).pushNamed('/batches', arguments: _subjectsVisible[index]);
+                        if(!_delete){
+                          Navigator.of(context).pushNamed('/batches', arguments: _subjectsVisible[index]);
+                        }
+                        else{
+                          showDialog(
+                            context: context,
+                            builder: (context){
+                              return AlertDialog(
+                                title: Text('Confirmation'),
+                                content: Text('Are you sure you want to delete ${_subjectsVisible[index]} ? This action can\'t be reverted.', textAlign: TextAlign.justify,),
+                                actions: <Widget>[
+                                  FlatButton(
+                                    child: Text('Cancel'),
+                                    onPressed: (){
+                                      Navigator.of(context).pop();
+                                    },
+                                  ),
+                                  FlatButton(
+                                    child: Text('Delete'),
+                                    onPressed: () async{
+                                      dynamic result = await _tSAB.deleteSubject(_subjectsVisible[index]);
+                                      if(result == 'Success')
+                                        {
+                                          setState(() {
+                                            _error = ' ';
+                                            _subjectsVisible.remove(_subjectsVisible[index]);
+                                            _subjects.remove(_subjectsVisible[index]);
+                                          });
+                                          Navigator.of(context).pop();
+                                        }
+                                      else{
+                                        setState(() {
+                                          _error = "Couldn't delete ${_subjectsVisible[index]}";
+                                        });
+                                        Navigator.of(context).pop();
+                                      }
+                                    },
+                                  ),
+                                ],
+                              );
+                            }
+                          );
+                        }
                       },
                       title: Row(
                         children: <Widget>[
                           Expanded(child: Text('${_subjectsVisible[index]}', style: TextStyle(color: Colors.cyan),)),
-                          Icon(Icons.forward, color: Colors.grey[700],)
+                          _delete ? Icon(Icons.delete, color: Colors.grey[700],) : Icon(Icons.forward, color: Colors.grey[700],)
                         ],
                       ),
                     ),
@@ -156,14 +199,71 @@ class _SubjectsState extends State<Subjects> {
 
   Widget addSubjectButton()
   {
-    return Row(
-      children: <Widget>[
-        Expanded(
-          child: GestureDetector(
+    if(!_delete){
+      return Row(
+        children: <Widget>[
+          Expanded(
+            child: GestureDetector(
+              onTap:(){
+                setState(() {
+                  _add = true;
+                });
+              },
+              child: Container(
+                padding: EdgeInsets.symmetric(horizontal: 15, vertical: 15),
+                decoration: BoxDecoration(
+                    color: Colors.cyan,
+                    borderRadius: BorderRadius.all(Radius.circular(50))
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    Icon(Icons.add, color: Colors.white, size: 25,),
+                    SizedBox(width: 10,) ,
+                    Text('Add', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18),)
+                  ],
+                ),
+              ),
+            ),
+          ),
+          SizedBox(width: 15,),
+          _subjects[0] != 'Empty'  ? Expanded(
+            child: GestureDetector(
+              onTap:(){
+                setState(() => _delete = true);
+              },
+              child: Container(
+                padding: EdgeInsets.symmetric(horizontal: 15, vertical: 15),
+                decoration: BoxDecoration(
+                    color: Colors.cyan,
+                    borderRadius: BorderRadius.all(Radius.circular(50))
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    Icon(Icons.add, color: Colors.white, size: 25,),
+                    SizedBox(width: 10,) ,
+                    Text('Remove', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18),)
+                  ],
+                ),
+              ),
+            ),
+          ) : Container(),
+        ],
+      );
+    }
+    else{
+      return Column(
+        children: <Widget>[
+          _error == ' ' ? Container() : Center(child: Text('$_error', style: TextStyle(color: Colors.red), textAlign: TextAlign.center,),),
+          _error == ' ' ? Container() : SizedBox(height: 15,),
+          GestureDetector(
             onTap:(){
               setState(() {
-                _add = true;
-              });
+                _delete = false;
+                _error = ' ';
+              }
+              );
             },
             child: Container(
               padding: EdgeInsets.symmetric(horizontal: 15, vertical: 15),
@@ -176,35 +276,14 @@ class _SubjectsState extends State<Subjects> {
                 children: <Widget>[
                   Icon(Icons.add, color: Colors.white, size: 25,),
                   SizedBox(width: 10,) ,
-                  Text('Add', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18),)
+                  Text('Done', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18),)
                 ],
               ),
             ),
           ),
-        ),
-        SizedBox(width: 15,),
-        Expanded(
-          child: GestureDetector(
-            onTap:(){},
-            child: Container(
-              padding: EdgeInsets.symmetric(horizontal: 15, vertical: 15),
-              decoration: BoxDecoration(
-                  color: Colors.cyan,
-                  borderRadius: BorderRadius.all(Radius.circular(50))
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  Icon(Icons.add, color: Colors.white, size: 25,),
-                  SizedBox(width: 10,) ,
-                  Text('Remove', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18),)
-                ],
-              ),
-            ),
-          ),
-        ),
-      ],
-    );
+        ],
+      );
+    }
   }
 
   Widget addSubjectForm()
@@ -213,8 +292,8 @@ class _SubjectsState extends State<Subjects> {
         key: _formKey,
         child: Column(
           children: <Widget>[
-            Center(child: Text('$_error', style: TextStyle(color: Colors.red),)),
-            SizedBox(height: 15,),
+            _error == ' ' ? Container() : Center(child: Text('$_error', style: TextStyle(color: Colors.red),)),
+            _error == ' ' ? Container() : SizedBox(height: 15,),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[

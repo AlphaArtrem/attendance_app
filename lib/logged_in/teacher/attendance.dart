@@ -183,8 +183,8 @@ class _UpdateAttendanceState extends State<UpdateAttendance> {
             ],
           ),
         ),
-        Text('$_error', style: TextStyle(color: Colors.red),),
-        SizedBox(height: 20,),
+        _error == ' ' ? Container() :  Text('$_error', style: TextStyle(color: Colors.red),),
+        _error == ' ' ? Container() :  SizedBox(height: 20,),
         Container(
           height: 50,
           margin: EdgeInsets.symmetric(horizontal: 70),
@@ -224,7 +224,7 @@ class _UpdateAttendanceState extends State<UpdateAttendance> {
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: <Widget>[
-          Text('$_error', style: TextStyle(color: Colors.red),),
+          _error == ' ' ? Container() :  Text('$_error', style: TextStyle(color: Colors.red),),
           Expanded(
             child: ListView.builder(
               itemCount: _enrolledStudents.length,

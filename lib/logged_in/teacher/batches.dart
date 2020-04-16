@@ -121,13 +121,13 @@ class _BatchesState extends State<Batches> {
   Widget batchList(){
     return Center(
       child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: <Widget>[
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: _add == false ? addBatchButton() : addBatchForm(),
           ),
-          _batches[0] == 'Empty' ? Text('You Need To Add Batches', style: TextStyle(color: Colors.red),) : Expanded(
+          _batches[0] == 'Empty' ? Text('\n\nYou Need To Add Batches', style: TextStyle(color: Colors.red),) : Expanded(
             child: ListView.builder(
               itemCount: _batchesVisible.length,
               itemBuilder: (context, index){
@@ -185,7 +185,7 @@ class _BatchesState extends State<Batches> {
           ),
         ),
         SizedBox(width: 15,),
-        Expanded(
+        _batches[0] != 'Empty' ? Expanded(
           child: GestureDetector(
             onTap:(){},
             child: Container(
@@ -204,7 +204,7 @@ class _BatchesState extends State<Batches> {
               ),
             ),
           ),
-        ),
+        ) : Container(),
       ],
     );
   }
@@ -215,8 +215,8 @@ class _BatchesState extends State<Batches> {
         key: _formKey,
         child: Column(
           children: <Widget>[
-            Center(child: Text('$_error', style: TextStyle(color: Colors.red),)),
-            SizedBox(height: 15,),
+            _error == ' ' ? Container() : Center(child: Text('$_error', style: TextStyle(color: Colors.red),)),
+            _error == ' ' ? Container() : SizedBox(height: 15,),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[

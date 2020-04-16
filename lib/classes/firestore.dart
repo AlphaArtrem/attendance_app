@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 
 class UserDataBase{
 
@@ -63,6 +64,34 @@ class TeacherSubjectsAndBatches{
     try{
       //Creating an map with subjects as keys and weather to show it or not as an boolean value
       await _teachers.document(user.email).setData({subject : true}, merge: true);
+      return 'Success';
+    }
+    catch(e){
+      print(e.toString());
+      return null;
+    }
+  }
+
+  Future deleteSubject(String subject) async {
+    try{
+      List<String> documents = [];
+      await _teachers.document(user.email).setData({subject : FieldValue.delete()}, merge: true);
+      await _teachers.document(user.email).collection(subject).getDocuments().then((QuerySnapshot qs){
+        for(DocumentSnapshot ds in qs.documents){
+          documents.add(ds.documentID);
+          ds.reference.delete();
+        }
+      });
+      if(documents.isNotEmpty){
+        for(String document in documents){
+          await _teachers.document(user.email).collection(subject).document(document).collection('attendance').getDocuments().then((QuerySnapshot qs){
+            for(DocumentSnapshot ds in qs.documents){
+              documents.add(ds.documentID);
+              ds.reference.delete();
+            }
+          });
+        }
+      }
       return 'Success';
     }
     catch(e){
