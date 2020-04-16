@@ -111,6 +111,17 @@ class TeacherSubjectsAndBatches{
     }
   }
 
+  Future deleteBatch(String subject, String batch) async{
+    try{
+      await _teachers.document(user.email).collection(subject).document(batch).delete();
+      return 'Success';
+    }
+    catch(e){
+      print(e.toString());
+      return null;
+    }
+  }
+
   Future<String> addStudent(String subject, String batch, String studentEmail) async{
     try{
       await _teachers.document(user.email).collection(subject).document(batch).setData({studentEmail : true}, merge: true);

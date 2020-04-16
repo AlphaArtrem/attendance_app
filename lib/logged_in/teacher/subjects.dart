@@ -157,13 +157,17 @@ class _SubjectsState extends State<Subjects> {
                                     child: Text('Delete'),
                                     onPressed: () async{
                                       dynamic result = await _tSAB.deleteSubject(_subjectsVisible[index]);
+                                      String deleted = _subjectsVisible[index];
                                       if(result == 'Success')
                                         {
                                           setState(() {
                                             _error = ' ';
-                                            _subjectsVisible.remove(_subjectsVisible[index]);
-                                            _subjects.remove(_subjectsVisible[index]);
+                                            _subjectsVisible.remove(deleted);
+                                            _subjects.remove(deleted);
                                           });
+                                          if(_subjects.isEmpty){
+                                            _subjects.add('Empty');
+                                          }
                                           Navigator.of(context).pop();
                                         }
                                       else{

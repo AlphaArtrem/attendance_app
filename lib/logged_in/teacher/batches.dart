@@ -20,6 +20,7 @@ class _BatchesState extends State<Batches> {
   final _formKey = GlobalKey<FormState>();
   bool _add = false;
   String _batch = '';
+  bool _delete = false;
   FirebaseUser _user;
 
   Future setup(FirebaseUser userCurrent, String sub) async{
@@ -137,12 +138,57 @@ class _BatchesState extends State<Batches> {
                     padding: const EdgeInsets.all(10.0),
                     child: ListTile(
                       onTap: () async{
-                        Navigator.of(context).pushNamed('/enrolledStudents', arguments: {'subject' : _subject, 'batch' : _batchesVisible[index]});
+                        if(!_delete){
+                          Navigator.of(context).pushNamed('/enrolledStudents', arguments: {'subject' : _subject, 'batch' : _batchesVisible[index]});
+                        }
+                        else{
+                          showDialog(
+                              context: context,
+                              builder: (context){
+                                return AlertDialog(
+                                  title: Text('Confirmation'),
+                                  content: Text('Are you sure you want to delete ${_batchesVisible[index]} ? This action can\'t be reverted.', textAlign: TextAlign.justify,),
+                                  actions: <Widget>[
+                                    FlatButton(
+                                      child: Text('Cancel'),
+                                      onPressed: (){
+                                        Navigator.of(context).pop();
+                                      },
+                                    ),
+                                    FlatButton(
+                                      child: Text('Delete'),
+                                      onPressed: () async{
+                                        dynamic result = await _tSAB.deleteBatch(_subject, _batchesVisible[index]);
+                                        String deleted = _batchesVisible[index];
+                                        if(result == 'Success')
+                                        {
+                                          Navigator.of(context).pop();
+                                          setState(() {
+                                            _error = ' ';
+                                            _batchesVisible.remove(deleted);
+                                            _batches.remove(deleted);
+                                          });
+                                          if(_batches.isEmpty){
+                                            _batches.add('Empty');
+                                          }
+                                        }
+                                        else{
+                                          setState(() {
+                                            _error = "Couldn't delete ${_batchesVisible[index]}";
+                                          });
+                                        }
+                                      },
+                                    ),
+                                  ],
+                                );
+                              }
+                          );
+                        }
                       },
                       title: Row(
                         children: <Widget>[
                           Expanded(child: Text('${_batchesVisible[index]}', style: TextStyle(color: Colors.cyan),)),
-                          Icon(Icons.forward, color: Colors.grey[700],)
+                          _delete ? Icon(Icons.delete, color: Colors.grey[700],) : Icon(Icons.forward, color: Colors.grey[700],),
                         ],
                       ),
                     ),
@@ -187,7 +233,11 @@ class _BatchesState extends State<Batches> {
         SizedBox(width: 15,),
         _batches[0] != 'Empty' ? Expanded(
           child: GestureDetector(
-            onTap:(){},
+            onTap:(){
+              setState(() {
+                _delete = true;
+              });
+            },
             child: Container(
               padding: EdgeInsets.symmetric(horizontal: 15, vertical: 15),
               decoration: BoxDecoration(
@@ -211,84 +261,117 @@ class _BatchesState extends State<Batches> {
 
   Widget addBatchForm()
   {
-    return Form(
-        key: _formKey,
-        child: Column(
-          children: <Widget>[
-            _error == ' ' ? Container() : Center(child: Text('$_error', style: TextStyle(color: Colors.red),)),
-            _error == ' ' ? Container() : SizedBox(height: 15,),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                Expanded(
-                  flex: 3,
-                  child: Container(
-                    padding: EdgeInsets.all(10),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.all(Radius.circular(20)),
-                      boxShadow: [BoxShadow(
-                        color: Color.fromRGBO(51, 204, 255, 0.3),
-                        blurRadius: 10,
-                        offset: Offset(0, 10),
-                      )],
-                    ),
-                    child: TextFormField(
-                      decoration: authInputFormatting.copyWith(hintText: 'Add Batch Name'),
-                      validator: (val) => val.isEmpty ? 'Batch Name Can\'t Be Empty' : null,
-                      onChanged: (val) => _batch = val,
+    if(!_delete){
+      return Form(
+          key: _formKey,
+          child: Column(
+            children: <Widget>[
+              _error == ' ' ? Container() : Center(child: Text('$_error', style: TextStyle(color: Colors.red),)),
+              _error == ' ' ? Container() : SizedBox(height: 15,),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  Expanded(
+                    flex: 3,
+                    child: Container(
+                      padding: EdgeInsets.all(10),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.all(Radius.circular(20)),
+                        boxShadow: [BoxShadow(
+                          color: Color.fromRGBO(51, 204, 255, 0.3),
+                          blurRadius: 10,
+                          offset: Offset(0, 10),
+                        )],
+                      ),
+                      child: TextFormField(
+                        decoration: authInputFormatting.copyWith(hintText: 'Add Batch Name'),
+                        validator: (val) => val.isEmpty ? 'Batch Name Can\'t Be Empty' : null,
+                        onChanged: (val) => _batch = val,
+                      ),
                     ),
                   ),
-                ),
-                SizedBox(width: 10,),
-                Expanded(
-                  flex: 1,
-                  child: GestureDetector(
-                    child: Container(
-                      padding: EdgeInsets.symmetric(horizontal: 15, vertical: 20),
-                      decoration: BoxDecoration(
-                        color: Colors.cyan,
-                        borderRadius: BorderRadius.all(Radius.circular(20)),
+                  SizedBox(width: 10,),
+                  Expanded(
+                    flex: 1,
+                    child: GestureDetector(
+                      child: Container(
+                        padding: EdgeInsets.symmetric(horizontal: 15, vertical: 20),
+                        decoration: BoxDecoration(
+                          color: Colors.cyan,
+                          borderRadius: BorderRadius.all(Radius.circular(20)),
+                        ),
+                        child: Icon(Icons.add, color: Colors.white, size: 25,),
                       ),
-                      child: Icon(Icons.add, color: Colors.white, size: 25,),
-                    ),
-                    onTap: () async{
-                      if(_formKey.currentState.validate())
-                      {
-                        if(_batches.contains(_batch))
+                      onTap: () async{
+                        if(_formKey.currentState.validate())
                         {
-                          setState(() {
-                            _error = "Batch Already Present";
-                          });
-                        }
-                        else
-                        {
-                          dynamic result = await _tSAB.addBatch(_subject, _batch);
-                          if(result ==  null)
+                          if(_batches.contains(_batch))
                           {
                             setState(() {
-                              _error = "Something Went Wrong, Couldn't Add Batch";
+                              _error = "Batch Already Present";
                             });
                           }
                           else
                           {
-                            await setup(_user, _subject);
-                            setState((){
-                              _batches.add(_subject);
-                              _batchesVisible.add(_subject);
-                              _error = ' ';
-                              _add = false;
-                            });
+                            dynamic result = await _tSAB.addBatch(_subject, _batch);
+                            if(result ==  null)
+                            {
+                              setState(() {
+                                _error = "Something Went Wrong, Couldn't Add Batch";
+                              });
+                            }
+                            else
+                            {
+                              setState((){
+                                _batches.add(_subject);
+                                _batchesVisible.add(_subject);
+                                _error = ' ';
+                                _add = false;
+                              });
+                            }
                           }
                         }
-                      }
-                    },
+                      },
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
+            ],
+          )
+      );
+    }
+    else{
+      return Column(
+        children: <Widget>[
+          _error == ' ' ? Container() : Center(child: Text('$_error', style: TextStyle(color: Colors.red), textAlign: TextAlign.center,),),
+          _error == ' ' ? Container() : SizedBox(height: 15,),
+          GestureDetector(
+            onTap:(){
+              setState(() {
+                _delete = false;
+                _error = ' ';
+              }
+              );
+            },
+            child: Container(
+              padding: EdgeInsets.symmetric(horizontal: 15, vertical: 15),
+              decoration: BoxDecoration(
+                  color: Colors.cyan,
+                  borderRadius: BorderRadius.all(Radius.circular(50))
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  Icon(Icons.add, color: Colors.white, size: 25,),
+                  SizedBox(width: 10,) ,
+                  Text('Done', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18),)
+                ],
+              ),
             ),
-          ],
-        )
-    );
+          ),
+        ],
+      );
+    }
   }
 }
