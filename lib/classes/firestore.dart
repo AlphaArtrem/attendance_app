@@ -124,7 +124,7 @@ class TeacherSubjectsAndBatches{
 
   Future<String> addStudent(String subject, String batch, String studentEmail) async{
     try{
-      await _teachers.document(user.email).collection(subject).document(batch).setData({studentEmail : true}, merge: true);
+      await _teachers.document(user.email).collection(subject).document(batch).setData({studentEmail : FieldValue.delete()}, merge: true);
       CollectionReference _students = Firestore.instance.collection('/students-data');
       await _students.document(studentEmail).setData({
         DateTime.now().millisecondsSinceEpoch.toString() : {
@@ -133,6 +133,32 @@ class TeacherSubjectsAndBatches{
           'batch' : batch,
         }
       }, merge: true);
+      return 'Success';
+    }
+    catch(e){
+      print(e.toString());
+      return null;
+    }
+  }
+
+  Future<String> deleteStudent(String subject, String batch, String studentEmail) async{
+    try{
+      await _teachers.document(user.email).collection(subject).document(batch).setData({studentEmail : true}, merge: true);
+      CollectionReference _students = Firestore.instance.collection('/students-data');
+      Map studentDetails = {};
+      await _students.document(studentEmail).get().then((DocumentSnapshot ds){
+        if(ds.exists){
+          studentDetails = ds.data;
+        }
+      });
+      if(studentDetails.isNotEmpty){
+        List<String> keys = studentDetails.keys;
+        for(String key in keys){
+          if(studentDetails[key]['teacherEmail'] == user.email){
+            await _students.document(studentEmail).setData({key : FieldValue.delete()});
+          }
+        }
+      }
       return 'Success';
     }
     catch(e){
