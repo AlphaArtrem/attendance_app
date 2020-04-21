@@ -113,7 +113,8 @@ class _BatchesState extends State<Batches> {
                             _moreOptions = !_moreOptions;
                           });
                         },
-                      )
+                      ),
+                      SizedBox(width: 5,)
                     ],
                   ),
                 ),
@@ -143,7 +144,7 @@ class _BatchesState extends State<Batches> {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: <Widget>[
           Padding(
-            padding: const EdgeInsets.all(8.0),
+            padding: _moreOptions ? const EdgeInsets.all(8.0) : const EdgeInsets.all(0),
             child: _add == false ? addBatchButton() : addBatchForm(),
           ),
           _batches[0] == 'Empty' ? Text('\n\nYou Need To Add Batches', style: TextStyle(color: Colors.red),) : Expanded(

@@ -112,7 +112,7 @@ class _SubjectsState extends State<Subjects> {
                             });
                           },
                         ),
-                        SizedBox(width: 10,),
+                        SizedBox(width: 5,),
                       ],
                     ),
                   ),
@@ -142,7 +142,7 @@ class _SubjectsState extends State<Subjects> {
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
           Padding(
-            padding: const EdgeInsets.all(8.0),
+            padding: _moreOptions ? const EdgeInsets.all(8.0) : const EdgeInsets.all(0),
             child: !_add ? addSubjectButton() : addSubjectForm(),
           ),
           _subjects[0] == 'Empty' ? Text('You Need To Add Subjects', style: TextStyle(color: Colors.red),) : Expanded(

@@ -17,7 +17,6 @@ class _EnrolledStudentsState extends State<EnrolledStudents> {
   List<String> _studentsVisible = [];
   String _subject = '';
   String _batch = '';
-  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey();
 
   Future setup(FirebaseUser user, String sub, String batchCopy) async {
     _tSAB = TeacherSubjectsAndBatches(user);
@@ -37,81 +36,6 @@ class _EnrolledStudentsState extends State<EnrolledStudents> {
     _subject = data['subject'];
     _batch = data['batch'];
     return Scaffold(
-      key: _scaffoldKey,
-      endDrawer: Drawer(
-        child: Container(
-          color: Colors.white,
-          child: Column(
-            children: <Widget>[
-              Container(
-                padding: EdgeInsets.symmetric(vertical: 0, horizontal: 0),
-                color: Colors.cyan,
-                child: Row(
-                  children: <Widget>[
-                    Container(
-                      margin: EdgeInsets.fromLTRB(5, 40, 20, 20),
-                      child: BackButton(color: Colors.white)
-                    ),
-                    Expanded(child: Container(),),
-                    Container(
-                      margin: EdgeInsets.fromLTRB(0, 40, 20, 20),
-                      padding: EdgeInsets.symmetric(horizontal: 10),
-                      decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.all(Radius.circular(50))
-                      ),
-                      child: FlatButton.icon(
-                        label: Text('Log Out', style: TextStyle(color: Colors.cyan, fontWeight: FontWeight.bold)),
-                        icon: Icon(Icons.exit_to_app, color: Colors.cyan, size: 15,),
-                        onPressed: () async {
-                          dynamic result = await User().signOut();
-                          if (result == null) {
-                            Navigator.of(context).pushReplacementNamed('/authentication');
-                          }
-                        },
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              Expanded(
-                child: ListView(
-                  children: <Widget>[
-                    Card(
-                      child: ListTile(
-                        onTap: (){},
-                        title: Text('Add Student'),
-                      ),
-                      elevation: 0,
-                    ),
-                    Card(
-                      child: ListTile(
-                        onTap: (){},
-                        title: Text('Remove Student'),
-                      ),
-                      elevation: 0,
-                    ),
-                    Card(
-                      child: ListTile(
-                        onTap: (){},
-                        title: Text('Add Attendance'),
-                      ),
-                      elevation: 0,
-                    ),
-                    Card(
-                      child: ListTile(
-                        onTap: (){},
-                        title: Text('Update Attendance'),
-                      ),
-                      elevation: 0,
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
       body: Column(
         children: <Widget>[
           Container(
@@ -131,7 +55,23 @@ class _EnrolledStudentsState extends State<EnrolledStudents> {
                     children: <Widget>[
                       BackButton(color: Colors.white70,),
                       Expanded(child: Text('Students', style: TextStyle(color: Colors.white, fontSize: 25, fontWeight: FontWeight.bold),)),
-                      IconButton(onPressed: () => _scaffoldKey.currentState.openEndDrawer(), icon: Icon(Icons.menu, color: Colors.white,))
+                      Container(
+                        padding: EdgeInsets.symmetric(horizontal: 10),
+                        decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.all(Radius.circular(50))
+                        ),
+                        child: FlatButton.icon(
+                          label: Text('Log Out', style: TextStyle(color: Colors.cyan, fontWeight: FontWeight.bold)),
+                          icon: Icon(Icons.exit_to_app, color: Colors.cyan, size: 15,),
+                          onPressed: () async {
+                            dynamic result = await User().signOut();
+                            if (result == null) {
+                              Navigator.of(context).pushReplacementNamed('/authentication');
+                            }
+                          },
+                        ),
+                      ),
                     ],
                   ),
                 ),
