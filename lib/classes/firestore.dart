@@ -124,7 +124,7 @@ class TeacherSubjectsAndBatches{
 
   Future<String> addStudent(String subject, String batch, String studentEmail) async{
     try{
-      await _teachers.document(user.email).collection(subject).document(batch).setData({studentEmail : FieldValue.delete()}, merge: true);
+      await _teachers.document(user.email).collection(subject).document(batch).setData({studentEmail : true}, merge: true);
       CollectionReference _students = Firestore.instance.collection('/students-data');
       await _students.document(studentEmail).setData({
         DateTime.now().millisecondsSinceEpoch.toString() : {
@@ -143,7 +143,7 @@ class TeacherSubjectsAndBatches{
 
   Future<String> deleteStudent(String subject, String batch, String studentEmail) async{
     try{
-      await _teachers.document(user.email).collection(subject).document(batch).setData({studentEmail : true}, merge: true);
+      await _teachers.document(user.email).collection(subject).document(batch).setData({studentEmail : FieldValue.delete()}, merge: true);
       CollectionReference _students = Firestore.instance.collection('/students-data');
       Map studentDetails = {};
       await _students.document(studentEmail).get().then((DocumentSnapshot ds){
