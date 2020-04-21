@@ -17,10 +17,14 @@ class _EnrolledStudentsState extends State<EnrolledStudents> {
   List<String> _studentsVisible = [];
   String _subject = '';
   String _batch = '';
+  bool _moreOptions = false;
 
   Future setup(FirebaseUser user, String sub, String batchCopy) async {
     _tSAB = TeacherSubjectsAndBatches(user);
     _students = await _tSAB.getStudents(sub, batchCopy);
+    if(_students[0] == 'Empty'){
+      _moreOptions = true;
+    }
     if (_students == null) {
       _students = ["Couldn't get students, try again"];
     }
@@ -86,16 +90,31 @@ class _EnrolledStudentsState extends State<EnrolledStudents> {
                       offset: Offset(0, 10),
                     )],
                   ),
-                  child: Container(
-                    padding: EdgeInsets.all(6.5),
-                    child: TextFormField(
-                      decoration: authInputFormatting.copyWith(hintText: "Search By ID"),
-                      onChanged: (val){
-                        setState(() {
-                          _studentsVisible = _students.where((student) => student.toLowerCase().startsWith(val.toLowerCase())).toList();
-                        });
-                      },
-                    ),
+                  child: Row(
+                    children: <Widget>[
+                      Expanded(
+                        child: Container(
+                          padding: EdgeInsets.all(6.5),
+                          child: TextFormField(
+                            decoration: authInputFormatting.copyWith(hintText: "Search By ID"),
+                            onChanged: (val){
+                              setState(() {
+                                _studentsVisible = _students.where((student) => student.toLowerCase().startsWith(val.toLowerCase())).toList();
+                              });
+                            },
+                          ),
+                        ),
+                      ),
+                      IconButton(
+                        icon: Icon(Icons.menu, color: _moreOptions ? Colors.cyan : Colors.grey[700]),
+                        onPressed: (){
+                          setState(() {
+                            _moreOptions = !_moreOptions;
+                          });
+                        },
+                      ),
+                      SizedBox(width: 5,)
+                    ],
                   ),
                 ),
               ],
@@ -124,7 +143,7 @@ class _EnrolledStudentsState extends State<EnrolledStudents> {
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
           Padding(
-            padding: const EdgeInsets.all(8.0),
+            padding: _moreOptions ? const EdgeInsets.all(8.0) : const EdgeInsets.all(0),
             child: addStudentButton(),
           ),
           _students[0] == 'Empty' ? Expanded(child: Text('You Need To Add Students', style: TextStyle(color: Colors.red),),) : Expanded(
@@ -162,60 +181,65 @@ class _EnrolledStudentsState extends State<EnrolledStudents> {
   }
 
   Widget addStudentButton() {
-    return Row(
-      children: <Widget>[
-        Expanded(
-          child: GestureDetector(
-            onTap:() async{
-              await Navigator.pushNamed(context, '/updateAttendance', arguments: {'enrolledStudents' : _students, 'subject' : _subject, 'batch' : _batch});
-            },
-            child: Container(
-              padding: EdgeInsets.symmetric(horizontal: 15, vertical: 15),
-              decoration: BoxDecoration(
-                  color: Colors.cyan,
-                  borderRadius: BorderRadius.all(Radius.circular(50))
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  Icon(Icons.add, color: Colors.white, size: 20,),
-                  SizedBox(width: 5,) ,
-                  Text('Attendance', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18),)
-                ],
-              ),
-            ),
-          ),
-        ),
-        SizedBox(width: 5,),
-        Expanded(
-          child: GestureDetector(
-            onTap:() async{
-              dynamic data = await Navigator.pushNamed(context, '/addStudents', arguments: {'enrolledStudents' : _students, 'batch' : _batch, 'subject': _subject});
-              if(data != null) {
-                setState(() {
-                  _students = data['enrolledStudents'];
-                  _studentsVisible = data['enrolledStudents'];
-                });
-              }
-            },
-            child: Container(
-              padding: EdgeInsets.symmetric(horizontal: 15, vertical: 15),
-              decoration: BoxDecoration(
-                  color: Colors.cyan,
-                  borderRadius: BorderRadius.all(Radius.circular(50))
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  Text('Student', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18),),
-                  SizedBox(width: 5,),
-                  Icon(Icons.more_vert, color: Colors.white, size: 20,),
-                ],
+    if(_moreOptions){
+      return Row(
+        children: <Widget>[
+          Expanded(
+            child: GestureDetector(
+              onTap:() async{
+                await Navigator.pushNamed(context, '/updateAttendance', arguments: {'enrolledStudents' : _students, 'subject' : _subject, 'batch' : _batch});
+              },
+              child: Container(
+                padding: EdgeInsets.symmetric(horizontal: 15, vertical: 15),
+                decoration: BoxDecoration(
+                    color: Colors.cyan,
+                    borderRadius: BorderRadius.all(Radius.circular(50))
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    Icon(Icons.add, color: Colors.white, size: 20,),
+                    SizedBox(width: 5,) ,
+                    Text('Attendance', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18),)
+                  ],
+                ),
               ),
             ),
           ),
-        ),
-      ],
-    );
+          SizedBox(width: 5,),
+          Expanded(
+            child: GestureDetector(
+              onTap:() async{
+                dynamic data = await Navigator.pushNamed(context, '/addStudents', arguments: {'enrolledStudents' : _students, 'batch' : _batch, 'subject': _subject});
+                if(data != null) {
+                  setState(() {
+                    _students = data['enrolledStudents'];
+                    _studentsVisible = data['enrolledStudents'];
+                  });
+                }
+              },
+              child: Container(
+                padding: EdgeInsets.symmetric(horizontal: 15, vertical: 15),
+                decoration: BoxDecoration(
+                    color: Colors.cyan,
+                    borderRadius: BorderRadius.all(Radius.circular(50))
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    Text('Student', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18),),
+                    SizedBox(width: 5,),
+                    Icon(Icons.more_vert, color: Colors.white, size: 20,),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ],
+      );
+    }
+    else{
+      return Container();
+    }
   }
 }
