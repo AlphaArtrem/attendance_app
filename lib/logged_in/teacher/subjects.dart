@@ -19,10 +19,12 @@ class _SubjectsState extends State<Subjects> {
   bool _delete = false;
   bool _moreOptions = false;
   final _formKey = GlobalKey<FormState>();
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey();
   String _subject = ' ';
   String _error = ' ';
   TeacherSubjectsAndBatches _tSAB;
   FirebaseUser _user;
+  String userName = '';
 
   Future setup(FirebaseUser userCurrent) async{
     _user = userCurrent;
@@ -35,11 +37,59 @@ class _SubjectsState extends State<Subjects> {
       _moreOptions = true;
     }
     _subjectsVisible = _subjects;
+
+    userName = await UserDataBase(_user).userName();
+    if(userName == null){
+      userName = 'Can\'t Get Name';
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+        key: _scaffoldKey,
+        endDrawer: Drawer(
+          child: Column(
+            children: <Widget>[
+              Row(
+                children: <Widget>[
+                  Expanded(
+                    child: Container(
+                      padding: EdgeInsets.fromLTRB(18, 95, 0, 20),
+                      color: Colors.cyan,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          Text(userName, style: TextStyle(color: Colors.white, fontSize: 20),),
+                          SizedBox(height: 10,),
+                          Text(Provider.of<FirebaseUser>(context).email, style: TextStyle(color: Colors.white, fontSize: 12),),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              Expanded(
+                child: ListView(
+                  children: <Widget>[
+                    ListTile(
+                      title: Text('Add Subject'),
+                      onTap: (){},
+                    ),
+                    ListTile(
+                      title: Text('Remove Subject'),
+                      onTap: (){},
+                    ),
+                    ListTile(
+                      title: Text('Account Settings'),
+                      onTap: (){},
+                    ),
+                  ],
+                ),
+              )
+            ],
+          ),
+        ),
         body: Column(
           children: <Widget>[
             Container(
@@ -107,9 +157,7 @@ class _SubjectsState extends State<Subjects> {
                         IconButton(
                           icon: Icon(Icons.menu, color: _moreOptions ? Colors.cyan : Colors.grey[700]),
                           onPressed: (){
-                            setState(() {
-                              _moreOptions = !_moreOptions;
-                            });
+                            _scaffoldKey.currentState.openEndDrawer();
                           },
                         ),
                         SizedBox(width: 5,),
@@ -141,10 +189,8 @@ class _SubjectsState extends State<Subjects> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
-          Padding(
-            padding: _moreOptions ? const EdgeInsets.all(8.0) : const EdgeInsets.all(0),
-            child: !_add ? addSubjectButton() : addSubjectForm(),
-          ),
+          _subjects[0] == 'Empty' ? addSubjectButton() : Container(),
+          _subjects[0] == 'Empty' ? SizedBox(height: 15,) : Container(),
           _subjects[0] == 'Empty' ? Text('You Need To Add Subjects', style: TextStyle(color: Colors.red),) : Expanded(
             child: ListView.builder(
               itemCount: _subjectsVisible.length,
@@ -222,72 +268,15 @@ class _SubjectsState extends State<Subjects> {
 
   Widget addSubjectButton()
   {
-    if(_moreOptions){
-      if(!_delete){
-        return Row(
-          children: <Widget>[
-            Expanded(
-              child: GestureDetector(
-                onTap:(){
-                  setState(() {
-                    _add = true;
-                  });
-                },
-                child: Container(
-                  padding: EdgeInsets.symmetric(horizontal: 15, vertical: 15),
-                  decoration: BoxDecoration(
-                      color: Colors.cyan,
-                      borderRadius: BorderRadius.all(Radius.circular(50))
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      Icon(Icons.add, color: Colors.white, size: 25,),
-                      SizedBox(width: 10,) ,
-                      Text('Add', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18),)
-                    ],
-                  ),
-                ),
-              ),
-            ),
-            SizedBox(width: 15,),
-            _subjects[0] != 'Empty'  ? Expanded(
-              child: GestureDetector(
-                onTap:(){
-                  setState(() => _delete = true);
-                },
-                child: Container(
-                  padding: EdgeInsets.symmetric(horizontal: 15, vertical: 15),
-                  decoration: BoxDecoration(
-                      color: Colors.cyan,
-                      borderRadius: BorderRadius.all(Radius.circular(50))
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      Icon(Icons.add, color: Colors.white, size: 25,),
-                      SizedBox(width: 10,) ,
-                      Text('Remove', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18),)
-                    ],
-                  ),
-                ),
-              ),
-            ) : Container(),
-          ],
-        );
-      }
-      else{
-        return Column(
-          children: <Widget>[
-            _error == ' ' ? Container() : Center(child: Text('$_error', style: TextStyle(color: Colors.red), textAlign: TextAlign.center,),),
-            _error == ' ' ? Container() : SizedBox(height: 15,),
-            GestureDetector(
+    if(!_delete){
+      return Row(
+        children: <Widget>[
+          Expanded(
+            child: GestureDetector(
               onTap:(){
                 setState(() {
-                  _delete = false;
-                  _error = ' ';
-                }
-                );
+                  _add = true;
+                });
               },
               child: Container(
                 padding: EdgeInsets.symmetric(horizontal: 15, vertical: 15),
@@ -300,17 +289,69 @@ class _SubjectsState extends State<Subjects> {
                   children: <Widget>[
                     Icon(Icons.add, color: Colors.white, size: 25,),
                     SizedBox(width: 10,) ,
-                    Text('Done', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18),)
+                    Text('Add', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18),)
                   ],
                 ),
               ),
             ),
-          ],
-        );
-      }
+          ),
+          SizedBox(width: 15,),
+          _subjects[0] != 'Empty'  ? Expanded(
+            child: GestureDetector(
+              onTap:(){
+                setState(() => _delete = true);
+              },
+              child: Container(
+                padding: EdgeInsets.symmetric(horizontal: 15, vertical: 15),
+                decoration: BoxDecoration(
+                    color: Colors.cyan,
+                    borderRadius: BorderRadius.all(Radius.circular(50))
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    Icon(Icons.add, color: Colors.white, size: 25,),
+                    SizedBox(width: 10,) ,
+                    Text('Remove', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18),)
+                  ],
+                ),
+              ),
+            ),
+          ) : Container(),
+        ],
+      );
     }
     else{
-      return Container();
+      return Column(
+        children: <Widget>[
+          _error == ' ' ? Container() : Center(child: Text('$_error', style: TextStyle(color: Colors.red), textAlign: TextAlign.center,),),
+          _error == ' ' ? Container() : SizedBox(height: 15,),
+          GestureDetector(
+            onTap:(){
+              setState(() {
+                _delete = false;
+                _error = ' ';
+              }
+              );
+            },
+            child: Container(
+              padding: EdgeInsets.symmetric(horizontal: 15, vertical: 15),
+              decoration: BoxDecoration(
+                  color: Colors.cyan,
+                  borderRadius: BorderRadius.all(Radius.circular(50))
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  Icon(Icons.add, color: Colors.white, size: 25,),
+                  SizedBox(width: 10,) ,
+                  Text('Done', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18),)
+                ],
+              ),
+            ),
+          ),
+        ],
+      );
     }
   }
 
@@ -352,8 +393,8 @@ class _SubjectsState extends State<Subjects> {
                     child: Container(
                       padding: EdgeInsets.symmetric(horizontal: 15, vertical: 20),
                       decoration: BoxDecoration(
-                          color: Colors.cyan,
-                          borderRadius: BorderRadius.all(Radius.circular(20)),
+                        color: Colors.cyan,
+                        borderRadius: BorderRadius.all(Radius.circular(20)),
                       ),
                       child: Icon(Icons.add, color: Colors.white, size: 25,),
                     ),

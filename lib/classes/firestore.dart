@@ -262,10 +262,10 @@ class StudentEnrollmentAndAttendance{
           enrollmentDetails = ds.data;
         }
         else{
-          enrollmentDetails = {'empty' : {'subject' : "You are not enrolled in any subject", 'batch' : '-_-', 'teacherEmail' : 'Try contacting your teachers'}};
+          enrollmentDetails = {'empty' : {'subject' : "Enrolled subjects not found", 'batch' : '-_-', 'teacherEmail' : 'Try contacting your teachers'}};
         }
       });
-      return enrollmentDetails.isEmpty ? {'empty' : {'subject' : "You are not enrolled in any subject", 'batch' : '-_-', 'teacherEmail' : 'Try contacting your teachers'}} : enrollmentDetails;
+      return enrollmentDetails.isEmpty ? {'empty' : {'subject' : "Enrolled subjects not found", 'batch' : '-_-', 'teacherEmail' : 'Try contacting your teachers'}} : enrollmentDetails;
     }
     catch(e){
       print(e.toString());
