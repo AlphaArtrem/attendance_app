@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:attendanceapp/classes/account.dart';
 import 'package:attendanceapp/classes/firestore.dart';
 import 'package:attendanceapp/shared/formatting.dart';
@@ -15,7 +17,6 @@ class Subjects extends StatefulWidget {
 class _SubjectsState extends State<Subjects> {
   List<String> _subjects = [];
   List<String> _subjectsVisible = [];
-  bool _add = false;
   bool _delete = false;
   bool _moreOptions = false;
   final _formKey = GlobalKey<FormState>();
@@ -74,11 +75,21 @@ class _SubjectsState extends State<Subjects> {
                   children: <Widget>[
                     ListTile(
                       title: Text('Add Subject'),
-                      onTap: (){},
+                      onTap: () async{
+                        Navigator.of(context).pop();
+                        addSubjectForm().then((val){
+                          setState(() {});
+                        });
+                      },
                     ),
                     ListTile(
                       title: Text('Remove Subject'),
-                      onTap: (){},
+                      onTap: (){
+                        Navigator.of(context).pop();
+                        setState(() {
+                          _delete = true;
+                        });
+                      },
                     ),
                     ListTile(
                       title: Text('Account Settings'),
@@ -156,7 +167,7 @@ class _SubjectsState extends State<Subjects> {
                         ),
                         IconButton(
                           icon: Icon(Icons.menu, color: _moreOptions ? Colors.cyan : Colors.grey[700]),
-                          onPressed: (){
+                          onPressed: () async{
                             _scaffoldKey.currentState.openEndDrawer();
                           },
                         ),
@@ -187,9 +198,9 @@ class _SubjectsState extends State<Subjects> {
   Widget subjectsList(){
     return Center(
       child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
           _subjects[0] == 'Empty' ? addSubjectButton() : Container(),
+          _delete && _subjects[0] != 'Empty' ? deleteButton() : Container(),
           _subjects[0] == 'Empty' ? SizedBox(height: 15,) : Container(),
           _subjects[0] == 'Empty' ? Text('You Need To Add Subjects', style: TextStyle(color: Colors.red),) : Expanded(
             child: ListView.builder(
@@ -268,71 +279,14 @@ class _SubjectsState extends State<Subjects> {
 
   Widget addSubjectButton()
   {
-    if(!_delete){
-      return Row(
-        children: <Widget>[
-          Expanded(
-            child: GestureDetector(
-              onTap:(){
-                setState(() {
-                  _add = true;
-                });
-              },
-              child: Container(
-                padding: EdgeInsets.symmetric(horizontal: 15, vertical: 15),
-                decoration: BoxDecoration(
-                    color: Colors.cyan,
-                    borderRadius: BorderRadius.all(Radius.circular(50))
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    Icon(Icons.add, color: Colors.white, size: 25,),
-                    SizedBox(width: 10,) ,
-                    Text('Add', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18),)
-                  ],
-                ),
-              ),
-            ),
-          ),
-          SizedBox(width: 15,),
-          _subjects[0] != 'Empty'  ? Expanded(
-            child: GestureDetector(
-              onTap:(){
-                setState(() => _delete = true);
-              },
-              child: Container(
-                padding: EdgeInsets.symmetric(horizontal: 15, vertical: 15),
-                decoration: BoxDecoration(
-                    color: Colors.cyan,
-                    borderRadius: BorderRadius.all(Radius.circular(50))
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    Icon(Icons.add, color: Colors.white, size: 25,),
-                    SizedBox(width: 10,) ,
-                    Text('Remove', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18),)
-                  ],
-                ),
-              ),
-            ),
-          ) : Container(),
-        ],
-      );
-    }
-    else{
-      return Column(
-        children: <Widget>[
-          _error == ' ' ? Container() : Center(child: Text('$_error', style: TextStyle(color: Colors.red), textAlign: TextAlign.center,),),
-          _error == ' ' ? Container() : SizedBox(height: 15,),
-          GestureDetector(
-            onTap:(){
-              setState(() {
-                _delete = false;
-                _error = ' ';
-              }
-              );
+    return Row(
+      children: <Widget>[
+        Expanded(
+          child: GestureDetector(
+            onTap:() async{
+              addSubjectForm().then((onValue){
+                setState(() {});
+              });
             },
             child: Container(
               padding: EdgeInsets.symmetric(horizontal: 15, vertical: 15),
@@ -345,105 +299,173 @@ class _SubjectsState extends State<Subjects> {
                 children: <Widget>[
                   Icon(Icons.add, color: Colors.white, size: 25,),
                   SizedBox(width: 10,) ,
-                  Text('Done', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18),)
+                  Text('Add', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18),)
                 ],
               ),
             ),
           ),
-        ],
-      );
-    }
+        ),
+      ],
+    );
   }
 
-  Widget addSubjectForm()
-  {
-    return Form(
-        key: _formKey,
-        child: Column(
-          children: <Widget>[
-            _error == ' ' ? Container() : Center(child: Text('$_error', style: TextStyle(color: Colors.red),)),
-            _error == ' ' ? Container() : SizedBox(height: 15,),
-            Row(
+  Widget deleteButton() {
+    return Column(
+      children: <Widget>[
+        _error == ' ' ? Container() : Center(child: Text('$_error', style: TextStyle(color: Colors.red), textAlign: TextAlign.center,),),
+        _error == ' ' ? Container() : SizedBox(height: 15,),
+        GestureDetector(
+          onTap:(){
+            setState(() {
+              _delete = false;
+              _error = ' ';
+            }
+            );
+          },
+          child: Container(
+            padding: EdgeInsets.symmetric(horizontal: 15, vertical: 15),
+            decoration: BoxDecoration(
+                color: Colors.cyan,
+                borderRadius: BorderRadius.all(Radius.circular(50))
+            ),
+            child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
-                Expanded(
-                  flex: 3,
-                  child: Container(
-                    padding: EdgeInsets.all(10),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.all(Radius.circular(20)),
-                      boxShadow: [BoxShadow(
-                        color: Color.fromRGBO(51, 204, 255, 0.3),
-                        blurRadius: 10,
-                        offset: Offset(0, 10),
-                      )],
-                    ),
-                    child: TextFormField(
-                      decoration: authInputFormatting.copyWith(hintText: 'Add Subject Name'),
-                      validator: (val) => val.isEmpty ? 'Subject Name Can\'t Be Empty' : null,
-                      onChanged: (val) => _subject = val,
-                    ),
-                  ),
-                ),
-                SizedBox(width: 10,),
-                Expanded(
-                  flex: 1,
-                  child: GestureDetector(
-                    child: Container(
-                      padding: EdgeInsets.symmetric(horizontal: 15, vertical: 20),
-                      decoration: BoxDecoration(
-                        color: Colors.cyan,
-                        borderRadius: BorderRadius.all(Radius.circular(20)),
-                      ),
-                      child: Icon(Icons.add, color: Colors.white, size: 25,),
-                    ),
-                    onTap: () async{
-                      if(_formKey.currentState.validate())
-                      {
-                        if(_subjects.contains(_subject))
-                        {
-                          setState(() {
-                            _error = "Subject Already Present";
-                          });
-                        }
-                        else
-                        {
-                          dynamic result = await _tSAB.addSubject(_subject);
-                          if(result ==  null)
-                          {
-                            setState(() {
-                              _error = "Something Went Wrong, Couldn't Add Subject";
-                            });
-                          }
-                          else
-                          {
-                            if(_subjects[0] == 'EMPTY'){
-                              setState((){
-                                _subjects.clear();
-                                _subjects.add(_subject);
-                                _error = ' ';
-                                _add = false;
-                              });
-                            }
-                            else{
-                              setState((){
-                                _subjects.add(_subject);
-                                _error = ' ';
-                                _add = false;
-                              });
-                            }
-                          }
-                        }
-                      }
-                    },
-                  ),
-                ),
+                Icon(Icons.add, color: Colors.white, size: 25,),
+                SizedBox(width: 10,) ,
+                Text('Done', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18),)
               ],
             ),
-          ],
-        )
+          ),
+        ),
+      ],
     );
+  }
+
+  Future addSubjectForm(){
+    bool adding = false;
+    return showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return StatefulBuilder(
+            builder: (context, setState){
+              return Dialog(
+                shape: RoundedRectangleBorder(
+                    borderRadius:
+                    BorderRadius.circular(20.0)),
+                child: Container(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 10),
+                    child: Form(
+                        key: _formKey,
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: <Widget>[
+                            _error == ' ' ? Container() : Center(child: Text('$_error', style: TextStyle(color: Colors.red),)),
+                            _error == ' ' ? Container() : SizedBox(height: 15,),
+                            Container(
+                              padding: EdgeInsets.all(10),
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.all(Radius.circular(20)),
+                                boxShadow: [BoxShadow(
+                                  color: Color.fromRGBO(51, 204, 255, 0.3),
+                                  blurRadius: 10,
+                                  offset: Offset(0, 10),
+                                )],
+                              ),
+                              child: TextFormField(
+                                decoration: authInputFormatting.copyWith(hintText: 'Add Subject Name'),
+                                validator: (val) => val.isEmpty ? 'Subject Name Can\'t Be Empty' : null,
+                                onChanged: (val) => _subject = val,
+                              ),
+                            ),
+                            SizedBox(height: 15,),
+                            adding ? Center(child: Text("Adding ..."),) : Row(
+                              children: <Widget>[
+                                Expanded(
+                                  child: GestureDetector(
+                                    child: Container(
+                                      padding: EdgeInsets.symmetric(horizontal: 45, vertical: 15),
+                                      decoration: BoxDecoration(
+                                        color: Colors.cyan,
+                                        borderRadius: BorderRadius.all(Radius.circular(20)),
+                                      ),
+                                      child: Text("Add", style: TextStyle(color: Colors.white),),
+                                    ),
+                                    onTap: () async{
+                                      if(_formKey.currentState.validate())
+                                      {
+                                        setState(() {
+                                          adding = true;
+                                        });
+                                        if(_subjects.contains(_subject))
+                                        {
+                                          setState(() {
+                                            _error = "Subject Already Present";
+                                            adding = false;
+                                          });
+                                        }
+                                        else
+                                        {
+                                          dynamic result = await _tSAB.addSubject(_subject);
+                                          if(result ==  null)
+                                          {
+                                            setState(() {
+                                              _error = "Something Went Wrong, Couldn't Add Subject";
+                                              adding = false;
+                                            });
+                                          }
+                                          else
+                                          {
+                                            if(_subjects[0] == 'EMPTY'){
+                                              setState((){
+                                                _subjects.clear();
+                                                _subjects.add(_subject);
+                                                _error = ' ';
+                                                adding = false;
+                                              });
+                                            }
+                                            else{
+                                              setState((){
+                                                _subjects.add(_subject);
+                                                _error = ' ';
+                                                adding = false;
+                                              });
+                                            }
+                                          }
+                                        }
+                                      }
+                                    },
+                                  ),
+                                ),
+                                SizedBox(width: 10,),
+                                Expanded(
+                                  child: GestureDetector(
+                                    child: Container(
+                                      padding: EdgeInsets.symmetric(horizontal: 45, vertical: 15),
+                                      decoration: BoxDecoration(
+                                        color: Colors.cyan,
+                                        borderRadius: BorderRadius.all(Radius.circular(20)),
+                                      ),
+                                      child: Text("Done", style: TextStyle(color: Colors.white),),
+                                    ),
+                                    onTap: () {
+                                      Navigator.of(context).pop();
+                                    },
+                                  ),
+                                )
+                              ],
+                            ),
+                          ],
+                        )
+                    ),
+                  ),
+                ),
+              );
+            },
+          );
+      });
   }
 }
 
