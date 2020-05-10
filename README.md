@@ -1,2 +1,2 @@
-# attendance_app
-A flutter android login app for students to check attendance and teachers to mark it.
+# Attendance App
+All major colleges and schools use attendance apps to enable teachers to mark attendance and students and parents can check it using the same application. However there are many small institutions, coaching centres and independent teachers cannot afford to have dedicated applications for this purpose. So this app is meant to be an free avatar of such applications to help solve this problem.

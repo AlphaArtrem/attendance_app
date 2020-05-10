@@ -1,4 +1,3 @@
-import 'package:attendanceapp/classes/account.dart';
 import 'package:attendanceapp/logged_in/teacher/subjects.dart';
 import 'package:flutter/material.dart';
 

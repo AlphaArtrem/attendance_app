@@ -16,6 +16,9 @@ class _StudentHomeState extends State<StudentHome> {
   Map _enrollmentDetails = {};
   Map _enrollmentDetailsVisible = {};
   List _keys = [];
+  bool _moreOptions = false;
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey();
+  String userName = '';
 
   Future setup(FirebaseUser user) async{
     _sEAA = StudentEnrollmentAndAttendance(user);
@@ -25,11 +28,59 @@ class _StudentHomeState extends State<StudentHome> {
     }
     _enrollmentDetailsVisible = _enrollmentDetails;
     _keys = _enrollmentDetailsVisible.keys.toList();
+
+    userName = await UserDataBase(user).userName();
+    if(userName == null){
+      userName = 'Can\'t Get Name';
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: _scaffoldKey,
+      endDrawer: Drawer(
+        child: Column(
+          children: <Widget>[
+            Row(
+              children: <Widget>[
+                Expanded(
+                  child: Container(
+                    padding: EdgeInsets.fromLTRB(18, 95, 0, 20),
+                    color: Colors.cyan,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        Text(userName, style: TextStyle(color: Colors.white, fontSize: 20),),
+                        SizedBox(height: 10,),
+                        Text(Provider.of<FirebaseUser>(context).email, style: TextStyle(color: Colors.white, fontSize: 12),),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            Expanded(
+              child: ListView(
+                children: <Widget>[
+                  ListTile(
+                    title: Text('Update Name'),
+                    onTap: (){},
+                  ),
+                  ListTile(
+                    title: Text('Update Email'),
+                    onTap: (){},
+                  ),
+                  ListTile(
+                    title: Text('Update Password'),
+                    onTap: (){},
+                  ),
+                ],
+              ),
+            )
+          ],
+        ),
+      ),
       body: Column(
         children: <Widget>[
           Container(
@@ -81,17 +132,33 @@ class _StudentHomeState extends State<StudentHome> {
                   ),
                   child: Container(
                     padding: EdgeInsets.all(6.5),
-                    child: TextFormField(
-                      decoration: authInputFormatting.copyWith(hintText: "Subject, Batch Or Teacher"),
-                      onChanged: (val){
-                        setState(() {
-                          _enrollmentDetailsVisible = Map.from(_enrollmentDetails)..removeWhere((k, v) => !(
-                              v['subject'].toString().toLowerCase().startsWith(val.toLowerCase()) ||
-                                  v['teacherEmail'].toString().toLowerCase().startsWith(val.toLowerCase()) ||
-                                  v['batch'].toString().toLowerCase().startsWith(val.toLowerCase())));
-                          _keys = _enrollmentDetailsVisible.keys.toList();
-                        });
-                      },
+                    child: Row(
+                      children: <Widget>[
+                        Expanded(
+                          child: TextFormField(
+                            decoration: authInputFormatting.copyWith(hintText: "Subject, Batch Or Teacher"),
+                            onChanged: (val){
+                              setState(() {
+                                _enrollmentDetailsVisible = Map.from(_enrollmentDetails)..removeWhere((k, v) => !(
+                                    v['subject'].toString().toLowerCase().startsWith(val.toLowerCase()) ||
+                                        v['teacherEmail'].toString().toLowerCase().startsWith(val.toLowerCase()) ||
+                                        v['batch'].toString().toLowerCase().startsWith(val.toLowerCase())));
+                                _keys = _enrollmentDetailsVisible.keys.toList();
+                              });
+                            },
+                          ),
+                        ),
+                        IconButton(
+                          icon: Icon(Icons.menu, color: _moreOptions ? Colors.cyan : Colors.grey[700]),
+                          onPressed: (){
+                            setState(() {
+                              _moreOptions = !_moreOptions;
+                              _scaffoldKey.currentState.openEndDrawer();
+                            });
+                          },
+                        ),
+                        SizedBox(width: 5,),
+                      ],
                     ),
                   ),
                 ),

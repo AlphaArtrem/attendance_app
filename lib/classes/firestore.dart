@@ -1,6 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 
 class UserDataBase{
 
@@ -32,6 +31,20 @@ class UserDataBase{
       data = ds;
     });
     return data.data['type'];
+  }
+
+  Future userName() async{
+   try{
+     DocumentSnapshot data;
+     await _userData.document(user.email).get().then((DocumentSnapshot ds){
+       data = ds;
+     });
+     return (data.data['fistName'].toString() + " " + data.data['lastName'].toString());
+   }
+   catch(e){
+     print(e.toString());
+     return null;
+   }
   }
 }
 
@@ -125,7 +138,7 @@ class TeacherSubjectsAndBatches{
   Future<String> addStudent(String subject, String batch, String studentEmail) async{
     try{
       await _teachers.document(user.email).collection(subject).document(batch).setData({studentEmail : true}, merge: true);
-      CollectionReference _students = Firestore.instance.collection('/students-data');
+      CollectionReference _students = Firestore.instance.collection('students-data');
       await _students.document(studentEmail).setData({
         DateTime.now().millisecondsSinceEpoch.toString() : {
           'teacherEmail' : user.email,
@@ -144,6 +157,7 @@ class TeacherSubjectsAndBatches{
   Future<String> deleteStudent(String subject, String batch, String studentEmail) async{
     try{
       await _teachers.document(user.email).collection(subject).document(batch).setData({studentEmail : FieldValue.delete()}, merge: true);
+      await _teachers.document(user.email).collection(subject).document(batch).collection('attendance').document(studentEmail).delete();
       CollectionReference _students = Firestore.instance.collection('/students-data');
       Map studentDetails = {};
       await _students.document(studentEmail).get().then((DocumentSnapshot ds){
@@ -152,10 +166,10 @@ class TeacherSubjectsAndBatches{
         }
       });
       if(studentDetails.isNotEmpty){
-        List<String> keys = studentDetails.keys;
+        List<String> keys = studentDetails.keys.toList();
         for(String key in keys){
           if(studentDetails[key]['teacherEmail'] == user.email){
-            await _students.document(studentEmail).setData({key : FieldValue.delete()});
+            await _students.document(studentEmail).setData({key : FieldValue.delete()}, merge: true);
           }
         }
       }

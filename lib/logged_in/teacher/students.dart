@@ -17,6 +17,7 @@ class _EnrolledStudentsState extends State<EnrolledStudents> {
   List<String> _studentsVisible = [];
   String _subject = '';
   String _batch = '';
+  String _error = '';
   bool _moreOptions = false;
   bool _studentOptions = false;
   bool _removeStudents = false;
@@ -35,10 +36,7 @@ class _EnrolledStudentsState extends State<EnrolledStudents> {
 
   @override
   Widget build(BuildContext context) {
-    Map data = ModalRoute
-        .of(context)
-        .settings
-        .arguments;
+    Map data = ModalRoute.of(context).settings.arguments;
     _subject = data['subject'];
     _batch = data['batch'];
     return Scaffold(
@@ -158,17 +156,62 @@ class _EnrolledStudentsState extends State<EnrolledStudents> {
                     padding: const EdgeInsets.all(10.0),
                     child: ListTile(
                       onTap: () async{
-                        Navigator.pushNamed(context, '/attendanceList', arguments: {
-                          'teacherEmail' : Provider.of<FirebaseUser>(context, listen: false).email ,
-                          'subject': _subject,
-                          'batch' : _batch,
-                          'studentEmail' : _studentsVisible[index],
-                        });
+                       if(_removeStudents){
+                         showDialog(
+                             context: context,
+                             builder: (context){
+                               return AlertDialog(
+                                 title: Text('Confirmation'),
+                                 content: Text('Are you sure you want to delete ${_studentsVisible[index]} ? This action can\'t be reverted.', textAlign: TextAlign.justify,),
+                                 actions: <Widget>[
+                                   FlatButton(
+                                     child: Text('Cancel'),
+                                     onPressed: (){
+                                       Navigator.of(context).pop();
+                                     },
+                                   ),
+                                   FlatButton(
+                                     child: Text('Delete'),
+                                     onPressed: () async{
+                                       dynamic result = await _tSAB.deleteStudent(_subject, _batch, _studentsVisible[index]);
+                                       String deleted = _studentsVisible[index];
+                                       if(result == 'Success')
+                                       {
+                                         Navigator.of(context).pop();
+                                         setState(() {
+                                           _error = '';
+                                           _studentsVisible.remove(deleted);
+                                           _students.remove(deleted);
+                                         });
+                                         if(_students.isEmpty){
+                                           _students.add('Empty');
+                                         }
+                                       }
+                                       else{
+                                         setState(() {
+                                           _error = "Couldn't delete ${_studentsVisible[index]}";
+                                         });
+                                       }
+                                     },
+                                   ),
+                                 ],
+                               );
+                             }
+                         );
+                       }
+                       else{
+                         Navigator.pushNamed(context, '/attendanceList', arguments: {
+                           'teacherEmail' : Provider.of<FirebaseUser>(context, listen: false).email ,
+                           'subject': _subject,
+                           'batch' : _batch,
+                           'studentEmail' : _studentsVisible[index],
+                         });
+                       }
                       },
                       title: Row(
                         children: <Widget>[
                           Expanded(child: Text('${_studentsVisible[index]}', style: TextStyle(color: Colors.cyan),)),
-                          Icon(Icons.forward, color: Colors.grey[700],)
+                          _removeStudents ? Icon(Icons.delete, color: Colors.grey[700],) : Icon(Icons.forward, color: Colors.grey[700],),
                         ],
                       ),
                     ),
@@ -301,24 +344,25 @@ class _EnrolledStudentsState extends State<EnrolledStudents> {
           );
         }
         else{
-          return Row(
+          return Column(
             children: <Widget>[
-              Expanded(
-                child: GestureDetector(
-                  onTap:() {
-                    setState(() {
-                      _removeStudents = !_removeStudents;
-                      _studentOptions = !_studentOptions;
-                    });
-                  },
-                  child: Container(
-                    padding: EdgeInsets.symmetric(horizontal: 15, vertical: 15),
-                    decoration: BoxDecoration(
-                        color: Colors.cyan,
-                        borderRadius: BorderRadius.all(Radius.circular(50))
-                    ),
-                    child: Center(child: Text('Done', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18),)),
+              _error == '' ? Container() : Center(child: Text('$_error', style: TextStyle(color: Colors.red), textAlign: TextAlign.center,),),
+              _error == '' ? Container() : SizedBox(height: 15,),
+              GestureDetector(
+                onTap:() {
+                  setState(() {
+                    _removeStudents = !_removeStudents;
+                    _studentOptions = !_studentOptions;
+                    _error = '';
+                  });
+                },
+                child: Container(
+                  padding: EdgeInsets.symmetric(horizontal: 15, vertical: 15),
+                  decoration: BoxDecoration(
+                      color: Colors.cyan,
+                      borderRadius: BorderRadius.all(Radius.circular(50))
                   ),
+                  child: Center(child: Text('Done', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18),)),
                 ),
               ),
             ],
