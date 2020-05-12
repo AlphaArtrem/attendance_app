@@ -77,9 +77,7 @@ class _SubjectsState extends State<Subjects> {
                       title: Text('Add Subject'),
                       onTap: () async{
                         Navigator.of(context).pop();
-                        addSubjectForm().then((val){
-                          setState(() {});
-                        });
+                        await addSubjectForm();
                       },
                     ),
                     ListTile(
@@ -309,9 +307,7 @@ class _SubjectsState extends State<Subjects> {
         Expanded(
           child: GestureDetector(
             onTap:() async{
-              addSubjectForm().then((onValue){
-                setState(() {});
-              });
+              await addSubjectForm();
             },
             child: Container(
               padding: EdgeInsets.symmetric(horizontal: 15, vertical: 15),
@@ -443,7 +439,7 @@ class _SubjectsState extends State<Subjects> {
                                           }
                                           else
                                           {
-                                            if(_subjects[0] == 'EMPTY'){
+                                            if(_subjects[0] == 'Empty'){
                                               setState((){
                                                 _subjects.clear();
                                                 _subjects.add(_subject);

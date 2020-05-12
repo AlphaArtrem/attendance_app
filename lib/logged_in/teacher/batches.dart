@@ -201,6 +201,7 @@ class _BatchesState extends State<Batches> {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: <Widget>[
           _batches[0] == "Empty" ? addBatchButton() : Container(),
+          _delete && _batches[0] != 'Empty' ? deleteButton() : Container(),
           _batches[0] == 'Empty' ? Text('\n\nYou Need To Add Batches', style: TextStyle(color: Colors.red),) : Expanded(
             child: ListView.builder(
               itemCount: _batchesVisible.length,
@@ -242,7 +243,10 @@ class _BatchesState extends State<Batches> {
                                             _batches.remove(deleted);
                                           });
                                           if(_batches.isEmpty){
-                                            _batches.add('Empty');
+                                            setState(() {
+                                              _batches.add('Empty');
+                                              _delete = false;
+                                            });
                                           }
                                         }
                                         else{
@@ -298,6 +302,39 @@ class _BatchesState extends State<Batches> {
           ],
         ),
       ),
+    );
+  }
+
+  Widget deleteButton() {
+    return Column(
+      children: <Widget>[
+        _error == ' ' ? Container() : Center(child: Text('$_error', style: TextStyle(color: Colors.red), textAlign: TextAlign.center,),),
+        _error == ' ' ? Container() : SizedBox(height: 15,),
+        GestureDetector(
+          onTap:(){
+            setState(() {
+              _delete = false;
+              _error = ' ';
+            }
+            );
+          },
+          child: Container(
+            padding: EdgeInsets.symmetric(horizontal: 15, vertical: 15),
+            decoration: BoxDecoration(
+                color: Colors.cyan,
+                borderRadius: BorderRadius.all(Radius.circular(50))
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                Icon(Icons.add, color: Colors.white, size: 25,),
+                SizedBox(width: 10,) ,
+                Text('Done', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18),)
+              ],
+            ),
+          ),
+        ),
+      ],
     );
   }
 
@@ -378,7 +415,7 @@ class _BatchesState extends State<Batches> {
                                         }
                                         else
                                         {
-                                          if(_batches[0] == 'EMPTY'){
+                                          if(_batches[0] == 'Empty'){
                                             setState((){
                                               _batches.clear();
                                               _batches.add(_batch);
