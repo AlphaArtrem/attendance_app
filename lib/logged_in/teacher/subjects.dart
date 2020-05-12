@@ -22,9 +22,9 @@ class _SubjectsState extends State<Subjects> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey();
   String _subject = ' ';
   String _error = ' ';
+  String _userName = '';
   TeacherSubjectsAndBatches _tSAB;
   FirebaseUser _user;
-  String _userName = '';
 
   Future setup(FirebaseUser userCurrent) async{
     _user = userCurrent;

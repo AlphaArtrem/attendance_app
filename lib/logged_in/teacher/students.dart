@@ -18,9 +18,11 @@ class _EnrolledStudentsState extends State<EnrolledStudents> {
   String _subject = '';
   String _batch = '';
   String _error = '';
+  String _userName = '';
   bool _moreOptions = false;
   bool _studentOptions = false;
   bool _removeStudents = false;
+  final GlobalKey<ScaffoldState> _scaffoldKey= GlobalKey();
 
   Future setup(FirebaseUser user, String sub, String batchCopy) async {
     _tSAB = TeacherSubjectsAndBatches(user);
@@ -39,7 +41,61 @@ class _EnrolledStudentsState extends State<EnrolledStudents> {
     Map data = ModalRoute.of(context).settings.arguments;
     _subject = data['subject'];
     _batch = data['batch'];
+    _userName = data['userName'];
     return Scaffold(
+        key: _scaffoldKey,
+        endDrawer: Drawer(
+          child: Column(
+            children: <Widget>[
+              Row(
+                children: <Widget>[
+                  Expanded(
+                    child: Container(
+                      padding: EdgeInsets.fromLTRB(18, 95, 0, 20),
+                      color: Colors.cyan,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          Text(_userName, style: TextStyle(color: Colors.white, fontSize: 20),),
+                          SizedBox(height: 10,),
+                          Text(Provider.of<FirebaseUser>(context).email, style: TextStyle(color: Colors.white, fontSize: 12),),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              Expanded(
+                child: ListView(
+                  children: <Widget>[
+                    ListTile(
+                      title: Text('Add Student'),
+                      onTap: () async{
+                        Navigator.of(context).pop();
+                      },
+                    ),
+                    ListTile(
+                      title: Text('Remove Student'),
+                      onTap: (){
+                        Navigator.of(context).pop();
+                      },
+                    ),
+                    ListTile(
+                      title: Text('Add Attendance'),
+                      onTap: (){
+                        Navigator.of(context).pop();
+                      },
+                    ),
+                    ListTile(
+                      title: Text('Account Settings'),
+                      onTap: (){},
+                    ),
+                  ],
+                ),
+              )
+            ],
+          ),
+        ),
       body: Column(
         children: <Widget>[
           Container(
@@ -108,9 +164,7 @@ class _EnrolledStudentsState extends State<EnrolledStudents> {
                       IconButton(
                         icon: Icon(Icons.menu, color: _moreOptions ? Colors.cyan : Colors.grey[700]),
                         onPressed: (){
-                          setState(() {
-                            _moreOptions = !_moreOptions;
-                          });
+                          _scaffoldKey.currentState.openEndDrawer();
                         },
                       ),
                       SizedBox(width: 5,)
@@ -142,10 +196,8 @@ class _EnrolledStudentsState extends State<EnrolledStudents> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
-          Padding(
-            padding: _moreOptions ? const EdgeInsets.all(8.0) : const EdgeInsets.all(0),
-            child: addStudentButton(),
-          ),
+          _students[0] == 'Empty' ? addStudentButton() : Container(),
+          _students[0] == 'Empty' ? SizedBox(height: 15,) : Container(),
           _students[0] == 'Empty' ? Expanded(child: Text('You Need To Add Students', style: TextStyle(color: Colors.red),),) : Expanded(
             child: ListView.builder(
               itemCount: _studentsVisible.length,

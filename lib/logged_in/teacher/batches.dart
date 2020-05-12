@@ -13,18 +13,18 @@ class Batches extends StatefulWidget {
 
 class _BatchesState extends State<Batches> {
   TeacherSubjectsAndBatches _tSAB;
+  FirebaseUser _user;
   String _subject = '';
   String _error  = '';
+  String _userName = "";
+  String _batch = '';
   List<String> _batches = [];
   List<String> _batchesVisible = [];
   final _formKey = GlobalKey<FormState>();
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey();
   bool _add = false;
-  String _batch = '';
   bool _delete = false;
   bool _moreOptions = false;
-  FirebaseUser _user;
-  String _userName = "";
 
   Future setup(FirebaseUser userCurrent, String sub) async{
     _user = userCurrent;
@@ -213,7 +213,7 @@ class _BatchesState extends State<Batches> {
                     child: ListTile(
                       onTap: () async{
                         if(!_delete){
-                          Navigator.of(context).pushNamed('/enrolledStudents', arguments: {'subject' : _subject, 'batch' : _batchesVisible[index]});
+                          Navigator.of(context).pushNamed('/enrolledStudents', arguments: {'subject' : _subject, 'batch' : _batchesVisible[index], 'userName' : _userName});
                         }
                         else{
                           showDialog(
