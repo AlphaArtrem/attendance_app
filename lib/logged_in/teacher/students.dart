@@ -20,7 +20,6 @@ class _EnrolledStudentsState extends State<EnrolledStudents> {
   String _error = '';
   String _userName = '';
   bool _moreOptions = false;
-  bool _studentOptions = false;
   bool _removeStudents = false;
   final GlobalKey<ScaffoldState> _scaffoldKey= GlobalKey();
 
@@ -72,18 +71,32 @@ class _EnrolledStudentsState extends State<EnrolledStudents> {
                       title: Text('Add Student'),
                       onTap: () async{
                         Navigator.of(context).pop();
+                        dynamic returnedData = await Navigator.pushNamed(context, '/addStudents', arguments: {'enrolledStudents' : _students, 'batch' : _batch, 'subject': _subject});
+                        if(returnedData != null) {
+                          if(returnedData['enrolledStudents'][0] == 'Empty'){
+                            returnedData['enrolledStudents'].remove('Empty');
+                          }
+                          setState(() {
+                            _students = returnedData['enrolledStudents'];
+                            _studentsVisible = returnedData['enrolledStudents'];
+                          });
+                        }
                       },
                     ),
                     ListTile(
                       title: Text('Remove Student'),
                       onTap: (){
                         Navigator.of(context).pop();
+                        setState(() {
+                          _removeStudents = true;
+                        });
                       },
                     ),
                     ListTile(
                       title: Text('Add Attendance'),
-                      onTap: (){
+                      onTap: () async{
                         Navigator.of(context).pop();
+                        await Navigator.pushNamed(context, '/updateAttendance', arguments: {'enrolledStudents' : _students, 'subject' : _subject, 'batch' : _batch});
                       },
                     ),
                     ListTile(
@@ -197,6 +210,7 @@ class _EnrolledStudentsState extends State<EnrolledStudents> {
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
           _students[0] == 'Empty' ? addStudentButton() : Container(),
+          _removeStudents && _students[0] != 'Empty' ? removeStudent() : Container(),
           _students[0] == 'Empty' ? SizedBox(height: 15,) : Container(),
           _students[0] == 'Empty' ? Expanded(child: Text('You Need To Add Students', style: TextStyle(color: Colors.red),),) : Expanded(
             child: ListView.builder(
@@ -236,7 +250,10 @@ class _EnrolledStudentsState extends State<EnrolledStudents> {
                                            _students.remove(deleted);
                                          });
                                          if(_students.isEmpty){
-                                           _students.add('Empty');
+                                           setState(() {
+                                             _students.add('Empty');
+                                             _removeStudents = false;
+                                           });
                                          }
                                        }
                                        else{
@@ -278,152 +295,60 @@ class _EnrolledStudentsState extends State<EnrolledStudents> {
   }
 
   Widget addStudentButton() {
-    if(_moreOptions){
-      if(!_studentOptions){
-        return Row(
+
+    return GestureDetector(
+      onTap:() async{
+        dynamic data = await Navigator.pushNamed(context, '/addStudents', arguments: {'enrolledStudents' : _students, 'batch' : _batch, 'subject': _subject});
+        if(data != null) {
+          if(data['enrolledStudents'][0] == 'Empty'){
+            data['enrolledStudents'].remove('Empty');
+          }
+          setState(() {
+            _students = data['enrolledStudents'];
+            _studentsVisible = data['enrolledStudents'];
+          });
+        }
+      },
+      child: Container(
+        padding: EdgeInsets.symmetric(horizontal: 15, vertical: 15),
+        decoration: BoxDecoration(
+            color: Colors.cyan,
+            borderRadius: BorderRadius.all(Radius.circular(50))
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            Expanded(
-              child: GestureDetector(
-                onTap:() async{
-                  await Navigator.pushNamed(context, '/updateAttendance', arguments: {'enrolledStudents' : _students, 'subject' : _subject, 'batch' : _batch});
-                },
-                child: Container(
-                  padding: EdgeInsets.symmetric(horizontal: 15, vertical: 15),
-                  decoration: BoxDecoration(
-                      color: Colors.cyan,
-                      borderRadius: BorderRadius.all(Radius.circular(50))
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      Icon(Icons.edit, color: Colors.white, size: 20,),
-                      SizedBox(width: 5,) ,
-                      Text('Attendance', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18),)
-                    ],
-                  ),
-                ),
-              ),
-            ),
-            SizedBox(width: 5,),
-            Expanded(
-              child: GestureDetector(
-                onTap:() {
-                  setState(() {
-                    _studentOptions = !_studentOptions;
-                  });
-                },
-                child: Container(
-                  padding: EdgeInsets.symmetric(horizontal: 15, vertical: 15),
-                  decoration: BoxDecoration(
-                      color: Colors.cyan,
-                      borderRadius: BorderRadius.all(Radius.circular(50))
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      Icon(Icons.edit, color: Colors.white, size: 20,),
-                      SizedBox(width: 5,) ,
-                      Text('Student', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18),),
-                    ],
-                  ),
-                ),
-              ),
-            ),
+            Icon(Icons.add, color: Colors.white, size: 20,),
+            SizedBox(width: 5,) ,
+            Text('Student', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18),),
           ],
-        );
-      }
-      else{
-        if(!_removeStudents){
-          return Row(
-            children: <Widget>[
-              Expanded(
-                child: GestureDetector(
-                  onTap:() {
-                    setState(() {
-                      _removeStudents = !_removeStudents;
-                    });
-                  },
-                  child: Container(
-                    padding: EdgeInsets.symmetric(horizontal: 15, vertical: 15),
-                    decoration: BoxDecoration(
-                        color: Colors.cyan,
-                        borderRadius: BorderRadius.all(Radius.circular(50))
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: <Widget>[
-                        Icon(Icons.clear, color: Colors.white, size: 20,),
-                        SizedBox(width: 5,) ,
-                        Text('Student', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18),)
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-              SizedBox(width: 5,),
-              Expanded(
-                child: GestureDetector(
-                  onTap:() async{
-                    dynamic data = await Navigator.pushNamed(context, '/addStudents', arguments: {'enrolledStudents' : _students, 'batch' : _batch, 'subject': _subject});
-                    if(data != null) {
-                      setState(() {
-                        _students = data['enrolledStudents'];
-                        _studentsVisible = data['enrolledStudents'];
-                      });
-                    }
-                    setState(() {
-                      _studentOptions = !_studentOptions;
-                    });
-                  },
-                  child: Container(
-                    padding: EdgeInsets.symmetric(horizontal: 15, vertical: 15),
-                    decoration: BoxDecoration(
-                        color: Colors.cyan,
-                        borderRadius: BorderRadius.all(Radius.circular(50))
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: <Widget>[
-                        Icon(Icons.add, color: Colors.white, size: 20,),
-                        SizedBox(width: 5,) ,
-                        Text('Student', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18),),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          );
-        }
-        else{
-          return Column(
-            children: <Widget>[
-              _error == '' ? Container() : Center(child: Text('$_error', style: TextStyle(color: Colors.red), textAlign: TextAlign.center,),),
-              _error == '' ? Container() : SizedBox(height: 15,),
-              GestureDetector(
-                onTap:() {
-                  setState(() {
-                    _removeStudents = !_removeStudents;
-                    _studentOptions = !_studentOptions;
-                    _error = '';
-                  });
-                },
-                child: Container(
-                  padding: EdgeInsets.symmetric(horizontal: 15, vertical: 15),
-                  decoration: BoxDecoration(
-                      color: Colors.cyan,
-                      borderRadius: BorderRadius.all(Radius.circular(50))
-                  ),
-                  child: Center(child: Text('Done', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18),)),
-                ),
-              ),
-            ],
-          );
-        }
-      }
-    }
-    else{
-      return Container();
-    }
+        ),
+      ),
+    );
+  }
+
+  Widget removeStudent(){
+    return Column(
+      children: <Widget>[
+        _error == '' ? Container() : Center(child: Text('$_error', style: TextStyle(color: Colors.red), textAlign: TextAlign.center,),),
+        _error == '' ? Container() : SizedBox(height: 15,),
+        GestureDetector(
+          onTap:() {
+            setState(() {
+              _removeStudents = !_removeStudents;
+              _error = '';
+            });
+          },
+          child: Container(
+            padding: EdgeInsets.symmetric(horizontal: 15, vertical: 15),
+            decoration: BoxDecoration(
+                color: Colors.cyan,
+                borderRadius: BorderRadius.all(Radius.circular(50))
+            ),
+            child: Center(child: Text('Done', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18),)),
+          ),
+        ),
+      ],
+    );
   }
 }
