@@ -33,6 +33,8 @@ class _StudentHomeState extends State<StudentHome> {
     if(userName == null){
       userName = 'Can\'t Get Name';
     }
+
+    setState(() {});
   }
 
   @override
@@ -46,7 +48,7 @@ class _StudentHomeState extends State<StudentHome> {
               children: <Widget>[
                 Expanded(
                   child: Container(
-                    padding: EdgeInsets.fromLTRB(18, 95, 0, 20),
+                    padding: EdgeInsets.fromLTRB(18, 80, 0, 20),
                     color: Colors.cyan,
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,

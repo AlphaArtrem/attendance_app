@@ -1,5 +1,4 @@
 import 'dart:ui';
-
 import 'package:attendanceapp/classes/account.dart';
 import 'package:attendanceapp/classes/firestore.dart';
 import 'package:attendanceapp/shared/formatting.dart';
@@ -25,7 +24,7 @@ class _SubjectsState extends State<Subjects> {
   String _error = ' ';
   TeacherSubjectsAndBatches _tSAB;
   FirebaseUser _user;
-  String userName = '';
+  String _userName = '';
 
   Future setup(FirebaseUser userCurrent) async{
     _user = userCurrent;
@@ -39,10 +38,11 @@ class _SubjectsState extends State<Subjects> {
     }
     _subjectsVisible = _subjects;
 
-    userName = await UserDataBase(_user).userName();
-    if(userName == null){
-      userName = 'Can\'t Get Name';
+    _userName = await UserDataBase(_user).userName();
+    if(_userName == null){
+      _userName = 'Can\'t Get Name';
     }
+    setState(() {});
   }
 
   @override
@@ -61,7 +61,7 @@ class _SubjectsState extends State<Subjects> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: <Widget>[
-                          Text(userName, style: TextStyle(color: Colors.white, fontSize: 20),),
+                          Text(_userName, style: TextStyle(color: Colors.white, fontSize: 20),),
                           SizedBox(height: 10,),
                           Text(Provider.of<FirebaseUser>(context).email, style: TextStyle(color: Colors.white, fontSize: 12),),
                         ],
@@ -86,9 +86,11 @@ class _SubjectsState extends State<Subjects> {
                       title: Text('Remove Subject'),
                       onTap: (){
                         Navigator.of(context).pop();
-                        setState(() {
-                          _delete = true;
-                        });
+                        if(_subjects[0] != 'Empty'){
+                          setState(() {
+                            _delete = true;
+                          });
+                        }
                       },
                     ),
                     ListTile(
@@ -213,48 +215,68 @@ class _SubjectsState extends State<Subjects> {
                     child: ListTile(
                       onTap: () async{
                         if(!_delete){
-                          Navigator.of(context).pushNamed('/batches', arguments: _subjectsVisible[index]);
+                          Navigator.of(context).pushNamed('/batches', arguments: {'subject' : _subjectsVisible[index], 'userName' : _userName});
                         }
                         else{
                           showDialog(
                             context: context,
                             builder: (context){
-                              return AlertDialog(
-                                title: Text('Confirmation'),
-                                content: Text('Are you sure you want to delete ${_subjectsVisible[index]} ? This action can\'t be reverted.', textAlign: TextAlign.justify,),
-                                actions: <Widget>[
-                                  FlatButton(
-                                    child: Text('Cancel'),
-                                    onPressed: (){
-                                      Navigator.of(context).pop();
-                                    },
+                              return Dialog(
+                                shape:  RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(20.0)
+                                ),
+                                child: Container(
+                                  padding: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+                                  child: Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: <Widget>[
+                                      SizedBox(height: 30,),
+                                      Text('Are you sure you want to delete ${_subjectsVisible[index]} ? This action can\'t be reverted.', textAlign: TextAlign.justify,),
+                                      SizedBox(height: 20,),
+                                      Row(
+                                        children: <Widget>[
+                                          Expanded(
+                                            child: FlatButton(
+                                              child: Text('Cancel', style: TextStyle(color: Colors.cyan),),
+                                              onPressed: (){
+                                                Navigator.of(context).pop();
+                                              },
+                                            ),
+                                          ),
+                                          Expanded(
+                                            child: FlatButton(
+                                              child: Text('Delete', style: TextStyle(color: Colors.cyan),),
+                                              onPressed: () async{
+                                                dynamic result = await _tSAB.deleteSubject(_subjectsVisible[index]);
+                                                String deleted = _subjectsVisible[index];
+                                                if(result == 'Success')
+                                                {
+                                                  setState(() {
+                                                    _error = ' ';
+                                                    _subjectsVisible.remove(deleted);
+                                                    _subjects.remove(deleted);
+                                                  });
+                                                  if(_subjects.isEmpty){
+                                                    _subjects.add('Empty');
+                                                  }
+                                                  Navigator.of(context).pop();
+                                                }
+                                                else{
+                                                  setState(() {
+                                                    _error = "Couldn't delete ${_subjectsVisible[index]}";
+                                                  });
+                                                  Navigator.of(context).pop();
+                                                }
+                                              },
+                                            ),
+                                          )
+                                        ],
+                                      )
+                                    ],
                                   ),
-                                  FlatButton(
-                                    child: Text('Delete'),
-                                    onPressed: () async{
-                                      dynamic result = await _tSAB.deleteSubject(_subjectsVisible[index]);
-                                      String deleted = _subjectsVisible[index];
-                                      if(result == 'Success')
-                                        {
-                                          setState(() {
-                                            _error = ' ';
-                                            _subjectsVisible.remove(deleted);
-                                            _subjects.remove(deleted);
-                                          });
-                                          if(_subjects.isEmpty){
-                                            _subjects.add('Empty');
-                                          }
-                                          Navigator.of(context).pop();
-                                        }
-                                      else{
-                                        setState(() {
-                                          _error = "Couldn't delete ${_subjectsVisible[index]}";
-                                        });
-                                        Navigator.of(context).pop();
-                                      }
-                                    },
-                                  ),
-                                ],
+                                ),
+                                /*actions: <Widget>[
+                                ],*/
                               );
                             }
                           );
@@ -391,7 +413,7 @@ class _SubjectsState extends State<Subjects> {
                                         color: Colors.cyan,
                                         borderRadius: BorderRadius.all(Radius.circular(20)),
                                       ),
-                                      child: Text("Add", style: TextStyle(color: Colors.white),),
+                                      child: Center(child: Text("Add", style: TextStyle(color: Colors.white),)),
                                     ),
                                     onTap: () async{
                                       if(_formKey.currentState.validate())
@@ -448,9 +470,12 @@ class _SubjectsState extends State<Subjects> {
                                         color: Colors.cyan,
                                         borderRadius: BorderRadius.all(Radius.circular(20)),
                                       ),
-                                      child: Text("Done", style: TextStyle(color: Colors.white),),
+                                      child: Center(child: Text("Done", style: TextStyle(color: Colors.white),)),
                                     ),
                                     onTap: () {
+                                      setState(() {
+                                        _error = ' ';
+                                      });
                                       Navigator.of(context).pop();
                                     },
                                   ),
