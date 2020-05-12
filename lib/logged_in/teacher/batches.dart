@@ -74,6 +74,9 @@ class _BatchesState extends State<Batches> {
                     title: Text('Add Batch'),
                     onTap: () async{
                       Navigator.of(context).pop();
+                      addBatchForm().then((onValue){
+                        setState(() {});
+                      });
                     },
                   ),
                   ListTile(
@@ -276,6 +279,9 @@ class _BatchesState extends State<Batches> {
   {
     return GestureDetector(
       onTap:() async{
+        addBatchForm().then((onValue){
+          setState(() {});
+        });
       },
       child: Container(
         padding: EdgeInsets.symmetric(horizontal: 15, vertical: 15),
@@ -297,5 +303,131 @@ class _BatchesState extends State<Batches> {
 
   Future addBatchForm()
   {
+    bool adding = false;
+    return showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return StatefulBuilder(
+          builder: (context, setState){
+            return Dialog(
+              shape: RoundedRectangleBorder(
+                  borderRadius:
+                  BorderRadius.circular(20.0)),
+              child: Container(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 10),
+                  child: Form(
+                      key: _formKey,
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: <Widget>[
+                          _error == ' ' ? Container() : Center(child: Text('$_error', style: TextStyle(color: Colors.red),)),
+                          _error == ' ' ? Container() : SizedBox(height: 15,),
+                          Container(
+                            padding: EdgeInsets.all(10),
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.all(Radius.circular(20)),
+                              boxShadow: [BoxShadow(
+                                color: Color.fromRGBO(51, 204, 255, 0.3),
+                                blurRadius: 10,
+                                offset: Offset(0, 10),
+                              )],
+                            ),
+                            child: TextFormField(
+                              decoration: authInputFormatting.copyWith(hintText: 'Add Batch Name'),
+                              validator: (val) => val.isEmpty ? 'Batch Name Can\'t Be Empty' : null,
+                              onChanged: (val) => _batch = val,
+                            ),
+                          ),
+                          SizedBox(height: 15,),
+                          adding ? Center(child: Text("Adding ..."),) : Row(
+                            children: <Widget>[
+                              Expanded(
+                                child: GestureDetector(
+                                  child: Container(
+                                    padding: EdgeInsets.symmetric(horizontal: 45, vertical: 15),
+                                    decoration: BoxDecoration(
+                                      color: Colors.cyan,
+                                      borderRadius: BorderRadius.all(Radius.circular(20)),
+                                    ),
+                                    child: Center(child: Text("Add", style: TextStyle(color: Colors.white),)),
+                                  ),
+                                  onTap: () async{
+                                    if(_formKey.currentState.validate())
+                                    {
+                                      setState(() {
+                                        adding = true;
+                                      });
+                                      if(_batches.contains(_batch))
+                                      {
+                                        setState(() {
+                                          _error = "Batch Already Present";
+                                          adding = false;
+                                        });
+                                      }
+                                      else
+                                      {
+                                        dynamic result = await _tSAB.addBatch(_subject, _batch);
+                                        if(result ==  null)
+                                        {
+                                          setState(() {
+                                            _error = "Something Went Wrong, Couldn't Add Batch";
+                                            adding = false;
+                                          });
+                                        }
+                                        else
+                                        {
+                                          if(_batches[0] == 'EMPTY'){
+                                            setState((){
+                                              _batches.clear();
+                                              _batches.add(_batch);
+                                              _error = ' ';
+                                              adding = false;
+                                            });
+                                          }
+                                          else{
+                                            setState((){
+                                              _batches.add(_batch);
+                                              _error = ' ';
+                                              adding = false;
+                                            });
+                                          }
+                                        }
+                                      }
+                                    }
+                                  },
+                                ),
+                              ),
+                              SizedBox(width: 10,),
+                              Expanded(
+                                child: GestureDetector(
+                                  child: Container(
+                                    padding: EdgeInsets.symmetric(horizontal: 45, vertical: 15),
+                                    decoration: BoxDecoration(
+                                      color: Colors.cyan,
+                                      borderRadius: BorderRadius.all(Radius.circular(20)),
+                                    ),
+                                    child: Center(child: Text("Done", style: TextStyle(color: Colors.white),)),
+                                  ),
+                                  onTap: () {
+                                    setState(() {
+                                      _error = ' ';
+                                    });
+                                    Navigator.of(context).pop();
+                                  },
+                                ),
+                              )
+                            ],
+                          ),
+                        ],
+                      )
+                  ),
+                ),
+              ),
+            );
+          },
+        );
+      });
   }
 }

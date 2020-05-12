@@ -257,7 +257,10 @@ class _SubjectsState extends State<Subjects> {
                                                     _subjects.remove(deleted);
                                                   });
                                                   if(_subjects.isEmpty){
-                                                    _subjects.add('Empty');
+                                                    setState(() {
+                                                      _subjects.add('Empty');
+                                                      _delete = false;
+                                                    });
                                                   }
                                                   Navigator.of(context).pop();
                                                 }
