@@ -276,8 +276,6 @@ class _SubjectsState extends State<Subjects> {
                                     ],
                                   ),
                                 ),
-                                /*actions: <Widget>[
-                                ],*/
                               );
                             }
                           );

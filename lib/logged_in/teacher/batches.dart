@@ -219,44 +219,63 @@ class _BatchesState extends State<Batches> {
                           showDialog(
                               context: context,
                               builder: (context){
-                                return AlertDialog(
-                                  title: Text('Confirmation'),
-                                  content: Text('Are you sure you want to delete ${_batchesVisible[index]} ? This action can\'t be reverted.', textAlign: TextAlign.justify,),
-                                  actions: <Widget>[
-                                    FlatButton(
-                                      child: Text('Cancel'),
-                                      onPressed: (){
-                                        Navigator.of(context).pop();
-                                      },
+                                return Dialog(
+                                  shape:  RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(20.0)
+                                  ),
+                                  child: Container(
+                                    padding: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+                                    child: Column(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: <Widget>[
+                                        SizedBox(height: 30,),
+                                        Text('Are you sure you want to delete ${_batchesVisible[index]} ? This action can\'t be reverted.', textAlign: TextAlign.justify,),
+                                        SizedBox(height: 20,),
+                                        Row(
+                                          children: <Widget>[
+                                            Expanded(
+                                              child: FlatButton(
+                                                child: Text('Cancel', style: TextStyle(color: Colors.cyan),),
+                                                onPressed: (){
+                                                  Navigator.of(context).pop();
+                                                },
+                                              ),
+                                            ),
+                                            Expanded(
+                                              child: FlatButton(
+                                                child: Text('Delete', style: TextStyle(color: Colors.cyan),),
+                                                onPressed: () async{
+                                                  dynamic result = await _tSAB.deleteBatch(_subject, _batchesVisible[index]);
+                                                  String deleted = _batchesVisible[index];
+                                                  if(result == 'Success')
+                                                  {
+                                                    Navigator.of(context).pop();
+                                                    setState(() {
+                                                      _error = '';
+                                                      _batchesVisible.remove(deleted);
+                                                      _batches.remove(deleted);
+                                                    });
+                                                    if(_batches.isEmpty){
+                                                      setState(() {
+                                                        _batches.add('Empty');
+                                                        _delete = false;
+                                                      });
+                                                    }
+                                                  }
+                                                  else{
+                                                    setState(() {
+                                                      _error = "Couldn't delete ${_batchesVisible[index]}";
+                                                    });
+                                                    Navigator.of(context).pop();
+                                                  }
+                                                },
+                                              ),
+                                            )
+                                          ],
+                                        )
+                                      ],
                                     ),
-                                    FlatButton(
-                                      child: Text('Delete'),
-                                      onPressed: () async{
-                                        dynamic result = await _tSAB.deleteBatch(_subject, _batchesVisible[index]);
-                                        String deleted = _batchesVisible[index];
-                                        if(result == 'Success')
-                                        {
-                                          Navigator.of(context).pop();
-                                          setState(() {
-                                            _error = '';
-                                            _batchesVisible.remove(deleted);
-                                            _batches.remove(deleted);
-                                          });
-                                          if(_batches.isEmpty){
-                                            setState(() {
-                                              _batches.add('Empty');
-                                              _delete = false;
-                                            });
-                                          }
-                                        }
-                                        else{
-                                          setState(() {
-                                            _error = "Couldn't delete ${_batchesVisible[index]}";
-                                          });
-                                        }
-                                      },
-                                    ),
-                                  ],
+                                  ),
                                 );
                               }
                           );
