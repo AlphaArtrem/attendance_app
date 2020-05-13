@@ -17,7 +17,7 @@ class _HomeState extends State<Home> {
   Widget build(BuildContext context) {
     Map data = ModalRoute.of(context).settings.arguments;
     String type = data['type'];
-    isEmailVerified = Provider.of<FirebaseUser>(context).isEmailVerified;
+    isEmailVerified = data['isEmailVerified'];
     Widget homeScreen;
     homeScreen = type == 'Student' ? StudentHome() : TeacherHome();
     return isEmailVerified ? homeScreen : VerifyEmail();

@@ -16,7 +16,6 @@ class _StudentHomeState extends State<StudentHome> {
   Map _enrollmentDetails = {};
   Map _enrollmentDetailsVisible = {};
   List _keys = [];
-  bool _moreOptions = false;
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey();
   String userName = '';
 
@@ -66,16 +65,10 @@ class _StudentHomeState extends State<StudentHome> {
               child: ListView(
                 children: <Widget>[
                   ListTile(
-                    title: Text('Update Name'),
-                    onTap: (){},
-                  ),
-                  ListTile(
-                    title: Text('Update Email'),
-                    onTap: (){},
-                  ),
-                  ListTile(
-                    title: Text('Update Password'),
-                    onTap: (){},
+                    title: Text('Account Settings'),
+                    onTap: (){
+                      Navigator.of(context).pushNamed('/accountSettings');
+                    },
                   ),
                 ],
               ),
@@ -151,10 +144,9 @@ class _StudentHomeState extends State<StudentHome> {
                           ),
                         ),
                         IconButton(
-                          icon: Icon(Icons.menu, color: _moreOptions ? Colors.cyan : Colors.grey[700]),
+                          icon: Icon(Icons.menu, color: Colors.cyan),
                           onPressed: (){
                             setState(() {
-                              _moreOptions = !_moreOptions;
                               _scaffoldKey.currentState.openEndDrawer();
                             });
                           },
