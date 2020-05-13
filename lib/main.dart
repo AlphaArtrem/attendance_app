@@ -26,7 +26,7 @@ class LoginApp extends StatelessWidget {
           '/batches' : (context) => Batches(),
           '/enrolledStudents' : (context) => EnrolledStudents(),
           '/addStudents' : (context) => AddStudents(),
-          '/updateAttendance' : (context) => UpdateAttendance(),
+          '/addAttendance' : (context) => AddAttendance(),
           '/attendanceList' : (context) => AttendanceList(),
           '/home' : (context) => Home(),
           '/authentication': (context) => Authentication(),

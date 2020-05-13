@@ -89,8 +89,18 @@ class _LoginState extends State<Login> {
                       FirebaseUser user = await _account.login(_email, _pass);
                       if(user != null)
                       {
+                        bool isEmailVerified = user.isEmailVerified;
                         dynamic type = await UserDataBase(user).userType();
-                        Navigator.of(context).pushReplacementNamed('/home', arguments: type);
+                        if(type != null){
+                          Navigator.of(context).pushReplacementNamed('/home', arguments: {'type' : type, 'isEmailVerified' : isEmailVerified});
+                        }
+                        else{
+                          await _account.signOut();
+                          setState(() {
+                            _loading = false;
+                            _error = 'Couldn\'t get user type, try again';
+                          });
+                        }
                       }
                       else
                       {

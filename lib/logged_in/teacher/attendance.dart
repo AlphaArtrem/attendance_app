@@ -7,12 +7,12 @@ import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
-class UpdateAttendance extends StatefulWidget {
+class AddAttendance extends StatefulWidget {
   @override
-  _UpdateAttendanceState createState() => _UpdateAttendanceState();
+  _AddAttendanceState createState() => _AddAttendanceState();
 }
 
-class _UpdateAttendanceState extends State<UpdateAttendance> {
+class _AddAttendanceState extends State<AddAttendance> {
   bool _chooseClass = true;
   DateTime _current = DateTime.now();
   String _date = '';
@@ -54,7 +54,7 @@ class _UpdateAttendanceState extends State<UpdateAttendance> {
                   child: Row(
                     children: <Widget>[
                       BackButton(color: Colors.white70,),
-                      Expanded(child: Text('${_chooseClass? 'Class Timing':'Update Attendance'}', style: TextStyle(color: Colors.white, fontSize: 25, fontWeight: FontWeight.bold),)),
+                      Expanded(child: Text('${_chooseClass? 'Class Timing':'Add Attendance'}', style: TextStyle(color: Colors.white, fontSize: 25, fontWeight: FontWeight.bold),)),
                       Container(
                         padding: EdgeInsets.symmetric(horizontal: 10),
                         decoration: BoxDecoration(
@@ -79,7 +79,7 @@ class _UpdateAttendanceState extends State<UpdateAttendance> {
             ),
           ),
           SizedBox(height: 5,),
-          Expanded(child: _chooseClass ? chooseClassDuration() : updateAttendance()),
+          Expanded(child: _chooseClass ? chooseClassDuration() : addAttendance()),
         ],
       ),
     );
@@ -218,7 +218,7 @@ class _UpdateAttendanceState extends State<UpdateAttendance> {
     );
   }
 
-  Widget updateAttendance(){
+  Widget addAttendance(){
     return Container(
       margin: EdgeInsets.symmetric(horizontal: 5, vertical: 5),
       padding: EdgeInsets.symmetric(horizontal: 20),
@@ -275,7 +275,7 @@ class _UpdateAttendanceState extends State<UpdateAttendance> {
                     Navigator.pop(context);
                   }
                 },
-                child: Text('Update Attendance', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, letterSpacing: 1.5, fontSize: 17),),
+                child: Text('Add Attendance', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, letterSpacing: 1.5, fontSize: 17),),
               )
             ),
           ),

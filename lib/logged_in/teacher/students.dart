@@ -19,16 +19,12 @@ class _EnrolledStudentsState extends State<EnrolledStudents> {
   String _batch = '';
   String _error = '';
   String _userName = '';
-  bool _moreOptions = false;
   bool _removeStudents = false;
   final GlobalKey<ScaffoldState> _scaffoldKey= GlobalKey();
 
   Future setup(FirebaseUser user, String sub, String batchCopy) async {
     _tSAB = TeacherSubjectsAndBatches(user);
     _students = await _tSAB.getStudents(sub, batchCopy);
-    if(_students[0] == 'Empty'){
-      _moreOptions = true;
-    }
     if (_students == null) {
       _students = ["Couldn't get students, try again"];
     }
@@ -96,7 +92,7 @@ class _EnrolledStudentsState extends State<EnrolledStudents> {
                       title: Text('Add Attendance'),
                       onTap: () async{
                         Navigator.of(context).pop();
-                        await Navigator.pushNamed(context, '/updateAttendance', arguments: {'enrolledStudents' : _students, 'subject' : _subject, 'batch' : _batch});
+                        await Navigator.pushNamed(context, '/addAttendance', arguments: {'enrolledStudents' : _students, 'subject' : _subject, 'batch' : _batch});
                       },
                     ),
                     ListTile(
@@ -175,7 +171,7 @@ class _EnrolledStudentsState extends State<EnrolledStudents> {
                         ),
                       ),
                       IconButton(
-                        icon: Icon(Icons.menu, color: _moreOptions ? Colors.cyan : Colors.grey[700]),
+                        icon: Icon(Icons.menu, color: Colors.cyan),
                         onPressed: (){
                           _scaffoldKey.currentState.openEndDrawer();
                         },

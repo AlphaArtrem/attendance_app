@@ -22,9 +22,7 @@ class _BatchesState extends State<Batches> {
   List<String> _batchesVisible = [];
   final _formKey = GlobalKey<FormState>();
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey();
-  bool _add = false;
   bool _delete = false;
-  bool _moreOptions = false;
 
   Future setup(FirebaseUser userCurrent, String sub) async{
     _user = userCurrent;
@@ -32,9 +30,6 @@ class _BatchesState extends State<Batches> {
     _batches = await _tSAB.getBatches(sub);
     if(_batches == null){
       _batches = ["Couldn't get batches, try again"];
-    }
-    if(_batches[0] == 'Empty'){
-      _moreOptions = true;
     }
     _batchesVisible = _batches;
   }
@@ -166,7 +161,7 @@ class _BatchesState extends State<Batches> {
                         ),
                       ),
                       IconButton(
-                        icon: Icon(Icons.menu, color: _moreOptions ? Colors.cyan : Colors.grey[700]),
+                        icon: Icon(Icons.menu, color: Colors.cyan),
                         onPressed: () async{
                           _scaffoldKey.currentState.openEndDrawer();
                         },

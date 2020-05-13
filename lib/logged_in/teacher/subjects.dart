@@ -17,7 +17,6 @@ class _SubjectsState extends State<Subjects> {
   List<String> _subjects = [];
   List<String> _subjectsVisible = [];
   bool _delete = false;
-  bool _moreOptions = false;
   final _formKey = GlobalKey<FormState>();
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey();
   String _subject = ' ';
@@ -32,9 +31,6 @@ class _SubjectsState extends State<Subjects> {
     _subjects = await _tSAB.getSubjects();
     if(_subjects == null){
       _subjects = ["Couldn't get subjects, try logging in again"];
-    }
-    if(_subjects[0] == 'Empty'){
-      _moreOptions = true;
     }
     _subjectsVisible = _subjects;
 
@@ -77,7 +73,9 @@ class _SubjectsState extends State<Subjects> {
                       title: Text('Add Subject'),
                       onTap: () async{
                         Navigator.of(context).pop();
-                        await addSubjectForm();
+                        addSubjectForm().then((onValue){
+                          setState(() {});
+                        });
                       },
                     ),
                     ListTile(
@@ -166,7 +164,7 @@ class _SubjectsState extends State<Subjects> {
                           ),
                         ),
                         IconButton(
-                          icon: Icon(Icons.menu, color: _moreOptions ? Colors.cyan : Colors.grey[700]),
+                          icon: Icon(Icons.menu, color: Colors.cyan),
                           onPressed: () async{
                             _scaffoldKey.currentState.openEndDrawer();
                           },
@@ -245,8 +243,8 @@ class _SubjectsState extends State<Subjects> {
                                             child: FlatButton(
                                               child: Text('Delete', style: TextStyle(color: Colors.cyan),),
                                               onPressed: () async{
-                                                dynamic result = await _tSAB.deleteSubject(_subjectsVisible[index]);
                                                 String deleted = _subjectsVisible[index];
+                                                dynamic result = await _tSAB.deleteSubject(_subjectsVisible[index]);
                                                 if(result == 'Success')
                                                 {
                                                   setState(() {
@@ -305,7 +303,9 @@ class _SubjectsState extends State<Subjects> {
         Expanded(
           child: GestureDetector(
             onTap:() async{
-              await addSubjectForm();
+              addSubjectForm().then((onValue){
+                setState(() {});
+              });
             },
             child: Container(
               padding: EdgeInsets.symmetric(horizontal: 15, vertical: 15),

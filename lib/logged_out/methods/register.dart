@@ -267,10 +267,20 @@ class _RegisterState extends State<Register> {
                       {
                         UserDataBase userData = UserDataBase(user) ;
                         dynamic userDataSet = await userData.newUserData(firstName, lastName, type);
+                        bool isEmailVerified = user.isEmailVerified;
                         if(userDataSet != null)
                         {
                           dynamic type = await userData.userType();
-                          Navigator.of(context).pushReplacementNamed('/home', arguments: type);
+                          if(type != null){
+                            Navigator.of(context).pushReplacementNamed('/home', arguments: {'type' : type, 'isEmailVerified' : isEmailVerified});
+                          }
+                          else{
+                            await _account.signOut();
+                            setState(() {
+                              loading = false;
+                              error = 'Couldn\'t get user type, try to log in';
+                            });
+                          }
                         }
                         else
                         {
