@@ -66,7 +66,8 @@ class _StudentHomeState extends State<StudentHome> {
                 children: <Widget>[
                   ListTile(
                     title: Text('Account Settings'),
-                    onTap: (){
+                    onTap: ()  {
+                      Navigator.of(context).pop();
                       Navigator.of(context).pushNamed('/accountSettings');
                     },
                   ),

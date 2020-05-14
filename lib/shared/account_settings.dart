@@ -7,6 +7,11 @@ class AccountSettings extends StatefulWidget {
 }
 
 class _AccountSettingsState extends State<AccountSettings> {
+  Map _status = {
+    'index': null,
+    'action' : null,
+  };
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -54,22 +59,43 @@ class _AccountSettingsState extends State<AccountSettings> {
             ),
             Expanded(
               child: Container(
-                padding: EdgeInsets.symmetric(horizontal: 30),
+                padding: EdgeInsets.symmetric(horizontal: 20),
                 color: Colors.white,
-                child: ListView(
+                child: Column(
                   children: <Widget>[
-                    ListTile(
-                      title: Text("Update Name"),
-                      onTap: (){},
+                    SizedBox(height: 40,),
+                    Card(
+                      child: ListTile(
+                        title: Text("Update Name"),
+                        trailing: Icon(Icons.edit),
+                        subtitle: _status['index'] == 0 ? Text(_status['status'], style: TextStyle(color: _status['error'] ? Colors.red : Colors.green),) : Text("Update Your Display Name"),
+                        onTap: (){},
+                      ),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
                     ),
-                    ListTile(
-                      title: Text("Update Email"),
-                      onTap: (){},
+                    Card(
+                      child: ListTile(
+                        title: Text("Update Email"),
+                        trailing: Icon(Icons.email),
+                        subtitle: _status['index'] == 1 ? Text(_status['status'], style: TextStyle(color: _status['error'] ? Colors.red : Colors.green),) : Text("Update Your Current Email"),
+                        onTap: (){
+                        },
+                      ),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
                     ),
-                    ListTile(
-                      title: Text("Update Password"),
-                      onTap: (){},
-                    ),
+                    Card(
+                      child: ListTile(
+                        title: Text("Update Password"),
+                        trailing: Icon(Icons.lock_outline),
+                        subtitle: _status['index'] == 2 ? Text(_status['status'], style: TextStyle(color: _status['error'] ? Colors.red : Colors.green),) : Text("Update Your Password"),
+                        onTap: () {
+                          setState(() {
+                            _status['action'] = 2;
+                          });
+                        },
+                      ),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
+                    )
                   ],
                 ),
               ),
