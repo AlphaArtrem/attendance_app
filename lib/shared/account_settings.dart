@@ -1,5 +1,9 @@
 import 'package:attendanceapp/classes/account.dart';
+import 'package:attendanceapp/classes/firestore.dart';
+import 'package:attendanceapp/shared/formatting.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class AccountSettings extends StatefulWidget {
   @override
@@ -11,6 +15,8 @@ class _AccountSettingsState extends State<AccountSettings> {
     'index': null,
     'action' : null,
   };
+
+  final _formKey = GlobalKey<FormState>();
 
   @override
   Widget build(BuildContext context) {
@@ -61,7 +67,7 @@ class _AccountSettingsState extends State<AccountSettings> {
               child: Container(
                 padding: EdgeInsets.symmetric(horizontal: 20),
                 color: Colors.white,
-                child: Column(
+                child: ListView(
                   children: <Widget>[
                     SizedBox(height: 40,),
                     Card(
@@ -69,10 +75,18 @@ class _AccountSettingsState extends State<AccountSettings> {
                         title: Text("Update Name"),
                         trailing: Icon(Icons.edit),
                         subtitle: _status['index'] == 0 ? Text(_status['status'], style: TextStyle(color: _status['error'] ? Colors.red : Colors.green),) : Text("Update Your Display Name"),
-                        onTap: (){},
+                        onTap: (){
+                          setState(() {
+                            _status = {
+                              'index' : null,
+                              'action' : 0,
+                            };
+                          });
+                        },
                       ),
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
                     ),
+                    _status['action'] == 0 ? changeNameForm() : Container(),
                     Card(
                       child: ListTile(
                         title: Text("Update Email"),
@@ -102,6 +116,131 @@ class _AccountSettingsState extends State<AccountSettings> {
             ),
           ],
         )
+    );
+  }
+
+  Widget changeNameForm(){
+    String firstName;
+    String lastName;
+    return Form(
+      key: _formKey,
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(0, 45, 0, 5),
+        child: Column(
+          children: <Widget>[
+            Container(
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(20),
+                boxShadow: [BoxShadow(
+                  color: Color.fromRGBO(51, 204, 255, 0.3),
+                  blurRadius: 20,
+                  offset: Offset(0, 10),
+                )],
+              ),
+              child: Column(
+                children: <Widget>[
+                  Container(
+                    padding: EdgeInsets.all(10.0),
+                    decoration: BoxDecoration(
+                        border: Border(bottom: BorderSide(color: Colors.grey[200]))
+                    ),
+                    child: TextFormField(
+                      decoration: authInputFormatting.copyWith(hintText: "First Name"),
+                      validator: (val) => val.isEmpty ? "First Name Can't Be Empty" : null,
+                      onChanged: (val){
+                        firstName = val;
+                      },
+                    ),
+                  ),
+                  Container(
+                    padding: EdgeInsets.all(10.0),
+                    decoration: BoxDecoration(
+                        border: Border(bottom: BorderSide(color: Colors.grey[200]))
+                    ),
+                    child: TextFormField(
+                      decoration: authInputFormatting.copyWith(hintText: "Last Name"),
+                      validator: (val) => val.isEmpty ? "Last Name Can't Be Empty" : null,
+                      onChanged: (val){
+                        lastName = val;
+                      },
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            SizedBox(height: 30,),
+            Row(
+              children: <Widget>[
+                Expanded(
+                  child: GestureDetector(
+                    onTap: () async{
+                      if(_formKey.currentState.validate()){
+                        dynamic result = await UserDataBase(Provider.of<FirebaseUser>(context, listen: false)).updateUserName(firstName, lastName);
+                        if(result != null){
+                          setState(() {
+                            _status = {
+                              'index': 0,
+                              'action': null,
+                              'error': false,
+                              'status': 'Name Changed Succesfuly',
+                            };
+                          });
+                        }
+                        else{
+                          setState(() {
+                            _status = {
+                              'index': 0,
+                              'action': 0,
+                              'error': true,
+                              'status': 'Couldn\'t Update Name',
+                            };
+                          });
+                        }
+                      }
+                    },
+                    child: Container(
+                      height: 50,
+                      margin: EdgeInsets.symmetric(horizontal: 10),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(50),
+                        color: Colors.cyan,
+                      ),
+                      child: Center(
+                        child: Text("Update", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, letterSpacing: 1.5, fontSize: 17),),
+                      ),
+                    ),
+                  ),
+                ),
+                Expanded(
+                  child: GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        _status = {
+                          'index' : null,
+                          'action' : null,
+                        };
+                      });
+                    },
+                    child: Container(
+                      height: 50,
+                      margin: EdgeInsets.symmetric(horizontal: 10),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(50),
+                        color: Colors.cyan[200],
+                      ),
+                      child: Center(
+                        child: Text("Cancel", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, letterSpacing: 1.5, fontSize: 17),),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            SizedBox(height : 30),
+          ],
+        ),
+      ),
     );
   }
 }

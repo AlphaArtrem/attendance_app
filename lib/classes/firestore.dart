@@ -46,6 +46,20 @@ class UserDataBase{
      return null;
    }
   }
+
+  Future<String> updateUserName(String firstName, String lastName) async{
+    try{
+      await _userData.document(user.email).updateData({
+        'fistName' : firstName,
+        'lastName' : lastName,
+      });
+      return 'Success';
+    }
+    catch(e){
+      print(e.toString());
+      return null;
+    }
+  }
 }
 
 class StudentsList{

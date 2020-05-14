@@ -46,6 +46,23 @@ class User{
     await user.delete();
   }
 
+  Future<String> resetPassword(oldPass, newPass) async{
+    try{
+      FirebaseUser user = await _auth.currentUser();
+      AuthResult newAuth = await user.reauthenticateWithCredential(
+        EmailAuthProvider.getCredential(
+          email: user.email,
+          password: oldPass,
+        ),
+      );
+      await newAuth.user.updatePassword(newPass);
+      return 'Link to reset password sent to curren email';
+    }
+    catch(e){
+      return null;
+    }
+  }
+
   String validateId(String id)
   {
     if(id.isEmpty)
