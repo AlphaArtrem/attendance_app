@@ -56,9 +56,10 @@ class User{
         ),
       );
       await newAuth.user.updatePassword(newPass);
-      return 'Link to reset password sent to curren email';
+      return 'Success';
     }
     catch(e){
+      print(e.toString());
       return null;
     }
   }
