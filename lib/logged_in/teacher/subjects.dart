@@ -91,7 +91,10 @@ class _SubjectsState extends State<Subjects> {
                     ),
                     ListTile(
                       title: Text('Account Settings'),
-                      onTap: (){},
+                      onTap: (){
+                        Navigator.of(context).pop();
+                        Navigator.of(context).pushNamed('/accountSettings');
+                      },
                     ),
                   ],
                 ),

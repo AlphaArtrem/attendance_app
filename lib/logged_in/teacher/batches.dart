@@ -87,7 +87,10 @@ class _BatchesState extends State<Batches> {
                   ),
                   ListTile(
                     title: Text('Account Settings'),
-                    onTap: (){},
+                    onTap: (){
+                      Navigator.of(context).pop();
+                      Navigator.of(context).pushNamed('/accountSettings');
+                    },
                   ),
                 ],
               ),

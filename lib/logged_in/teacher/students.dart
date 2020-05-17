@@ -97,7 +97,10 @@ class _EnrolledStudentsState extends State<EnrolledStudents> {
                     ),
                     ListTile(
                       title: Text('Account Settings'),
-                      onTap: (){},
+                      onTap: (){
+                        Navigator.of(context).pop();
+                        Navigator.of(context).pushNamed('/accountSettings');
+                      },
                     ),
                   ],
                 ),
