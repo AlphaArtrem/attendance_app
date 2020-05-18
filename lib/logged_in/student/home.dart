@@ -25,7 +25,7 @@ class _StudentHomeState extends State<StudentHome> {
     if(_enrollmentDetails == null){
       _enrollmentDetails = {'error' : {'subject' : "Couldn't load subject list", 'batch' : 'Try Again', 'teacherEmail' : ' '}};
     }
-    _enrollmentDetailsVisible = _enrollmentDetails;
+    _enrollmentDetailsVisible = Map.from(_enrollmentDetails)..removeWhere((key, value) => !value['active']);
     _keys = _enrollmentDetailsVisible.keys.toList();
 
     userName = await UserDataBase(user).userName();
@@ -64,6 +64,13 @@ class _StudentHomeState extends State<StudentHome> {
             Expanded(
               child: ListView(
                 children: <Widget>[
+                  ListTile(
+                    title: Text('Enrollment Requests'),
+                    onTap: ()  {
+                      Navigator.of(context).pop();
+                      Navigator.of(context).pushNamed('/accountSettings');
+                    },
+                  ),
                   ListTile(
                     title: Text('Account Settings'),
                     onTap: ()  {
@@ -136,9 +143,9 @@ class _StudentHomeState extends State<StudentHome> {
                             onChanged: (val){
                               setState(() {
                                 _enrollmentDetailsVisible = Map.from(_enrollmentDetails)..removeWhere((k, v) => !(
-                                    v['subject'].toString().toLowerCase().startsWith(val.toLowerCase()) ||
+                                    (v['subject'].toString().toLowerCase().startsWith(val.toLowerCase()) ||
                                         v['teacherEmail'].toString().toLowerCase().startsWith(val.toLowerCase()) ||
-                                        v['batch'].toString().toLowerCase().startsWith(val.toLowerCase())));
+                                        v['batch'].toString().toLowerCase().startsWith(val.toLowerCase())) && v['active']));
                                 _keys = _enrollmentDetailsVisible.keys.toList();
                               });
                             },

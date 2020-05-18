@@ -13,6 +13,7 @@ class EnrolledStudents extends StatefulWidget {
 
 class _EnrolledStudentsState extends State<EnrolledStudents> {
   TeacherSubjectsAndBatches _tSAB;
+  Map _studentsMap = {};
   List<String> _students = [];
   List<String> _studentsVisible = [];
   String _subject = '';
@@ -24,11 +25,14 @@ class _EnrolledStudentsState extends State<EnrolledStudents> {
 
   Future setup(FirebaseUser user, String sub, String batchCopy) async {
     _tSAB = TeacherSubjectsAndBatches(user);
-    _students = await _tSAB.getStudents(sub, batchCopy);
-    if (_students == null) {
-      _students = ["Couldn't get students, try again"];
+    _studentsMap = await _tSAB.getStudents(sub, batchCopy);
+    if (_studentsMap == null) {
+      _students = ['Couldn\'t get students, try again'];
     }
-    _studentsVisible = _students;
+    else{
+      _students = _studentsMap.keys.where((key) => key != 'Empty').toList();
+      _studentsVisible = _students;
+    }
   }
 
   @override
@@ -69,12 +73,13 @@ class _EnrolledStudentsState extends State<EnrolledStudents> {
                         Navigator.of(context).pop();
                         dynamic returnedData = await Navigator.pushNamed(context, '/addStudents', arguments: {'enrolledStudents' : _students, 'batch' : _batch, 'subject': _subject});
                         if(returnedData != null) {
-                          if(returnedData['enrolledStudents'][0] == 'Empty'){
-                            returnedData['enrolledStudents'].remove('Empty');
+                          if(_studentsMap['Empty']){
+                            _studentsMap['Empty'] = false;
                           }
                           setState(() {
-                            _students = returnedData['enrolledStudents'];
-                            _studentsVisible = returnedData['enrolledStudents'];
+                            _studentsMap['${returnedData['studentAdded']}'] = false;
+                            _students.add(returnedData['studentAdded']);
+                            _studentsVisible.add(returnedData['studentAdded']);
                           });
                         }
                       },
@@ -208,10 +213,10 @@ class _EnrolledStudentsState extends State<EnrolledStudents> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
-          _students[0] == 'Empty' ? addStudentButton() : Container(),
-          _removeStudents && _students[0] != 'Empty' ? removeStudent() : Container(),
-          _students[0] == 'Empty' ? SizedBox(height: 15,) : Container(),
-          _students[0] == 'Empty' ? Expanded(child: Text('You Need To Add Students', style: TextStyle(color: Colors.red),),) : Expanded(
+          _studentsMap['Empty'] ? addStudentButton() : Container(),
+          _removeStudents && !_studentsMap['Empty'] ? removeStudent() : Container(),
+          _studentsMap['Empty'] ? SizedBox(height: 15,) : Container(),
+          _studentsMap['Empty'] ? Expanded(child: Text('You Need To Add Students', style: TextStyle(color: Colors.red),),) : Expanded(
             child: ListView.builder(
               itemCount: _studentsVisible.length,
               itemBuilder: (context, index){
@@ -260,11 +265,12 @@ class _EnrolledStudentsState extends State<EnrolledStudents> {
                                                      _error = '';
                                                      _studentsVisible.remove(deleted);
                                                      _students.remove(deleted);
+                                                     _studentsMap.removeWhere((key, value) => key == deleted);
                                                    });
                                                    if(_students.isEmpty){
                                                      setState(() {
-                                                       _students.add('Empty');
                                                        _removeStudents = false;
+                                                       _studentsMap['Empty'] = true;
                                                      });
                                                    }
                                                  }
@@ -287,12 +293,42 @@ class _EnrolledStudentsState extends State<EnrolledStudents> {
                          );
                        }
                        else{
-                         Navigator.pushNamed(context, '/attendanceList', arguments: {
-                           'teacherEmail' : Provider.of<FirebaseUser>(context, listen: false).email ,
-                           'subject': _subject,
-                           'batch' : _batch,
-                           'studentEmail' : _studentsVisible[index],
-                         });
+                         if(_studentsMap[_studentsVisible[index]]){
+                           Navigator.pushNamed(context, '/attendanceList', arguments: {
+                             'teacherEmail' : Provider.of<FirebaseUser>(context, listen: false).email ,
+                             'subject': _subject,
+                             'batch' : _batch,
+                             'studentEmail' : _studentsVisible[index],
+                           });
+                         }
+                         else{
+                           showDialog(
+                               context: context,
+                               builder: (context){
+                             return Dialog(
+                               shape:  RoundedRectangleBorder(
+                                   borderRadius: BorderRadius.circular(20.0)
+                               ),
+                               child: Container(
+                                 padding: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+                                 child: Column(
+                                   mainAxisSize: MainAxisSize.min,
+                                   children: <Widget>[
+                                     SizedBox(height: 30,),
+                                     Text('This enrollement has not been accepted by the student', textAlign: TextAlign.justify,),
+                                     SizedBox(height: 20,),
+                                     FlatButton(
+                                       child: Text('Close', style: TextStyle(color: Colors.cyan),),
+                                       onPressed: (){
+                                         Navigator.of(context).pop();
+                                       },
+                                     )
+                                   ],
+                                 ),
+                               ),
+                             );
+                           });
+                         }
                        }
                       },
                       title: Row(
@@ -317,13 +353,15 @@ class _EnrolledStudentsState extends State<EnrolledStudents> {
     return GestureDetector(
       onTap:() async{
         dynamic data = await Navigator.pushNamed(context, '/addStudents', arguments: {'enrolledStudents' : _students, 'batch' : _batch, 'subject': _subject});
+        print(data);
         if(data != null) {
-          if(data['enrolledStudents'][0] == 'Empty'){
-            data['enrolledStudents'].remove('Empty');
+          if(_studentsMap['Empty']){
+            _studentsMap['Empty'] = false;
           }
           setState(() {
-            _students = data['enrolledStudents'];
-            _studentsVisible = data['enrolledStudents'];
+            _studentsMap['${data['studentAdded']}'] = false;
+            _students.add(data['studentAdded']);
+            _studentsVisible.add(data['studentAdded']);
           });
         }
       },

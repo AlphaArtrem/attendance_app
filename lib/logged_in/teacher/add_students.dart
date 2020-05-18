@@ -88,12 +88,13 @@ class _AddStudentsState extends State<AddStudents> {
                         padding: EdgeInsets.all(6.5),
                         child: ListTile(
                           onTap: () async{
-                            dynamic result = await _tSAB.addStudent(_subject, _batch, _filteredStudents[index]);
+                            String added = _filteredStudents[index];
+                            dynamic result = await _tSAB.addStudent(_subject, _batch, added);
                             if(result == 'Success'){
                               setState(() {
-                                _enrolledStudents.add(_filteredStudents[index]);
-                                _filteredStudents.remove(_filteredStudents[index]);
-                                Navigator.pop(context, {'enrolledStudents' : _enrolledStudents,});
+                                _enrolledStudents.add(added);
+                                _filteredStudents.remove(added);
+                                Navigator.pop(context, {'studentAdded' : added,});
                               });
                             }
                             else{
