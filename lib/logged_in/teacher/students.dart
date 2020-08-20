@@ -315,7 +315,7 @@ class _EnrolledStudentsState extends State<EnrolledStudents> {
                                    mainAxisSize: MainAxisSize.min,
                                    children: <Widget>[
                                      SizedBox(height: 30,),
-                                     Text('This enrollement has not been accepted by the student', textAlign: TextAlign.justify,),
+                                     Text('This enrollement has not been accepted by the student.', textAlign: TextAlign.justify,),
                                      SizedBox(height: 20,),
                                      FlatButton(
                                        child: Text('Close', style: TextStyle(color: Colors.cyan),),
