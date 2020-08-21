@@ -24,9 +24,7 @@ dependencies:
   provider: ^4.0.4
   flutter_spinkit: "^4.1.2"
   enhanced_future_builder: ^1.0.2
-  flutter_datetime_picker:
-    git:
-      url: https://github.com/derohimat/flutter_datetime_picker.git
+  flutter_datetime_picker: ^1.0.1
   intl: ^0.16.1
 
   # The following adds the Cupertino Icons font to your application.
